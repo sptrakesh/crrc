@@ -1,0 +1,25 @@
+<div>
+  <h2>Manage Institutions</h2>
+  <div>
+    <div style="display:inline-block; float: left; padding: 10px;"><a href="/institutions/create" style="float: left;">Create Institution</a></div>
+    <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
+    <div style="display:inline-block; float: right; padding: 10px;">
+      <form name="search" method="post" action="/institutions/search">
+      <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
+      </form>
+    </div>
+    <div style="clear: both;"></div>
+  </div>
+  {% if searchText %}
+  <h3>Search results for ({{ searchText }})</h3>
+  {% endif %}
+  <ul>
+    {% for institution in institutions %}
+    <li><a href="/institutions/id/{{ institution.institution_id }}/view">{{ institution.name }}</a> - <form action="/institutions/remove" method="post" style="display: inline-block;">
+      <input type="hidden" name="id" value="{{ institution.institution_id }}"/>
+      <input type="submit" value="Delete" />
+    </form>
+    </li>
+  </ul>
+  {% endfor %}
+</div>

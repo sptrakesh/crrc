@@ -1,0 +1,32 @@
+<div>
+<h3>Name: {{ object.name }}</h3>
+{% if object.work_email %}
+<strong>Work Email:</strong> <a href="mailto:{{ object.work_email }}">{{ object.work_email }}</a><br/>
+{% endif %}
+{% if object.home_email %}
+<strong>Home Email:</strong> <a href="mailto:{{ object.home_email }}">{{ object.home_email }}</a><br/>
+{% endif %}
+{% if object.other_email %}
+<strong>Other Email:</strong> <a href="mailto:{{ object.other_email }}">{{ object.other_email }}</a><br/>
+{% endif %}
+
+{% if object.work_phone %}
+<strong>Work Number:</strong> {{ object.work_phone }}<br/>
+{% endif %}
+{% if object.home_phone %}
+<strong>Home Number:</strong> {{ object.home_phone }}<br/>
+{% endif %}
+{% if object.mobile_phone %}
+<strong>Mobile Number:</strong> {{ object.mobile_phone }}<br/>
+{% endif %}
+
+<span>
+<form id="details" method="post" action="/contacts/id/{{ object.contact_id }}/update" style="display: inline-block;">
+<input type="submit" value="Edit"/>
+</form>
+<form action="/contacts/remove" method="post" style="display: inline-block;">
+<input type="hidden" name="id" value="{{ object.contact_id }}"/>
+<input type="submit" value="Delete" />
+</form>
+</span>
+</div>

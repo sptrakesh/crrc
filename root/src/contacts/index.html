@@ -1,0 +1,25 @@
+<div>
+  <h2>Manage Contacts</h2>
+  <div>
+    <div style="display:inline-block; float: left; padding: 10px;"><a href="/contacts/create" style="float: left;">Create Contact</a></div>
+    <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
+    <div style="display:inline-block; float: right; padding: 10px;">
+      <form name="search" method="post" action="/contacts/search">
+      <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
+      </form>
+    </div>
+    <div style="clear: both;"></div>
+  </div>
+  {% if searchText %}
+  <h3>Search results for ({{ searchText }})</h3>
+  {% endif %}
+  <ul>
+    {% for contact in contacts %}
+    <li><a href="/contacts/id/{{ contact.contact_id }}/view">{{ contact.name }}</a> - <form action="/contacts/remove" method="post" style="display: inline-block;">
+      <input type="hidden" name="id" value="{{ contact.contact_id }}"/>
+      <input type="submit" value="Delete" />
+    </form>
+    </li>
+  </ul>
+  {% endfor %}
+</div>

@@ -1,0 +1,45 @@
+<div>
+<h3>Title: {{ object.filename }}</h3>
+<strong>Size:</strong> {{ object.filesize }}<br/>
+<strong>Type:</strong> {{ object.mimetype }}<br/>
+<div>
+Click <a href="/agreements/id/{{ object.agreement_id }}/display">{{ object.filename }}</a>
+to view/download the articulation agreement.<br/>
+</div>
+<div>
+<form id="details" method="post" action="/agreements/id/{{ object.agreement_id }}/update" style="display: inline-block; float: left;">
+<input type="submit" value="Edit"/>
+</form>
+<form action="/agreements/remove" method="post" style="display: inline-block; float: right;">
+<input type="hidden" name="id" value="{{ object.agreement_id }}"/>
+<input type="submit" value="Delete" />
+<div style="clear: both;"></div>
+</form>
+</div>
+<br/>
+<h3>Institutional Program Relations</h3>
+<table border="0" cellpadding="5" cellspacing="0">
+<thead>
+<tr>
+<th colspan="2">Transfer</th><th colspan="2">Transferee</th>
+</tr>
+<tr>
+<th>Institution</th><th>Program</th><th>Institution</th><th>Program</th>
+</tr>
+</thead>
+<tbody>
+{% for relation in relations %}
+<tr>
+<td><a href="/institutions/id/{{ relation.institution1.id }}">{{ relation.institution1.name }}</a></td>
+<td><a href="/programs/id/{{ relation.transfer.id }}">{{ relation.transfer.name }}</a></td>
+<td><a href="/institutions/id/{{ relation.transferee.id }}">{{ relation.transferee.name }}</a></td>
+<td><a href="/programs/id/{{ relation.transferee.name }}">{{ relation.transferee.name }}</a></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+<form action="/institution/program/relations/create" method="post" style="display: inline-block;">
+<input type="hidden" name="id" value="{{ object.agreement_id }}"/>
+<input type="submit" value="Add Relation" />
+</form>
+</div>

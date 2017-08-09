@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>CRRC: {{ template }}</title>
+  <link rel="stylesheet" type="text/css" media="all" href="/static/rw_common/themes/business/consolidated.css" />
+  <script type="text/javascript" src="/static/rw_common/themes/business/javascript.js"></script>
+</head>
+<body>
+<div id="container"><!-- Start container -->
+  
+  <div id="pageHeader"><!-- Start page header -->
+    
+    <h1>CSSIA</h1>
+    <h2>CRRC Database</h2>
+  </div><!-- End page header -->
+  
+  <div id="sidebarContainer"><!-- Start Sidebar wrapper -->
+    <div id="navcontainer"><!-- Start Navigation -->
+      <ul><li><a href="/contacts" rel="">Contacts</a></li><li><a href="/institutions" rel="">Institutions</a></li><li><a href="/degrees" rel="">Degrees</a></li><li><a href="/programs">Programs</a></li><li><a href="/agreements">Agreements</a></li><li><a href="/logout" rel="">Logout</a></li></ul>
+    </div><!-- End navigation --> 
+
+    <div id="sidebar"><!-- Start sidebar content -->
+      <h1 class="sideHeader"></h1><!-- Sidebar header -->
+       <br /><!-- sidebar content you enter in the page inspector -->
+       <!-- sidebar content such as the blog archive links -->
+    </div><!-- End sidebar content -->
+  </div><!-- End sidebar wrapper -->
+  
+  <div id="contentContainer"><!-- Start main content wrapper -->
+    <div id="content"><!-- Start content -->
+      <div style="display: flex; margin: auto; padding: 10px; min-height: 300px;">
+        {% comment %} Status and error messages {% endcomment %}
+        <span class="message">{{ status_msg }}{{ c.request.params.status_msg|escape }}</span>
+        <span class="error">{{ error_msg }}</span>
+        {{ content }}
+      </div>
+      <div id="breadcrumbcontainer"><!-- Start the breadcrumb wrapper -->
+      </div><!-- End breadcrumb -->
+    </div><!-- End content -->
+  </div><!-- End main content wrapper -->
+  <div class="clearer"></div>
+  <div id="footer"><!-- Start Footer -->
+    <p>&copy; 2017 CSSIA</p>
+  </div><!-- End Footer -->
+
+</div><!-- End container -->
+</body>
+</html>

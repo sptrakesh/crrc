@@ -1,0 +1,22 @@
+<div style="display: flex; margin: auto; width: 90%; padding: 10px;">
+<form id="edit" method="post" action="/agreements/edit" enctype="multipart/form-data">
+{% if object %}
+<h2>Edit Agreement</h2>
+{% else %}
+<h2>Create Agreement</h2>
+{% endif %}
+<h3>Upload agreement document.</h3>
+<div>
+<strong>Note:</strong>
+Filenames of documents being uploaded need to be unique.  It would be very difficult
+to distinguish between various documents uploaded to the system if file names
+were not unique.
+</div>
+<input name="document" id="document" type="file" required="required" size="50"/>
+{% if object %}
+<input type="hidden" name="id" value="{{ object.agreement_id }}"/>
+{% endif %}
+<br/>
+<input type="submit" value="Upload"/>
+</form>
+</div>

@@ -1,0 +1,100 @@
+<script type="text/javascript">
+  if ( !window.console ) { window.console = function(){}; }
+
+  const programs = JSON.parse( '{{ programs }}' );
+  console.log( programs );
+
+  function updateProgram( source, targetName )
+  {
+    let program = source.value;
+    let target = document.getElementById( targetName );
+    console.log( `Selected program ${program} in ${source.id}` );
+    target.innerHTML = "";
+
+    if ( program > 0 )
+    {
+      target.removeAttribute( 'disabled' );
+      console.log( `Array for key: ${program}` );
+      console.log( programs[program] );
+
+      let arr = programs[program];
+      target.appendChild( new Option( 'Select Program', '0' ) );
+      for ( let i = 0; i < arr.length; ++i )
+      {
+        target.appendChild( new Option( arr[i].title, arr[i].program_id ) );
+      }
+    }
+    else target.setAttribute( 'disabled', 'disabled' );
+  }
+
+  function validate( form )
+  {
+    let agreement = document.getElementById( 'agreement_id' ).value;
+    if ( ! ( agreement > 0 ) )
+    {
+      alert( 'Please select an agreement' );
+      return false;
+    }
+
+    let transferProgram = document.getElementById( 'transfer_program_id' ).value;
+    if ( ! ( transferProgram > 0 ) )
+    {
+      alert( 'Please select a transfer program' );
+      return false;
+    }
+
+    let transfereeProgram = document.getElementById( 'transferee_program_id' ).value;
+    if ( ! ( transfereeProgram > 0 ) )
+    {
+      alert( 'Please select a transferee program' );
+      return false;
+    }
+
+    return true;
+  }
+</script>
+<div style="display: flex; margin: auto; width: 90%; padding: 10px;">
+<form id="edit" method="post" action="/institution/program/relations/edit" onsubmit="return validate( this );">
+<h2>Create Institutional Program Transfer Agreement</h2>
+<table>
+<tr>
+<td align="right">Agreement:</td>
+<td><select name="agreement_id" id="agreement_id" required="required">
+<option value="0">Select Agreement</option>
+{% for agreement in agreements %}
+<option value="{{ agreement.agreement_id }}">{{ agreement.filename }}</option>
+{% endfor %}
+</select></td>
+</tr>
+<tr>
+<td align="right">Transfer Institution</td>
+<td><select name="transfer_institution" id="transfer_institution" onchange="updateProgram( this, 'transfer_program_id' );" required="required">
+<option value="0">Select Institution</option>
+{% for institution in institutions %}
+<option value="{{ institution.institution_id }}">{{ institution.name }}</option>
+{% endfor %}
+</select></td>
+</tr>
+<tr>
+<td align="right">Transfer Program:</td>
+<td><select name="transfer_program_id" id="transfer_program_id" disabled="disabled" required="required">
+</select></td>
+</tr>
+<tr>
+<td align="right">Transferee Institution</td>
+<td><select name="transferee_institution" id="transferee_institution" onchange="updateProgram( this, 'transferee_program_id' );" required="required">
+<option value="0">Select Institution</option>
+{% for institution in institutions %}
+<option value="{{ institution.institution_id }}">{{ institution.name }}</option>
+{% endfor %}
+</select></td>
+</tr>
+<tr>
+<td align="right">Transferee Program:</td>
+<td><select name="transferee_program_id" id="transferee_program_id" disabled="disabled" required="required">
+</select></td>
+</tr>
+</table>
+<input type="submit" value="Save"/>
+</form>
+</div>

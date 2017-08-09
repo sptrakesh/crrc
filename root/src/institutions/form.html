@@ -1,0 +1,89 @@
+<div style="display: flex; margin: auto; width: 90%; padding: 10px;">
+<form id="edit" method="post" action="/institutions/edit">
+{% if object %}
+<h2>Edit Institution</h2>
+{% else %}
+<h2>Create Institution</h2>
+{% endif %}
+<table>
+<td align="right">Name:</td>
+<td><input name="name" id="name" type="text" size="35" width="50" required="required"
+{% if object %}
+value="{{ object.name }}"
+{% endif %}
+/></td>
+</tr>
+<td align="right">Address:</td>
+<td><input name="address" id="address" type="text" size="35" width="250"
+{% if object %}
+value="{{ object.address }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">City:</td>
+<td><input name="city" id="city" type="text" size="35" width="100"
+{% if object %}
+value="{{ object.city }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">State:</td>
+<td><input name="state" id="state" type="text" size="35" width="100"
+{% if object %}
+value="{{ object.state }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">Postal Code:</td>
+<td><input name="postalCode" id="postalCode" type="text" size="35" width="100"
+{% if object %}
+value="{{ object.postal_code }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">Country:</td>
+<td><input name="country" id="country" type="text" size="35" width="100" value=
+{% if object %}
+"{{ object.country }}"
+{% else %}
+USA
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">Website:</td>
+<td><input name="website" id="website" type="text" size="35" width="250"
+{% if object %}
+value="{{ object.website }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">Contact:</td>
+<td><select name="contact" id="contact">
+<option value="0">Select Contact</option>
+{% for contact in contacts %}
+<option value="{{ contact.contact_id }}"
+{% ifequal contact.contact_id object.contact.contact_id %}
+selected="selected"
+{% endifequal %}
+>{{ contact.name}}
+{% if contact.work_email %}
+({{ contact.work_email}})
+{% endif %}
+</option>
+{% endfor %}
+</select>
+</td>
+</tr>
+</table>
+{% if object %}
+<input type="hidden" name="id" value="{{ object.institution_id }}"/>
+{% endif %}
+<input type="submit" value="Save"/>
+</form>
+</div>

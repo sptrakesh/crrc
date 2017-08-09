@@ -1,0 +1,69 @@
+<div style="display: flex; margin: auto; width: 90%; padding: 10px;">
+<form id="edit" method="post" action="/contacts/edit">
+{% if object %}
+<h2>Edit Contact</h2>
+{% else %}
+<h2>Create Contact</h2>
+{% endif %}
+<table>
+<td align="right">Name:</td>
+<td><input name="name" id="name" type="text" size="30" width="100" required="required"
+{% if object %}
+value="{{ object.name }}"
+{% endif %}
+/></td>
+</tr>
+<td align="right">Email (Work):</td>
+<td><input name="workEmail" id="workEmail" type="text" size="30" width="100"
+{% if object %}
+value="{{ object.work_email }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">Email (Home):</td>
+<td><input name="homeEmail" id="otherEmail" type="text" size="30" width="100"
+{% if object %}
+value="{{ object.home_email }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">Email (Other):</td>
+<td><input name="otherEmail" id="otherEmail" type="text" size="30" width="100"
+{% if object %}
+value="{{ object.other_email }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">Telephone (Work):</td>
+<td><input name="workPhone" id="workPhone" type="text" size="30" width="100"
+{% if object %}
+value="{{ object.work_phone }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">Telephone (Mobile):</td>
+<td><input name="mobilePhone" id="mobilePhone" type="text" size="30" width="100"
+{% if object %}
+value="{{ object.mobile_phone }}"
+{% endif %}
+/></td>
+</tr>
+<tr>
+<td align="right">Telephone (Other):</td>
+<td><input name="otherPhone" id="otherPhone" type="text" size="30" width="100"
+{% if object %}
+value="{{ object.other_phone }}"
+{% endif %}
+/></td>
+</tr>
+</table>
+{% if object %}
+<input type="hidden" name="id" value="{{ object.contact_id }}"/>
+{% endif %}
+<input type="submit" value="Save"/>
+</form>
+</div>

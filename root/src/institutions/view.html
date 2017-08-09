@@ -1,0 +1,34 @@
+<div>
+<h3>Name: {{ object.name }}</h3>
+{% if object.address %}
+<strong>Address:</strong> {{ object.address }}<br/>
+{% endif %}
+{% if object.city %}
+<strong>City:</strong> {{ object.city }}<br/>
+{% endif %}
+{% if object.state %}
+<strong>State:</strong> {{ object.state }}<br/>
+{% endif %}
+{% if object.postal_code %}
+<strong>ZIP/Postal Code:</strong> {{ object.postal_code }}<br/>
+{% endif %}
+{% if object.country %}
+<strong>Country:</strong> {{ object.country }}<br/>
+{% endif %}
+{% if object.website %}
+<strong>Website:</strong> <a href="{{ object.website }}">{{ object.website }}</a><br/>
+{% endif %}
+{% if object.contact %}
+<strong>Contact:</strong> <a href="/contacts/id/{{ object.contact.contact_id }}/view">{{ object.contact.name }}</a><br/>
+{% endif %}
+
+<span>
+<form id="details" method="post" action="/institutions/id/{{ object.institution_id }}/update" style="display: inline-block;">
+<input type="submit" value="Edit"/>
+</form>
+<form action="/institutions/remove" method="post" style="display: inline-block;">
+<input type="hidden" name="id" value="{{ object.institution_id }}"/>
+<input type="submit" value="Delete" />
+</form>
+</span>
+</div>

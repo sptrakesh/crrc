@@ -1,0 +1,25 @@
+<div>
+  <h2>Manage Degrees</h2>
+  <div>
+    <div style="display:inline-block; float: left; padding: 10px;"><a href="/degrees/create" style="float: left;">Create Degree</a></div>
+    <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
+    <div style="display:inline-block; float: right; padding: 10px;">
+      <form name="search" method="post" action="/degrees/search">
+      <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
+      </form>
+    </div>
+    <div style="clear: both;"></div>
+  </div>
+  {% if searchText %}
+  <h3>Search results for ({{ searchText }})</h3>
+  {% endif %}
+  <ul>
+    {% for degree in degrees %}
+    <li><a href="/degrees/id/{{ degree.degree_id }}/view">{{ degree.title }}</a> - <form action="/degrees/remove" method="post" style="display: inline-block;">
+      <input type="hidden" name="id" value="{{ degree.degree_id }}"/>
+      <input type="submit" value="Delete" />
+    </form>
+    </li>
+  </ul>
+  {% endfor %}
+</div>
