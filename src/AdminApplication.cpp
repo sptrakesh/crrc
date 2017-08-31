@@ -57,7 +57,7 @@ bool AdminApplication::postFork()
 {
   auto db = QSqlDatabase::addDatabase( "QSQLITE",
     Cutelyst::Sql::databaseNameThread( DATABASE_NAME ) );
-  db.setDatabaseName( "crrc.db" );
+  db.setDatabaseName( "var/crrc.db" );
   db.setConnectOptions( "foreign_keys = on" );
   if ( !db.open() )
   {

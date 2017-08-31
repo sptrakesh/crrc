@@ -1,2 +1,7 @@
+set cwd=%cd%
+set build=%0\..\..\build
+if not exist %build% mkdir %build%
+cd %build%
 cmake -G"Visual Studio 15 Win64" ..
 cmake --build .
+cd %cwd%
