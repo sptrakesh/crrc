@@ -1,13 +1,14 @@
 #!/bin/sh
 cd `dirname $0`/..
 
-if [ ! -d /var/tmp/crrc ]
+if [ ! -d var ]
 then
-  mkdir /var/tmp/crrc
+  mkdir var
 fi
 
-docker run -it \
-  -v /private/var/tmp/crrc:/var/lib/postgresql/9.6/data \
+docker run -d \
   --name crrc --rm=true \
-  -p 3000:3000 -p 5432:5432 \
-  crrc
+  -v $PWD/root:/opt/crrc/root \
+  -v $PWD/var:/opt/crrc/var \
+  -p 80:80 \
+  crrc updateStart
