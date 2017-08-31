@@ -55,7 +55,6 @@ bool AdminApplication::init()
 
 bool AdminApplication::postFork()
 {
-#if defined (_WINDOWS)
   auto db = QSqlDatabase::addDatabase( "QSQLITE",
     Cutelyst::Sql::databaseNameThread( DATABASE_NAME ) );
   db.setDatabaseName( "crrc.db" );
@@ -65,14 +64,5 @@ bool AdminApplication::postFork()
     qCritical() << "Failed to open database:" << db.lastError().text();
     return false;
   }
-#else
-  auto db = QSqlDatabase::addDatabase( "QPSQL",
-    Cutelyst::Sql::databaseNameThread( DATABASE_NAME ) );
-  if ( !db.open() )
-  {
-    qCritical() << "Failed to open database:" << db.lastError().text();
-    return false;
-  }
-#endif
   return true;
 }

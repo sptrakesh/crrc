@@ -2,5 +2,5 @@
 
 namespace crrc
 {
-  constexpr char* DATABASE_NAME{ "CRRCDB" };
+  constexpr const char* DATABASE_NAME{ "CRRCDB" };
 }
