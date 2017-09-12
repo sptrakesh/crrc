@@ -1,32 +1,38 @@
 <div>
-<h3>Name: {{ object.name }}</h3>
-{% if object.work_email %}
-<strong>Work Email:</strong> <a href="mailto:{{ object.work_email }}">{{ object.work_email }}</a><br/>
-{% endif %}
-{% if object.home_email %}
-<strong>Home Email:</strong> <a href="mailto:{{ object.home_email }}">{{ object.home_email }}</a><br/>
-{% endif %}
-{% if object.other_email %}
-<strong>Other Email:</strong> <a href="mailto:{{ object.other_email }}">{{ object.other_email }}</a><br/>
-{% endif %}
+  <h3>Name: {{ object.name }}</h3>
+  {% if object.work_email %}
+  <label class="label">Work Email:</label> <a href="mailto:{{ object.work_email }}">{{ object.work_email }}</a><br />
+  {% endif %}
+  {% if object.home_email %}
+  <label class="label">Home Email:</label> <a href="mailto:{{ object.home_email }}">{{ object.home_email }}</a><br />
+  {% endif %}
+  {% if object.other_email %}
+  <label class="label">Other Email:</label> <a href="mailto:{{ object.other_email }}">{{ object.other_email }}</a><br />
+  {% endif %}
 
-{% if object.work_phone %}
-<strong>Work Number:</strong> {{ object.work_phone }}<br/>
-{% endif %}
-{% if object.home_phone %}
-<strong>Home Number:</strong> {{ object.home_phone }}<br/>
-{% endif %}
-{% if object.mobile_phone %}
-<strong>Mobile Number:</strong> {{ object.mobile_phone }}<br/>
-{% endif %}
+  {% if object.work_phone %}
+  <label class="label">Work Number:</label> {{ object.work_phone }}<br />
+  {% endif %}
+  {% if object.home_phone %}
+  <label class="label">Home Number:</label> {{ object.home_phone }}<br />
+  {% endif %}
+  {% if object.mobile_phone %}
+  <label class="label">Mobile Number:</label> {{ object.mobile_phone }}<br />
+  {% endif %}
+  {% if object.user.username %}
+  <label class="label">Username:</label> {{ object.user.username }}<br />
+  {% endif %}
+  {% if object.user.role.role %}
+  <label class="label">Role:</label> {{ object.user.role.role }}<br />
+  {% endif %}
 
-<span>
-<form id="details" method="post" action="/contacts/id/{{ object.contact_id }}/update" style="display: inline-block;">
-<input type="submit" value="Edit"/>
-</form>
-<form action="/contacts/remove" method="post" style="display: inline-block;">
-<input type="hidden" name="id" value="{{ object.contact_id }}"/>
-<input type="submit" value="Delete" />
-</form>
-</span>
+  <div>
+    <form id="details" method="post" action="/contacts/id/{{ object.contact_id }}/update" style="display: inline-block;">
+      <input type="submit" value="Edit" />
+    </form>
+    <form action="/contacts/remove" method="post" style="display: inline-block;">
+      <input type="hidden" name="id" value="{{ object.contact_id }}" />
+      <input type="submit" value="Delete" />
+    </form>
+  </div>
 </div>

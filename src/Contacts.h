@@ -36,5 +36,8 @@ namespace crrc
 
     C_ATTR( remove, :Chained( "base" ) : PathPart( "remove" ) : Args( 0 ) )
     void remove( Cutelyst::Context* c );
+
+    C_ATTR( isUsernameAvailable, :Chained( "base" ) : PathPart( "isUsernameAvailable" ) : Args( 0 ) )
+    void isUsernameAvailable( Cutelyst::Context* c );
   };
 }

@@ -2,11 +2,20 @@
 #include "dao/AgreementDAO.h"
 #include "dao/InstitutionAgreementDAO.h"
 #include <QtCore/QStringBuilder>
+#include <QtCore/QtDebug>
+#include <Cutelyst/Plugins/Authentication/authentication.h>
+#include <Cutelyst/Plugins/Authentication/authenticationuser.h>
 
 using crrc::Agreements;
 
 void Agreements::index( Cutelyst::Context* c ) const
 {
+  using Cutelyst::Authentication;
+  using Cutelyst::AuthenticationUser;
+
+  const AuthenticationUser& user = Authentication::user( c );
+  qDebug() << "Authenticated user: " << user << ", id: " << user.id();
+
   dao::AgreementDAO dao;
   c->stash( {
     { "agreements", dao.retrieveAll() },

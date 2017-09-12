@@ -25,6 +25,7 @@ bool Root::Auto( Cutelyst::Context* c )
   if ( Cutelyst::Authentication::userExists( c ) ) return true;
 
   qDebug( "***Root::Auto User not found, forwarding to /login" );
+  c->response()->setHeader( "referer", c->request()->uri().toString() );
   c->response()->redirect( c->uriFor( "/login" ) );
   return false;
 }

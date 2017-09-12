@@ -13,5 +13,9 @@ namespace crrc
 
     C_ATTR( index, :Path("/login"):Args( 0 ) )
     void index( Cutelyst::Context* c );
+
+  private:
+    bool plainText( Cutelyst::Context* c );
+    bool hashed( Cutelyst::Context* c );
   };
 }

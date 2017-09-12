@@ -1,5 +1,7 @@
 #include "Contacts.h"
 #include "dao/ContactDAO.h"
+#include "dao/UserDAO.h"
+#include "dao/RoleDAO.h"
 
 using crrc::Contacts;
 
@@ -19,12 +21,16 @@ void Contacts::base( Cutelyst::Context* c ) const
 void Contacts::object( Cutelyst::Context* c, const QString& id ) const
 {
   dao::ContactDAO dao;
-  c->setStash( "object", dao.retrieve( id ) );
+  const auto obj = dao.retrieve( id );
+  c->setStash( "object", obj );
 }
 
 void Contacts::create( Cutelyst::Context* c ) const
 {
-  c->setStash( "template", "contacts/form.html" );
+  c->stash( {
+    { "template", "contacts/form.html" },
+    { "roles", dao::RoleDAO().retrieveAll() }
+  } );
 }
 
 void Contacts::edit( Cutelyst::Context* c ) const
@@ -88,4 +94,13 @@ void Contacts::remove( Cutelyst::Context* c )
 
   c->stash()["status_msg"] = statusMsg;
   c->response()->redirect( "/contacts" );
+}
+
+void Contacts::isUsernameAvailable( Cutelyst::Context* c )
+{
+  const auto status = dao::UserDAO().isUsernameAvailable( c->request()->param( "username" ) );
+  const QString string = status ? "true" : "false";
+  c->response()->setContentType( "text/plain" );
+  c->response()->setContentLength( string.size() );
+  c->response()->setBody( string );
 }

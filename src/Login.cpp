@@ -1,5 +1,7 @@
 #include "Login.h"
 
+#include <QtCore/QCryptographicHash>
+#include <QtCore/QtDebug>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 
 using crrc::Login;
@@ -17,10 +19,11 @@ void Login::index( Cutelyst::Context* c )
 
   if ( !username.isNull() && !password.isNull() )
   {
-    if ( Authentication::authenticate( c, { { "username", username }, { "password", password } } ) )
+    if ( hashed( c ) || plainText( c ) )
     {
-      //c->response()->redirect( c->request()->referer() );
+      qDebug() << "client specified referrer: " << c->request()->referer();
       c->response()->redirect( "/contacts" );
+      //c->response()->redirect( c->request()->header( "referrer" ) );
       return;
     }
     else
@@ -34,4 +37,25 @@ void Login::index( Cutelyst::Context* c )
   }
 
   c->setStash( "template", "login.html" );
+}
+
+bool Login::plainText( Cutelyst::Context* c )
+{
+  using Cutelyst::Authentication;
+
+  auto username = c->request()->param( "username" );
+  auto password = c->request()->param( "password" );
+  return Authentication::authenticate( c, { { "username", username }, { "password", password } } );
+}
+
+bool Login::hashed( Cutelyst::Context* c )
+{
+  using Cutelyst::Authentication;
+
+  auto username = c->request()->param( "username" );
+
+  QCryptographicHash hash{ QCryptographicHash::Sha3_512 };
+  hash.addData( c->request()->param( "password" ).toLocal8Bit() );
+  const auto passwd = hash.result().toHex();
+  return Authentication::authenticate( c, { { "username", username }, { "password", passwd } } );
 }

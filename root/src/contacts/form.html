@@ -1,69 +1,144 @@
+<script type="text/javascript">
+  function isEnoughLength(str, length)
+  {
+    if ((str == null) || isNaN(length)) return false;
+    else if (str.length < length) return false;
+    return true;
+  }
+
+  function hasMixedCase(passwd)
+  {
+    return passwd.match(/[a-z]/) && passwd.match(/[A-Z]/);
+  }
+
+  function hasNumeral(passwd)
+  {
+    return passwd.match(/[0-9]/);
+  }
+
+  function hasSpecialChars(passwd)
+  {
+    return passwd.match(/[!,@,#,$,%,^,&,*,?,_,~]/);
+  }
+
+  function checkPasswordStrength(pwd)
+  {
+    return (isEnoughLength(pwd, 8) && hasMixedCase(pwd) &&
+      hasNumeral(pwd) && hasSpecialChars(pwd));
+  }
+
+  function validate(form)
+  {
+    let readonly = document.getElementById('username').getAttribute('readonly');
+    var response = true;
+    if (readonly == null)
+    {
+      response = ajaxResponse('GET', `/contacts/isUsernameAvailable/?username=${form.username.value}`);
+      let exists = response === 'true';
+      console.log(`Check to see if username ${form.username.value} is available returned ${exists}.`);
+
+      let element = document.getElementById('userNameWarning');
+      if (!exists)
+      {
+        console.log(`Check for response for username: ${form.username.value} was ${response}`);
+        element.style.display = 'inline';
+        form.username.focus();
+      }
+      else element.style.display = 'none';
+    }
+
+    var strength = true;
+    if (form.password)
+    {
+      strength = checkPasswordStrength(form.password.value);
+      element = document.getElementById('passwordWarning');
+
+      if (!strength)
+      {
+        console.log(`Password (${form.password.value}) fails strength check.`);
+        element.style.display = "inline";
+        form.password.focus();
+      }
+      else element.style.display = 'none';
+    }
+
+    return exists && strength;
+  }
+</script>
+
 <div style="display: flex; margin: auto; width: 90%; padding: 10px;">
-<form id="edit" method="post" action="/contacts/edit">
-{% if object %}
-<h2>Edit Contact</h2>
-{% else %}
-<h2>Create Contact</h2>
-{% endif %}
-<table>
-<td align="right">Name:</td>
-<td><input name="name" id="name" type="text" size="30" width="100" required="required"
-{% if object %}
-value="{{ object.name }}"
-{% endif %}
-/></td>
-</tr>
-<td align="right">Email (Work):</td>
-<td><input name="workEmail" id="workEmail" type="text" size="30" width="100"
-{% if object %}
-value="{{ object.work_email }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">Email (Home):</td>
-<td><input name="homeEmail" id="otherEmail" type="text" size="30" width="100"
-{% if object %}
-value="{{ object.home_email }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">Email (Other):</td>
-<td><input name="otherEmail" id="otherEmail" type="text" size="30" width="100"
-{% if object %}
-value="{{ object.other_email }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">Telephone (Work):</td>
-<td><input name="workPhone" id="workPhone" type="text" size="30" width="100"
-{% if object %}
-value="{{ object.work_phone }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">Telephone (Mobile):</td>
-<td><input name="mobilePhone" id="mobilePhone" type="text" size="30" width="100"
-{% if object %}
-value="{{ object.mobile_phone }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">Telephone (Other):</td>
-<td><input name="otherPhone" id="otherPhone" type="text" size="30" width="100"
-{% if object %}
-value="{{ object.other_phone }}"
-{% endif %}
-/></td>
-</tr>
-</table>
-{% if object %}
-<input type="hidden" name="id" value="{{ object.contact_id }}"/>
-{% endif %}
-<input type="submit" value="Save"/>
-</form>
+  <form id="edit" method="post" action="/contacts/edit" onsubmit="return validate(this);">
+    {% if object %}
+    <h2>Edit Contact</h2>
+    {% else %}
+    <h2>Create Contact</h2>
+    {% endif %}
+    <label class="label">Name:</label>
+    <input name="name" id="name" type="text" size="30" width="100" required="required"
+           {% if object %}value="{{ object.name }}"{% endif %} />
+    <br />
+    <label class="label">Email (Work):</label>
+    <input name="workEmail" id="workEmail" type="email" size="30" width="100"
+           {% if object %}value="{{ object.work_email }}"{% endif %} />
+    <br />
+    <label class="label">Email (Home):</label>
+    <input name="homeEmail" id="otherEmail" type="email" size="30" width="100"
+           {% if object %}value="{{ object.home_email }}"{% endif %} />
+    <br />
+    <label class="label">Email (Other):</label>
+    <input name="otherEmail" id="otherEmail" type="email" size="30" width="100"
+           {% if object %}value="{{ object.other_email }}"{% endif %} />
+    <br />
+    <label class="label">Telephone (Work):</label>
+    <input name="workPhone" id="workPhone" type="tel" size="30" width="100"
+           {% if object %}value="{{ object.work_phone }}"{% endif %} />
+    <br />
+    <label class="label">Telephone (Mobile):</label>
+    <input name="mobilePhone" id="mobilePhone" type="tel" size="30" width="100"
+           {% if object %}value="{{ object.mobile_phone }}"{% endif %} />
+    <br />
+    <label class="label">Telephone (Other):</label>
+    <input name="otherPhone" id="otherPhone" type="tel" size="30" width="100"
+           {% if object %}value="{{ object.other_phone }}"{% endif %} />
+    <br />
+    <p><strong>Login Information</strong></p>
+    <label class="label">Username:</label>
+    <input name="username" id="username" type="text" size="30" width="100"
+           {% if object.user.username %}value="{{ object.user.username }}" readonly="readonly"{% endif %} />
+    <q id="userNameWarning" class="warning" style="display: none;">Username not available.  Please try another username.</q>
+    <br />
+    {% if object.user %}{% else %}
+    <label class="label">Password:</label>
+    <input name="password" id="password" type="password" size="30" width="100" required/>
+    <q id="passwordWarning" class="warning" style="display: none;">Password should contain minimum 8 characters, combination of upper and lower case letters, numbers and special characters.</q>
+    {% endif %}
+    <br />
+    <label class="label">Role:</label>
+    <select name="role" id="role" {% if object.user %}{% else %}disabled{% endif %}>
+      <option value="-1">Select Role</option>
+      {% for role in roles %}
+      <option value="{{ role.role_id }}"
+{% ifequal role.role_id object.user.role.role_id %}selected="selected"{% endifequal %}>{{ role.role }}</option>
+      {% endfor %}
+    </select>
+    {% if object %}
+    <input type="hidden" name="_role" value="{{ object.user.role.role_id }}" />
+    <input type="hidden" name="id" value="{{ object.contact_id }}" />
+    {% endif %}
+    <input type="submit" value="Save" />
+  </form>
 </div>
+
+<script type="text/javascript">
+  function enableRole()
+  {
+    if (this.value != null && this.value.length > 0)
+    {
+      let element = document.getElementById('role');
+      element.setAttribute('disabled', false);
+    }
+  }
+
+  let element = document.getElementById('username');
+  element.addEventListener('change', enableRole);
+</script>
