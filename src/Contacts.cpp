@@ -1,5 +1,6 @@
 #include "Contacts.h"
 #include "dao/ContactDAO.h"
+#include "dao/InstitutionDAO.h"
 #include "dao/UserDAO.h"
 #include "dao/RoleDAO.h"
 
@@ -8,8 +9,11 @@ using crrc::Contacts;
 void Contacts::index( Cutelyst::Context* c ) const
 {
   dao::ContactDAO dao;
-  c->setStash( "contacts", dao.retrieveAll() );
-  c->setStash( "template", "contacts/index.html" );
+
+  c->stash( {
+    { "contacts", dao.retrieveAll() },
+    { "template", "contacts/index.html" }
+  } );
 }
 
 void Contacts::base( Cutelyst::Context* c ) const
@@ -29,6 +33,7 @@ void Contacts::create( Cutelyst::Context* c ) const
 {
   c->stash( {
     { "template", "contacts/form.html" },
+    { "institutions", dao::InstitutionDAO().retrieveAll( dao::InstitutionDAO::Mode::Partial ) },
     { "roles", dao::RoleDAO().retrieveAll() }
   } );
 }

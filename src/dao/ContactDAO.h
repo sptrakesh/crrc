@@ -14,6 +14,7 @@ namespace crrc
       void update( Cutelyst::Context* context ) const;
       QVariantList search( Cutelyst::Context* context, const Mode& mode = Mode::Full ) const;
       QString remove( uint32_t id ) const;
+      void removeInstitution( uint32_t id ) const;
     };
   }
 }

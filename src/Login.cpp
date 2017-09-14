@@ -1,9 +1,9 @@
 #include "Login.h"
+#include "dao/UserDAO.h"
 
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QtDebug>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
-#include "dao/UserDAO.h"
 
 using crrc::Login;
 

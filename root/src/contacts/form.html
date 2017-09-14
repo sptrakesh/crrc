@@ -33,7 +33,7 @@
     if (form.password)
     {
       strength = checkPasswordStrength(form.password.value);
-      element = document.getElementById('passwordWarning');
+      let element = document.getElementById('passwordWarning');
 
       if (!strength)
       {
@@ -45,6 +45,21 @@
     }
 
     return strength;
+  }
+
+  function checkInstitution(form)
+  {
+    let element = document.getElementById('institutionWarning');
+
+    if ("-1" === form.institution.value)
+    {
+      element.style.display = "inline";
+      form.institution.focus();
+      return false;
+    }
+    else element.style.display = 'none';
+
+    return true;
   }
 
   function enableRole()
@@ -64,7 +79,7 @@
 
     if (isEmpty(form.username) || readonly != null)
     {
-      form.submit();
+      if (checkInstitution(form)) form.submit();
       return;
     }
 
@@ -72,23 +87,22 @@
     xhr.open('GET', `/contacts/isUsernameAvailable/?username=${form.username.value}`);
     xhr.onload = function()
     {
+      let element = document.getElementById('userNameWarning');
       let response = xhr.responseText;
       console.log(`Check to see if username ${form.username.value} is available returned ${response}.`);
 
       if (200 === xhr.status)
       {
         let available = 'true' === xhr.responseText;
-        let element = document.getElementById('userNameWarning');
         if (!available)
         {
-          console.log(`Check for response for username: ${form.username.value} was ${response}`);
           element.style.display = 'inline';
           form.username.focus();
         }
         else
         {
           element.style.display = 'none';
-          if (checkPassword(form)) form.submit();
+          if (checkPassword(form) && checkInstitution(form)) form.submit();
         }
       }
       else
@@ -136,6 +150,17 @@
     <input name="otherPhone" id="otherPhone" type="tel" size="30" width="100"
            {% if object %}value="{{ object.other_phone }}"{% endif %} />
     <br />
+    <label class="label">Institution:</label>
+    <select name="institution" id="institution">
+      <option value="-1">Select Institution</option>
+      {% for institution in institutions %}
+      <option value="{{ institution.institution_id }}"
+              {% if institution.institution_id == object.institution.institution_id %}selected{% endif %}
+              >{{ institution.name }}</option>
+      {% endfor %}
+    </select>
+    <q id="institutionWarning" class="warning" style="display: none;">Contact must be associated with an institution.</q>
+    <br/>
     <p><strong>Login Information</strong></p>
     <label class="label">Username:</label>
     <input name="username" id="username" type="text" size="30" width="100"

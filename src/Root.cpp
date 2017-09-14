@@ -24,7 +24,13 @@ void Root::defaultPage( Cutelyst::Context* c )
 bool Root::Auto( Cutelyst::Context* c )
 {
   if ( c->controller() == c->controller( "crrc::Login" ) ) return true;
-  if ( Cutelyst::Authentication::userExists( c ) ) return true;
+
+  const auto& user = Cutelyst::Authentication::user( c );
+  if ( ! user.isEmpty() )
+  {
+    c->setStash( "user", user );
+    return true;
+  }
 
   qDebug() << "***Root::Auto User not found, forwarding to /login from" <<
     c->request()->uri();

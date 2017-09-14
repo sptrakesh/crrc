@@ -18,9 +18,6 @@
 {% if object.website %}
 <strong>Website:</strong> <a href="{{ object.website }}">{{ object.website }}</a><br/>
 {% endif %}
-{% if object.contact %}
-<strong>Contact:</strong> <a href="/contacts/id/{{ object.contact.contact_id }}/view">{{ object.contact.name }}</a><br/>
-{% endif %}
 
 <span>
 <form id="details" method="post" action="/institutions/id/{{ object.institution_id }}/update" style="display: inline-block;">

@@ -1,5 +1,4 @@
 #include "Institutions.h"
-#include "dao/ContactDAO.h"
 #include "dao/InstitutionDAO.h"
   
 using crrc::Institutions;
@@ -7,8 +6,10 @@ using crrc::Institutions;
 void Institutions::index( Cutelyst::Context* c ) const
 {
   dao::InstitutionDAO dao;
-  c->setStash( "institutions", dao.retrieveAll() );
-  c->setStash( "template", "institutions/index.html" );
+  c->stash( {
+    { "institutions", dao.retrieveAll() },
+    { "template", "institutions/index.html" }
+  } );
 }
 
 void Institutions::base( Cutelyst::Context* c ) const
@@ -27,7 +28,6 @@ void Institutions::create( Cutelyst::Context* c ) const
 {
   const auto id = c->request()->param( "id", "" );
   if ( !id.isEmpty() ) object( c, id );
-  c->setStash( "contacts", dao::ContactDAO().retrieveAll( dao::ContactDAO::Mode::Partial ) );
   c->setStash( "template", "institutions/form.html" );
 }
 
@@ -91,4 +91,16 @@ void Institutions::remove( Cutelyst::Context* c )
 
   c->stash()["status_msg"] = statusMsg;
   c->response()->redirect( "/institutions" );
+}
+
+void Institutions::checkUnique( Cutelyst::Context* c )
+{
+  const auto name = c->request()->param( "name" );
+  const auto city = c->request()->param( "city" );
+  const auto status = dao::InstitutionDAO().isUnique( name, city );
+  const QString string = status ? "true" : "false";
+
+  c->response()->setContentType( "text/plain" );
+  c->response()->setContentLength( string.size() );
+  c->response()->setBody( string );
 }

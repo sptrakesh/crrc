@@ -37,5 +37,8 @@ namespace crrc
 
     C_ATTR( remove, :Chained( "base" ) : PathPart( "remove" ) : Args( 0 ) )
     void remove( Cutelyst::Context* c );
+
+    C_ATTR( checkUnique, :Chained( "base" ) : PathPart( "checkUnique" ) : Args( 0 ) )
+    void checkUnique( Cutelyst::Context* c );
   };
 }

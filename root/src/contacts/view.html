@@ -19,6 +19,9 @@
   {% if object.mobile_phone %}
   <label class="label">Mobile Number:</label> {{ object.mobile_phone }}<br />
   {% endif %}
+  {% if object.institution.name %}
+  <label class="label">Institution:</label><a href="/institutions/id/{{ object.institution.institution_id }}/view">{{ object.institution.name }}</a><br />
+  {% endif %}
   {% if object.user.username %}
   <label class="label">Username:</label> {{ object.user.username }}<br />
   {% endif %}

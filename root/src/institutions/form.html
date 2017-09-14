@@ -1,89 +1,77 @@
+<script type="text/javascript">
+  function validate()
+  {
+    let form = document.forms[0];
+    let xhr = new XMLHttpRequest();
+    xhr.open('POST', '/institutions/checkUnique');
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onload = function() {
+      let element = document.getElementById('nameWarning');
+      let response = xhr.responseText;
+      console.log(`Check to see if institution ${form.name.value} in city ${form.city.value} exists returned ${response}.`);
+
+      if (200 === xhr.status)
+      {
+        let available = 'true' === xhr.responseText;
+        if (!available)
+        {
+          element.style.display = 'inline';
+          form.name.focus();
+        }
+        else
+        {
+          element.style.display = 'none';
+          form.submit();
+        }
+      }
+      else
+      {
+        element.style.display = 'inline';
+        element.innerHTML = 'Unable to access server to validate name/city.  Please try again later';
+      }
+    };
+    xhr.send(encodeURI(`name=${form.name.value}&city=${form.city.value}`));
+  }
+</script>
+
 <div style="display: flex; margin: auto; width: 90%; padding: 10px;">
-<form id="edit" method="post" action="/institutions/edit">
-{% if object %}
-<h2>Edit Institution</h2>
-{% else %}
-<h2>Create Institution</h2>
-{% endif %}
-<table>
-<td align="right">Name:</td>
-<td><input name="name" id="name" type="text" size="35" width="50" required="required"
-{% if object %}
-value="{{ object.name }}"
-{% endif %}
-/></td>
-</tr>
-<td align="right">Address:</td>
-<td><input name="address" id="address" type="text" size="35" width="250"
-{% if object %}
-value="{{ object.address }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">City:</td>
-<td><input name="city" id="city" type="text" size="35" width="100"
-{% if object %}
-value="{{ object.city }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">State:</td>
-<td><input name="state" id="state" type="text" size="35" width="100"
-{% if object %}
-value="{{ object.state }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">Postal Code:</td>
-<td><input name="postalCode" id="postalCode" type="text" size="35" width="100"
-{% if object %}
-value="{{ object.postal_code }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">Country:</td>
-<td><input name="country" id="country" type="text" size="35" width="100" value=
-{% if object %}
-"{{ object.country }}"
-{% else %}
-USA
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">Website:</td>
-<td><input name="website" id="website" type="text" size="35" width="250"
-{% if object %}
-value="{{ object.website }}"
-{% endif %}
-/></td>
-</tr>
-<tr>
-<td align="right">Contact:</td>
-<td><select name="contact" id="contact">
-<option value="0">Select Contact</option>
-{% for contact in contacts %}
-<option value="{{ contact.contact_id }}"
-{% ifequal contact.contact_id object.contact.contact_id %}
-selected="selected"
-{% endifequal %}
->{{ contact.name}}
-{% if contact.work_email %}
-({{ contact.work_email}})
-{% endif %}
-</option>
-{% endfor %}
-</select>
-</td>
-</tr>
-</table>
-{% if object %}
-<input type="hidden" name="id" value="{{ object.institution_id }}"/>
-{% endif %}
-<input type="submit" value="Save"/>
-</form>
+  <form id="edit" method="post" action="/institutions/edit" onsubmit="return false;">
+    {% if object %}
+    <h2>Edit Institution</h2>
+    {% else %}
+    <h2>Create Institution</h2>
+    {% endif %}
+    <label class="label">Name:</label>
+    <input name="name" id="name" type="text" size="35" width="50" required="required"
+           {% if object %}value="{{ object.name }}" {% endif %} />
+    <q id="nameWarning" class="warning" style="display: none;">Institution with specified name already exists in this city.</q>
+    <br />
+    <label class="label">Address:</label>
+    <input name="address" id="address" type="text" size="35" width="250"
+           {% if object %}value="{{ object.address }}" {% endif %} />
+    <br />
+    <label class="label">City:</label>
+    <input name="city" id="city" type="text" size="35" width="100" required
+           {% if object %}value="{{ object.city }}" {% endif %} />
+    <br />
+    <label class="label">State:</label>
+    <input name="state" id="state" type="text" size="35" width="100"
+           {% if object %}value="{{ object.state }}" {% endif %} />
+    <br />
+    <label class="label">Postal Code:</label>
+    <input name="postalCode" id="postalCode" type="text" size="35" width="100"
+           {% if object %}value="{{ object.postal_code }}" {% endif %} />
+    <br />
+    <label class="label">Country:</label>
+    <input name="country" id="country" type="text" size="35" width="100" value={% if object %}"{{ object.country }}"{% else %}USA{% endif %} />
+    <br />
+    <label class="label">Website:</label>
+    <input name="website" id="website" type="text" size="35" width="250"
+           {% if object %}value="{{ object.website }}" {% endif %} />
+    <br />
+    {% if object %}
+    <input type="hidden" name="id" value="{{ object.institution_id }}" />
+    {% endif %}
+    <button onclick="validate()">Save</button>
+  </form>
 </div>
