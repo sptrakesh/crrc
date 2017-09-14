@@ -292,3 +292,31 @@ bool UserDAO::updateRole( uint32_t userId, uint32_t roleId ) const
 
   return result;
 }
+
+bool UserDAO::updatePassword( const QString& username, const QString& password ) const
+{
+  QCryptographicHash hash{ QCryptographicHash::Sha3_512 };
+  hash.addData( password.toLocal8Bit() );
+  const auto passwd = hash.result().toHex();
+  const auto user = retrieveByUsername( username );
+  const auto userId = user.value( "user_id" ).toUInt();
+
+  auto query = CPreparedSqlQueryThreadForDB(
+   "update users set password = :password where user_id = :userId", DATABASE_NAME );
+  query.bindValue( ":password", passwd );
+  query.bindValue( ":userId", userId );
+  const auto result = query.exec();
+
+  if ( result )
+  {
+    const auto iter = users.find( userId );
+    auto u = iter.value();
+    u.password = passwd;
+    std::lock_guard<std::mutex> lock{ userMutex };
+    users[userId] = std::move( u );
+    qDebug() << "Updated plain text password for user: " << userId;
+  }
+  else qWarning() << query.lastError().text();
+
+  return result;
+}

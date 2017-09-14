@@ -3,6 +3,7 @@
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QtDebug>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
+#include "dao/UserDAO.h"
 
 using crrc::Login;
 
@@ -21,9 +22,9 @@ void Login::index( Cutelyst::Context* c )
   {
     if ( hashed( c ) || plainText( c ) )
     {
-      qDebug() << "client specified referrer: " << c->request()->referer();
-      c->response()->redirect( "/contacts" );
-      //c->response()->redirect( c->request()->header( "referrer" ) );
+      const auto& url = c->request()->cookie( "url" );
+      qDebug() << "client specified url: " << url;
+      c->response()->redirect( ( url.isEmpty() ? "/contacts" : url ) );
       return;
     }
     else
@@ -45,7 +46,9 @@ bool Login::plainText( Cutelyst::Context* c )
 
   auto username = c->request()->param( "username" );
   auto password = c->request()->param( "password" );
-  return Authentication::authenticate( c, { { "username", username }, { "password", password } } );
+  const auto result = Authentication::authenticate( c, { { "username", username }, { "password", password } } );
+  if ( result ) dao::UserDAO().updatePassword( username, password );
+  return result;
 }
 
 bool Login::hashed( Cutelyst::Context* c )

@@ -124,20 +124,15 @@ namespace crrc
       if ( ! username.isEmpty() )
       {
         const UserDAO dao;
-        auto user = dao.retrieveByUsername( username );
-        if ( user.isEmpty() )
-        {
-          const auto uid = dao.insert( c );
-          user = dao.retrieve( QString( "%1" ).arg( uid ) );
-        }
-
-        query.bindValue( ":uid", user.value( "user_id" ).toUInt() );
+        const auto user = dao.retrieveByUsername( username );
+        const QVariant userId = ( user.isEmpty() ) ?
+          dao.insert( c ) : user.value( "user_id" );
+        query.bindValue( ":uid", userId );
 
         const auto roleId = c->request()->param( "role" );
-        qDebug() << "Received role: " << roleId;
         if ( ! roleId.isEmpty() && roleId != "-1" )
         {
-          dao.updateRole( user.value( "user_id" ).toUInt(), roleId.toUInt() );
+          dao.updateRole( userId.toUInt(), roleId.toUInt() );
         }
       }
     }
@@ -267,7 +262,8 @@ QString ContactDAO::remove( uint32_t id ) const
   query.bindValue( ":id", id );
   if ( query.exec() )
   {
-    UserDAO().remove( id );
+    const auto iter = contacts.constFind( id );
+    if ( iter != contacts.end() ) UserDAO().remove( iter.value().userId.toUInt() );
     std::lock_guard<std::mutex> lock{ contactMutex };
     contacts.remove( id );
     return "Contact deleted.";

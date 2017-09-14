@@ -1,5 +1,7 @@
 #include "Root.h"
 
+#include <QtCore/QtDebug>
+#include <QtNetwork/QNetworkCookie>
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 
 using crrc::Root;
@@ -24,8 +26,10 @@ bool Root::Auto( Cutelyst::Context* c )
   if ( c->controller() == c->controller( "crrc::Login" ) ) return true;
   if ( Cutelyst::Authentication::userExists( c ) ) return true;
 
-  qDebug( "***Root::Auto User not found, forwarding to /login" );
-  c->response()->setHeader( "referer", c->request()->uri().toString() );
+  qDebug() << "***Root::Auto User not found, forwarding to /login from" <<
+    c->request()->uri();
+  const auto cookie = QNetworkCookie( "url", c->request()->uri().toEncoded() );
+  c->response()->setCookie( cookie );
   c->response()->redirect( c->uriFor( "/login" ) );
   return false;
 }

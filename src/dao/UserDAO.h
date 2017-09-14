@@ -16,6 +16,7 @@ namespace crrc
       QString remove( uint32_t id ) const;
       bool isUsernameAvailable( const QString& username ) const;
       bool updateRole( uint32_t userId, uint32_t roleId ) const;
+      bool updatePassword( const QString& username, const QString& password ) const;
     };
   }
 }

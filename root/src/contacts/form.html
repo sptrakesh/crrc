@@ -27,26 +27,8 @@
       hasNumeral(pwd) && hasSpecialChars(pwd));
   }
 
-  function validate(form)
+  function checkPassword(form)
   {
-    let readonly = document.getElementById('username').getAttribute('readonly');
-    var response = true;
-    if (readonly == null)
-    {
-      response = ajaxResponse('GET', `/contacts/isUsernameAvailable/?username=${form.username.value}`);
-      let exists = response === 'true';
-      console.log(`Check to see if username ${form.username.value} is available returned ${exists}.`);
-
-      let element = document.getElementById('userNameWarning');
-      if (!exists)
-      {
-        console.log(`Check for response for username: ${form.username.value} was ${response}`);
-        element.style.display = 'inline';
-        form.username.focus();
-      }
-      else element.style.display = 'none';
-    }
-
     var strength = true;
     if (form.password)
     {
@@ -62,12 +44,65 @@
       else element.style.display = 'none';
     }
 
-    return exists && strength;
+    return strength;
+  }
+
+  function enableRole()
+  {
+    let username = document.getElementById('username');
+    if (!isEmpty(username))
+    {
+      let element = document.getElementById('role');
+      element.disabled = false;
+    }
+  }
+
+  function validate()
+  {
+    let form = document.forms[0];
+    let readonly = document.getElementById('username').getAttribute('readonly');
+
+    if (isEmpty(form.username) || readonly != null)
+    {
+      form.submit();
+      return;
+    }
+
+    let xhr = new XMLHttpRequest();
+    xhr.open('GET', `/contacts/isUsernameAvailable/?username=${form.username.value}`);
+    xhr.onload = function()
+    {
+      let response = xhr.responseText;
+      console.log(`Check to see if username ${form.username.value} is available returned ${response}.`);
+
+      if (200 === xhr.status)
+      {
+        let available = 'true' === xhr.responseText;
+        let element = document.getElementById('userNameWarning');
+        if (!available)
+        {
+          console.log(`Check for response for username: ${form.username.value} was ${response}`);
+          element.style.display = 'inline';
+          form.username.focus();
+        }
+        else
+        {
+          element.style.display = 'none';
+          if (checkPassword(form)) form.submit();
+        }
+      }
+      else
+      {
+        element.style.display = 'inline';
+        element.innerHTML = 'Unable to access server to validate username.  Please try again later';
+      }
+    };
+    xhr.send();
   }
 </script>
 
 <div style="display: flex; margin: auto; width: 90%; padding: 10px;">
-  <form id="edit" method="post" action="/contacts/edit" onsubmit="return validate(this);">
+  <form id="edit" method="post" action="/contacts/edit" onsubmit="return false;">
     {% if object %}
     <h2>Edit Contact</h2>
     {% else %}
@@ -104,12 +139,13 @@
     <p><strong>Login Information</strong></p>
     <label class="label">Username:</label>
     <input name="username" id="username" type="text" size="30" width="100"
-           {% if object.user.username %}value="{{ object.user.username }}" readonly="readonly"{% endif %} />
+           {% if object.user.username %}value="{{ object.user.username }}" readonly="readonly"{% endif %} 
+           onchange="enableRole()"/>
     <q id="userNameWarning" class="warning" style="display: none;">Username not available.  Please try another username.</q>
     <br />
     {% if object.user %}{% else %}
     <label class="label">Password:</label>
-    <input name="password" id="password" type="password" size="30" width="100" required/>
+    <input name="password" id="password" type="password" size="30" width="100"/>
     <q id="passwordWarning" class="warning" style="display: none;">Password should contain minimum 8 characters, combination of upper and lower case letters, numbers and special characters.</q>
     {% endif %}
     <br />
@@ -125,20 +161,6 @@
     <input type="hidden" name="_role" value="{{ object.user.role.role_id }}" />
     <input type="hidden" name="id" value="{{ object.contact_id }}" />
     {% endif %}
-    <input type="submit" value="Save" />
+    <button onclick="validate()">Save</button>
   </form>
 </div>
-
-<script type="text/javascript">
-  function enableRole()
-  {
-    if (this.value != null && this.value.length > 0)
-    {
-      let element = document.getElementById('role');
-      element.setAttribute('disabled', false);
-    }
-  }
-
-  let element = document.getElementById('username');
-  element.addEventListener('change', enableRole);
-</script>

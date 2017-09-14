@@ -440,19 +440,10 @@ function QT_WriteOBJECT_XHTML()
 	document.writeln(_QTGenerate("QT_WriteOBJECT_XHTML", true, arguments));
 }
 
-function ajaxResponse(method, path)
+function isEmpty(element)
 {
-  let xhr = new XMLHttpRequest();
-  xhr.open(method, path, false);
-  xhr.send();
-  if (200 === xhr.status)
-  {
-    return xhr.responseText;
-  }
-  else
-  {
-    console.error('Request failed.  Returned status of ' + xhr.status);
-  }
-
-  return null;
+  if (element == null) return true;
+  if (element.value == null) return true;
+  if (element.value.length == 0) return true;
+  return false;
 }
