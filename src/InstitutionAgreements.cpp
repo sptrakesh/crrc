@@ -20,7 +20,7 @@ void InstitutionAgreements::index( Cutelyst::Context* c ) const
 
 void InstitutionAgreements::base( Cutelyst::Context* c ) const
 {
-  c->response()->setHeader( "Cache-Control", "no-cache" );
+  c->response()->setHeader( "Cache-Control", "no-cache, no-store, must-revalidate" );
 }
 
 

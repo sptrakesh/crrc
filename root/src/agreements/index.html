@@ -15,8 +15,8 @@
   {% endif %}
   <ul>
     {% for agreement in agreements %}
-    <li><a href="/agreements/id/{{ agreement.agreement_id }}/view">{{ agreement.filename }}</a> - <form action="/agreements/remove" method="post" style="display: inline-block;">
-      <input type="hidden" name="id" value="{{ agreement.agreement_id }}"/>
+    <li><a href="/agreements/id/{{ agreement.id }}/view">{{ agreement.filename }}</a> - <form action="/agreements/remove" method="post" style="display: inline-block;">
+      <input type="hidden" name="id" value="{{ agreement.id }}"/>
       <input type="submit" value="Delete" />
     </form>
     </li>

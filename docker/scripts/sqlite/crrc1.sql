@@ -10,3 +10,14 @@ update users set role_id = 1 where user_id = 1;
 drop index idx_institutions_contact_id;
 alter table contacts add column institution_id integer references institutions on delete set null deferrable;
 create index idx_contacts_institution on contacts (institution_id);
+
+create table logos
+(
+  logo_id integer primary key,
+  filename text not null,
+  mimetype text not null,
+  filesize integer not null,
+  image blob not null,
+  checksum text not null,
+  updated timestamp not null default current_timestamp
+);

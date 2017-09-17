@@ -1,9 +1,8 @@
 #include "AgreementDAO.h"
 #include "constants.h"
+#include "functions.h"
 
 #include <mutex>
-#include <QtCore/QStringBuilder>
-#include <QtCore/QCryptographicHash>
 #include <QtSql/QtSql>
 #include <Cutelyst/Upload>
 #include <Cutelyst/Plugins/Utils/sql.h>
@@ -21,6 +20,7 @@ namespace crrc
       QVariant filesize;
       QVariant document;
       QVariant checksum;
+      QVariant updated;
     };
 
     static QMap<uint32_t, Agreement> agreements;
@@ -30,7 +30,7 @@ namespace crrc
     QVariantHash transform( const Agreement& agreement, const AgreementDAO::Mode& mode )
     {
       QVariantHash record;
-      record.insert( "agreement_id", agreement.id );
+      record.insert( "id", agreement.id );
       record.insert( "filename", agreement.filename );
 
       if ( AgreementDAO::Mode::Full == mode )
@@ -38,6 +38,7 @@ namespace crrc
         record.insert( "mimetype", agreement.mimetype );
         record.insert( "filesize", agreement.filesize );
         record.insert( "checksum", agreement.checksum );
+        record.insert( "updated", agreement.updated );
         record.insert( "document", agreement.document );
       }
 
@@ -63,6 +64,7 @@ namespace crrc
       agreement.mimetype = query.value( 2 );
       agreement.filesize = query.value( 3 );
       agreement.checksum = query.value( 4 );
+      agreement.updated = query.value( 5 );
       return agreement;
     }
 
@@ -77,7 +79,7 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select agreement_id, filename, mimetype, filesize, checksum from agreements order by filename",
+        "select agreement_id, filename, mimetype, filesize, checksum, updated from agreements order by filename",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -93,12 +95,6 @@ namespace crrc
       }
     }
 
-    QString checksum( const QByteArray& bytes )
-    {
-      return QString::fromLatin1(
-        QCryptographicHash::hash( bytes, QCryptographicHash::Md5 ).toBase64() );
-    }
-
     QByteArray bindAgreement( Cutelyst::Context* c, QSqlQuery& query )
     {
       auto upload = c->request()->upload( "document" );
@@ -111,6 +107,7 @@ namespace crrc
       query.bindValue( ":filesize", upload->size() );
       query.bindValue( ":document", bytes );
       query.bindValue( ":checksum", checksum( bytes ) );
+      query.bindValue( ":updated", httpDate( file.lastModified() ) );
 
       return bytes;
     }
@@ -118,12 +115,13 @@ namespace crrc
     Agreement agreementFromContext( Cutelyst::Context* context, const QByteArray& bytes )
     {
       Agreement agreement;
-      auto upload = context->request()->upload( "document" );
+      const auto upload = context->request()->upload( "document" );
       const QFileInfo file{ upload->filename() };
       agreement.filename = file.fileName();
       agreement.mimetype = upload->contentType();
       agreement.filesize = upload->size();
       agreement.checksum = checksum( bytes );
+      agreement.updated = httpDate( file.lastModified() );
       return agreement;
     }
   }
@@ -171,7 +169,7 @@ QByteArray AgreementDAO::contents( Cutelyst::Context* context, const QString& id
 uint32_t AgreementDAO::insert( Cutelyst::Context* context ) const
 {
   auto query = CPreparedSqlQueryThreadForDB(
-    "insert into agreements (filename, mimetype, filesize, document, checksum) values (:filename, :mimetype, :filesize, :document, :checksum)",
+    "insert into agreements (filename, mimetype, filesize, document, checksum, updated) values (:filename, :mimetype, :filesize, :document, :checksum, :updated)",
     crrc::DATABASE_NAME );
   auto bytes = bindAgreement( context, query );
 
@@ -197,7 +195,7 @@ void AgreementDAO::update( Cutelyst::Context* context ) const
   const auto doc =  context->request()->upload( "document" );
 
   auto query = CPreparedSqlQueryThreadForDB( 
-    "update agreements set mimetype=:mimetype, filesize=:filesize, document=:document, checksum=:checksum where agreement_id=:id",
+    "update agreements set mimetype=:mimetype, filesize=:filesize, document=:document, checksum=:checksum, updated=:updated where agreement_id=:id",
     crrc::DATABASE_NAME );
   auto bytes = bindAgreement( context, query );
   query.bindValue( ":id", id.toInt() );
