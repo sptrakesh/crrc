@@ -21,7 +21,7 @@ namespace crrc
       QVariantHash record;
       record.insert( "institution_id", id.institutionId );
       record.insert( "designation", DesignationDAO().retrieve( id.designationId.toString() ) );
-      record.insert( "expiration", id.expiration );
+      record.insert( "expiration", id.expiration.toInt() );
       return record;
     }
 
@@ -36,8 +36,8 @@ namespace crrc
 
     void bindInstitutionDesignation( Cutelyst::Context* c, QSqlQuery& query )
     {
-      query.bindValue( ":iid", c->request()->param( "institution_id" ) );
-      query.bindValue( ":did", c->request()->param( "designation_id" ) );
+      query.bindValue( ":iid", c->request()->param( "institution_id" ).toUInt() );
+      query.bindValue( ":did", c->request()->param( "designation_id" ).toUInt() );
       query.bindValue( ":expiration", c->request()->param( "expiration" ) );
     }
 
@@ -59,8 +59,9 @@ QVariantList InstitutionDesignationDAO::retrieve( uint32_t institution_id ) cons
   QVariantList list;
 
   auto query = CPreparedSqlQueryThreadForDB( 
-    "select institution_id, designation_id, expiration from institution_designations where institution_id = :id",
+    "select institution_id, designation_id, expiration from institution_designations where institution_id = :iid",
     crrc::DATABASE_NAME );
+  query.bindValue( ":iid", institution_id );
   if ( query.exec() )
   {
     while ( query.next() )
@@ -74,20 +75,9 @@ QVariantList InstitutionDesignationDAO::retrieve( uint32_t institution_id ) cons
 
 QString InstitutionDesignationDAO::save( Cutelyst::Context* context ) const
 {
-  auto update = CPreparedSqlQueryThreadForDB( 
-    "update institution_designations set expiration = :expiration where institution_id = :iid and designation_id = :did",
-    crrc::DATABASE_NAME );
-  bindInstitutionDesignation( context, update );
-  if ( update.exec() )
-  {
-    if ( update.numRowsAffected() > 0 ) return QString();
-
-    auto insert = CPreparedSqlQueryThreadForDB( 
-      "insert into institution_designations (institution_id, designation_id, expiration) values (:iid, :did, :expiration)",
-      crrc::DATABASE_NAME );
-    return insert.exec() ? QString() : insert.lastError().text();
-  }
-  else return update.lastError().text();
+  const auto& result = update( context );
+  if ( result == "0" ) return insert( context );
+  return result;
 }
 
 QString InstitutionDesignationDAO::remove( Cutelyst::Context* context ) const
@@ -95,7 +85,31 @@ QString InstitutionDesignationDAO::remove( Cutelyst::Context* context ) const
   auto query = CPreparedSqlQueryThreadForDB( 
     "delete from institution_designations where institution_id = :iid and designation_id = :did",
     crrc::DATABASE_NAME );
-  query.bindValue( ":iid", context->request()->param( "institution_id" ) );
-  query.bindValue( ":did", context->request()->param( "designation_id" ) );
+  query.bindValue( ":iid", context->request()->param( "institution_id" ).toUInt() );
+  query.bindValue( ":did", context->request()->param( "designation_id" ).toUInt() );
+  return query.exec() ? QString() : query.lastError().text();
+}
+
+QString InstitutionDesignationDAO::update( Cutelyst::Context* context ) const
+{
+  auto query = CPreparedSqlQueryThreadForDB( 
+    "update institution_designations set expiration = :expiration where institution_id = :iid and designation_id = :did",
+    crrc::DATABASE_NAME );
+  bindInstitutionDesignation( context, query );
+  if ( query.exec() )
+  {
+    qDebug() << "Update statement succeeded.  Num rows: " << query.numRowsAffected();
+    return ( query.numRowsAffected() > 0 ) ? QString() : QString( "0" );
+  }
+
+  return query.lastError().text();
+}
+
+QString InstitutionDesignationDAO::insert( Cutelyst::Context* context ) const
+{
+  auto query = CPreparedSqlQueryThreadForDB( 
+    "insert into institution_designations (institution_id, designation_id, expiration) values (:iid, :did, :expiration)",
+    crrc::DATABASE_NAME );
+  bindInstitutionDesignation( context, query );
   return query.exec() ? QString() : query.lastError().text();
 }

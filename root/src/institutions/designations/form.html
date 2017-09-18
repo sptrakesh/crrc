@@ -1,116 +1,88 @@
 <script type="text/javascript">
-  function checkUnique( form )
+  function update( form )
   {
+    form.disabled = true;
     let xhr = new XMLHttpRequest();
-    xhr.open( 'POST', '/institutions/checkUnique' );
+    let url = form.designation_id.checked ?
+      '/institution/designations/save' : '/institution/designations/remove';
+    xhr.open( 'POST', url );
     xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
     xhr.onreadystatechange = function ()
     {
-      let element = document.getElementById( 'nameWarning' );
-      let response = xhr.responseText;
-      console.log( `Check to see if institution ${form.name.value} in city ${form.city.value} exists returned ${response}.` );
-
       if ( 4 === xhr.readyState && 200 === xhr.status )
       {
-        let available = 'true' === xhr.responseText;
-        if ( !available )
-        {
-          element.style.display = 'inline';
-          form.name.focus();
-        }
-        else
-        {
-          element.style.display = 'none';
-          form.submit();
-        }
-      }
-      else
-      {
-        element.style.display = 'inline';
-        element.innerHTML = 'Unable to access server to validate name/city.  Please try again later';
+        console.log( `Updated designation.  ${xhr.responseText}` );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status ) location.reload( true );
+        else form.disabled = false;
       }
     };
-    xhr.send( encodeURI( `name=${form.name.value}&city=${form.city.value}` ) );
-  }
+    xhr.send( encodeURI( `institution_id=${form.institution_id.value}&designation_id=${form.designation_id.value}&expiration=${form.expiration.value}` ) );
 
-  function update( form )
-  {
+    return false;
   }
 
   function add( form )
   {
+    form.disabled = true;
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/institution/designations/save' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onreadystatechange = function ()
+    {
+      if ( 4 === xhr.readyState && 200 === xhr.status )
+      {
+        console.log( `Added designation.  ${xhr.responseText}` );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status ) location.reload( true );
+        else form.disabled = false;
+      }
+    };
+    xhr.send( encodeURI( `institution_id=${form.institution_id.value}&designation_id=${form.designation_id.value}&expiration=${form.expiration.value}` ) );
+
+    return false;
   }
 </script>
 
-<!--<div style="display: flex; margin: auto; width: 90%; padding: 10px;">-->
-  <!--
-  <h3>Designations for {{ object.name }}</h3>
-  <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
-    <tbody>
-      <tr>
-        <td>
-          {% for member in members %}
-          <form method="post" action="/institution/designations/save" onsubmit="return update(this);">
-            <input type="hidden" name="institution_id" value="{{ member.instituion_id }}" />
-            <table border="0" cellpadding="0" cellspacing="0">
-              <tr>
-                <th>Designation</th>
-                <th>Expiration</th>
-                <th>Action</th>
-              </tr>
-              <tr>
-                <td style="width: 60%; border: 1px solid black;">
-                  <input type="checkbox" name="designation_id" value="{{ member.designation.designation_id }}" checked/>{{ member.designation.title }}
-                </td>
-                <td style="width: 20%; border: 1px solid black;">
-                  <select name="expiration" style="width: 10em;" onchange="update( this )">
-                    {% for year in years %}
-                    <option {% if year == member.expiration %}selected{% endif %}>{{ year }}</option>
-                    {% endfor %}
-                  </select>
-                </td>
-                <td style="width: 20%; border: 1px solid black;">
-                  <input type="submit" value="Update" />
-                </td>
-              </tr>
-            </table>
-          </form>
-          {% endfor %}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  -->
 
-  <h3>Add designations to {{ object.name }}</h3>
-  <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
-    <tbody>
-      <tr>
-        <td>
-          {% for designation in designations %}
-          <form method="post" action="/institution/designations/save" onsubmit="return update(this);">
-            <input type="hidden" name="institution_id" value="{{ member.instituion_id }}" />
-            <table border="0" cellpadding="0" cellspacing="0">
-              <tr>
-                <td style="width: 60%; border: 1px solid black;">
-                  <input type="checkbox" name="designation_id" value="{{ member.designation.designation_id }}" />{{ member.designation.title }}
-                </td>
-                <td style="width: 20%; border: 1px solid black;">
-                  <select name="expiration" style="width: 10em;" onchange="update( this )">
-                    {% for year in years %}
-                    <option>{{ year }}</option>
-                    {% endfor %}
-                  </select>
-                </td>
-                <td style="width: 20%; border: 1px solid black;">
-                  <input type="submit" value="Add" />
-                </td>
-              </tr>
-            </table>
-          </form>
-          {% endfor %}
-        </td>
-      </tr>
-    </tbody>
-  </table>
-<!--</div>-->
+<table>
+  <tr><td><h3>Current designations in {{ object.name }}</h3></td></tr>
+  <tr><td>
+    {% for member in members %}
+    <form method="post" action="/institution/designations/save" onsubmit="return update(this);">
+      <input type="hidden" name="institution_id" value="{{ member.institution_id }}" />
+      <div style="width:100%;">
+        <div style="float: left; width: 55%;"><input type="checkbox" name="designation_id" value="{{ member.designation.designation_id }}" checked/>{{ member.designation.title }}</div>
+        <div style="float: right; width: 20%;"><input type="submit" value="Update" /></div>
+        <div style="float: none; width: 20%; display: inline;">
+          <select name="expiration" style="width: 5em;">
+            {% for year in years %}
+            <option {% if year == member.expiration %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+    </form>
+    {% endfor %}
+  </td></tr>
+  <tr><td><h3>Add designations to {{ object.name }}</h3></td></tr>
+  <tr><td>
+    {% for designation in designations %}
+    <form method="post" action="/institution/designations/save" onsubmit="return add(this);">
+      <input type="hidden" name="institution_id" value="{{ object.institution_id }}" />
+      <div style="width:100%;">
+        <div style="float: left; width: 55%;"><input type="hidden" name="designation_id" value="{{ designation.designation_id }}" />{{ designation.title }}</div>
+        <div style="float: right; width: 20%;"><input type="submit" value="Add" /></div>
+        <div style="float: none; width: 20%; display: inline;">
+          <select name="expiration" style="width: 5em; display: inline;">
+            {% for year in years %}
+            <option>{{ year }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div style="clear: both;"></div>
+      </div>
+    </form>
+    {% endfor %}
+</td></tr></table>

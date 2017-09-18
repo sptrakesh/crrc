@@ -3,7 +3,7 @@
 #include "dao/InstitutionDesignationDAO.h"
 #include "dao/DesignationDAO.h"
 
-#include <QtCore/QDateTime>
+#include <QtCore/QDate>
 #include <QtCore/QDebug>
 #include <QtCore/QSet>
 #include <QtCore/QJsonDocument>
@@ -38,15 +38,11 @@ void InstitutionDesignations::view( Cutelyst::Context* c ) const
 void InstitutionDesignations::edit( Cutelyst::Context* c ) const
 {
   QVariantList years;
-  auto dt = QDateTime::currentDateTime();
-  years << dt.toString( "yyyy" );
-
   for ( auto i = 0; i < 10; ++i )
   {
-    dt.addYears( 1 );
-    years << dt.toString( "yyyy" );
+    auto dt = QDate::currentDate().addYears( i );
+    years << dt.year();
   }
-  qDebug() << years;
 
   const auto id = c->stash( "object" ).toHash().value( "institution_id" ).toUInt();
   const auto& members = dao::InstitutionDesignationDAO().retrieve( id );

@@ -45,8 +45,8 @@ insert into designations values (7, 'CAE', 'CAE-R - National Centers of Academic
 
 create table institution_designations
 (
-  institution_id integer not null,
-  designation_id integer not null,
+  institution_id integer not null references institutions on delete cascade,
+  designation_id integer not null references designations on delete cascade,
   expiration integer,
   primary key (institution_id, designation_id)
 );

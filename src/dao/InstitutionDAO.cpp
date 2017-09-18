@@ -1,5 +1,6 @@
 #include "InstitutionDAO.h"
 #include "LogoDAO.h"
+#include "InstitutionDesignationDAO.h"
 #include "constants.h"
 #include <mutex>
 #include <QtCore/QStringBuilder>
@@ -239,6 +240,7 @@ QString InstitutionDAO::remove( uint32_t id ) const
   if ( query.exec() )
   {
     ContactDAO().removeInstitution( id );
+    InstitutionDesignationDAO().retrieve( id );
 
     const auto& institution = institutions.constFind( id );
     if ( institution != institutions.constEnd() )

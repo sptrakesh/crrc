@@ -12,6 +12,10 @@ namespace crrc
       QVariantList retrieve( uint32_t institution_id ) const;
       QString save( Cutelyst::Context* context ) const;
       QString remove( Cutelyst::Context* context ) const;
+
+    private:
+      QString update( Cutelyst::Context* context ) const;
+      QString insert( Cutelyst::Context* context ) const;
     };
   }
 }
