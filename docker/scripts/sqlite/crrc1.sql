@@ -61,3 +61,4 @@ create table departments
 );
 
 create index idx_departments_name on departments (name);
+create unique index unq_departments_name_prefix on departments (name, prefix);

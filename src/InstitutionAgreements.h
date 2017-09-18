@@ -20,7 +20,7 @@ namespace crrc
     C_ATTR( object, :Chained( "base" ) : PathPart( "id" ) : CaptureArgs( 1 ) )
     void object( Cutelyst::Context* c, const QString& id ) const;
 
-    C_ATTR( create, :Chained( "base" ) : PathPart( "create" ) : Args( 0 ) )
+    C_ATTR( create, :Chained( "object" ) : PathPart( "create" ) : Args( 0 ) )
     void create( Cutelyst::Context* c ) const;
 
     C_ATTR( edit, :Chained( "base" ) : PathPart( "edit" ) : Args( 0 ) )

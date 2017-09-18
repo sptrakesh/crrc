@@ -15,7 +15,7 @@ using crrc::InstitutionAgreements;
 void InstitutionAgreements::index( Cutelyst::Context* c ) const
 {
   dao::InstitutionAgreementDAO dao;
-  c->setStash( "template", "institutionAgreements/index.html" );
+  c->setStash( "template", "institutions/agreements/index.html" );
 }
 
 void InstitutionAgreements::base( Cutelyst::Context* c ) const
@@ -26,13 +26,13 @@ void InstitutionAgreements::base( Cutelyst::Context* c ) const
 
 void InstitutionAgreements::object( Cutelyst::Context* c, const QString& id ) const
 {
-  dao::InstitutionAgreementDAO dao;
-  auto list = dao.retrieve( id );
+  auto list = dao::InstitutionAgreementDAO().retrieve( id );
   c->setStash( "object", list.first() );
 }
 
 void InstitutionAgreements::create( Cutelyst::Context* c ) const
 {
+  qDebug() << "Agreement: " << c->stash( "object" );
   const auto& institutions = dao::InstitutionDAO().retrieveAll(
     dao::InstitutionDAO::Mode::Partial );
 
@@ -47,10 +47,9 @@ void InstitutionAgreements::create( Cutelyst::Context* c ) const
   }
 
   c->stash( {
-    { "agreements", dao::AgreementDAO().retrieveAll( dao::AgreementDAO::Mode::Partial ) },
     { "institutions", institutions },
     { "programs", QJsonDocument( json ).toJson( QJsonDocument::Compact ) },
-    { "template", "institutionAgreements/form.html" }
+    { "template", "institutions/agreements/form.html" }
   } );
 }
 
@@ -65,14 +64,14 @@ void InstitutionAgreements::edit( Cutelyst::Context* c ) const
   const auto tp1 = c->request()->param( "transfer_program_id" );
   const auto tp2 = c->request()->param( "transferee_program_id" );
   c->stash( {
-    { "template", "institutionAgreements/view.html" },
+    { "template", "institutions/agreements/view.html" },
     { "object", dao.retrieve( id % "_" % tp1 % "_" % tp2 ) }
   } );
 }
 
 void InstitutionAgreements::view( Cutelyst::Context* c ) const
 {
-  c->setStash( "template", "institutionAgreements/view.html" );
+  c->setStash( "template", "institutions/agreements/view.html" );
 }
 
 void InstitutionAgreements::search( Cutelyst::Context* c ) const
@@ -87,7 +86,7 @@ void InstitutionAgreements::search( Cutelyst::Context* c ) const
 
   c->stash( {
     { "searchText", text },
-    { "template", "institutionAgreements/index.html" }
+    { "template", "institutions/agreements/index.html" }
   } );
 }
 

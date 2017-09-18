@@ -18,8 +18,7 @@ void Degrees::base( Cutelyst::Context* c ) const
 
 void Degrees::object( Cutelyst::Context* c, const QString& id ) const
 {
-  dao::DegreeDAO dao;
-  c->setStash( "object", dao.retrieve( id ) );
+  c->setStash( "object", dao::DegreeDAO().retrieve( id ) );
 }
 
 void Degrees::create( Cutelyst::Context* c ) const

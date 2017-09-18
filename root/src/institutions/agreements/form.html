@@ -29,13 +29,6 @@
 
   function validate( form )
   {
-    let agreement = document.getElementById( 'agreement_id' ).value;
-    if ( ! ( agreement > 0 ) )
-    {
-      alert( 'Please select an agreement' );
-      return false;
-    }
-
     let transferProgram = document.getElementById( 'transfer_program_id' ).value;
     if ( ! ( transferProgram > 0 ) )
     {
@@ -55,17 +48,9 @@
 </script>
 <div style="display: flex; margin: auto; width: 90%; padding: 10px;">
 <form id="edit" method="post" action="/institution/program/relations/edit" onsubmit="return validate( this );">
+  <input type="hidden" name="agreement_id" value="{{ object.agreement_id }}" />
 <h2>Create Institutional Program Transfer Agreement</h2>
 <table>
-<tr>
-<td align="right">Agreement:</td>
-<td><select name="agreement_id" id="agreement_id" required="required">
-<option value="0">Select Agreement</option>
-{% for agreement in agreements %}
-<option value="{{ agreement.agreement_id }}">{{ agreement.filename }}</option>
-{% endfor %}
-</select></td>
-</tr>
 <tr>
 <td align="right">Transfer Institution</td>
 <td><select name="transfer_institution" id="transfer_institution" onchange="updateProgram( this, 'transfer_program_id' );" required="required">

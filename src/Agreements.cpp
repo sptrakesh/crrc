@@ -46,8 +46,7 @@ void Agreements::view( Cutelyst::Context* c ) const
 {
   const auto& object = c->stash( "object" ).toHash();
 
-  dao::InstitutionAgreementDAO dao;
-  const auto& list = dao.retrieve( object.value( "id" ).toString() );
+  const auto& list = dao::InstitutionAgreementDAO().retrieve( object.value( "id" ).toString() );
   c->stash( {
     { "template", "agreements/view.html" },
     { "relations", list }

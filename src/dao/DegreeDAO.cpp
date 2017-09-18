@@ -106,7 +106,7 @@ QVariantList DegreeDAO::retrieveAll() const
 QVariantHash DegreeDAO::retrieve( const QString& id ) const
 {
   loadDegrees();
-  uint32_t cid = id.toUInt();
+  const uint32_t cid = id.toUInt();
   const auto iter = degrees.constFind( cid );
   return ( iter != degrees.end() ) ? transform( iter.value() ) : QVariantHash();
 }
@@ -126,8 +126,8 @@ uint32_t DegreeDAO::insert( Cutelyst::Context* context ) const
   }
   else
   {
-    auto id = query.lastInsertId().toUInt();
-    Degree degree = degreeFromContext( context );
+    const auto id = query.lastInsertId().toUInt();
+    auto degree = degreeFromContext( context );
     degree.id = id;
     std::lock_guard<std::mutex> lock{ degreeMutex };
     degrees[id] = std::move( degree );

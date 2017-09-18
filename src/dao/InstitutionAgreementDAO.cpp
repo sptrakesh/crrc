@@ -23,8 +23,7 @@ namespace crrc
     QVariantHash createProgramFromId( const QVariant& p )
     {
       QVariantHash transfer;
-      ProgramDAO pdao;
-      auto program = pdao.retrieve( p.toString() );
+      const auto program = ProgramDAO().retrieve( p.toString() );
       if ( ! program.isEmpty() )
       {
         transfer.insert( "program_id", program.value( "program_id" ).toUInt() );
