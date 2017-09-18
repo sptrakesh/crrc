@@ -119,11 +119,11 @@ namespace crrc
       query.bindValue( ":title", c->request()->param( "title" ) );
       query.bindValue( ":credits", c->request()->param( "credits" ) );
 
-      auto iid = c->request()->param( "institution", "0" );
+      const auto iid = c->request()->param( "institution", "0" );
       if ( iid == "0" ) query.bindValue( ":institutionId", QVariant() );
       else query.bindValue( ":institutionId", iid );
 
-      auto did = c->request()->param( "degree", "0" );
+      const auto did = c->request()->param( "degree", "0" );
       if ( did == "0" ) query.bindValue( ":degreeId", QVariant() );
       else query.bindValue( ":degreeId", did );
     }

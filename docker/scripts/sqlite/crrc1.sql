@@ -53,3 +53,11 @@ create table institution_designations
 
 create index idx_institution_designations_iid on institution_designations (institution_id);
 
+create table departments
+(
+  department_id integer primary key,
+  name text not null,
+  prefix text
+);
+
+create index idx_departments_name on departments (name);
