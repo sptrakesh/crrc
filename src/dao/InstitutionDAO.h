@@ -1,4 +1,5 @@
 #pragma once
+
 #include <Cutelyst/context.h>
 
 namespace crrc

@@ -21,3 +21,35 @@ create table logos
   checksum text not null,
   updated timestamp not null default current_timestamp
 );
+
+alter table institutions add column logo_id integer references logos on delete set null deferrable;
+create index idx_institutions_logo on institutions (logo_id);
+
+create table designations
+(
+  designation_id integer primary key,
+  type text not null,
+  title text not null
+);
+
+create index idx_designations_type on designations (type);
+create unique index unq_designations_title on designations (title);
+
+insert into designations values (1, 'CAE', 'CAE/IAE 4Y- National Centers of Academic Excellence in Information Assurance Education');
+insert into designations values (2, 'CAE', 'CAE-CDE 4Y- National Centers of Academic Excellence in Cyber Defense Education');
+insert into designations values (3, 'CAE', 'CAE-CO 4Y- National Centers of Academic Excellence in Cyber Operations Education');
+insert into designations values (4, 'CAE', 'CAE/IAE 2Y - National Centers of Academic Excellence in Information Assurance 2-Year Education');
+insert into designations values (5, 'CAE', 'CAE-CDE 2Y - National Centers of Academic Excellence in Cyber Defense 2-Year Education');
+insert into designations values (6, 'CAE', 'CAE-IA-R - National Centers of Academic Excellence in Information Assurance Research');
+insert into designations values (7, 'CAE', 'CAE-R - National Centers of Academic Excellence in Cyber Defense Research');
+
+create table institution_designations
+(
+  institution_id integer not null,
+  designation_id integer not null,
+  expiration integer,
+  primary key (institution_id, designation_id)
+);
+
+create index idx_institution_designations_iid on institution_designations (institution_id);
+

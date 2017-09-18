@@ -46,7 +46,7 @@ namespace crrc
       const auto bytes = DAO().contents( c, object.value( "id" ).toString() );
       c->response()->setContentType( object.value( "mimetype" ).toString() );
       c->response()->setContentLength( object.value( "filesize" ).toUInt() );
-      QString disposition = "inline; filename=\"" % object.value( "filename" ).toString() % "\"";
+      const QString disposition = "inline; filename=\"" % object.value( "filename" ).toString() % "\"";
       c->response()->setHeader( "Content-Disposition", disposition );
       c->response()->setBody( bytes );
     }

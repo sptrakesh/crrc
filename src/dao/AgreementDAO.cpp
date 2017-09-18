@@ -157,11 +157,8 @@ QByteArray AgreementDAO::contents( Cutelyst::Context* context, const QString& id
     query.first();
     return query.value( 0 ).toByteArray();
   }
-  else
-  {
-    context->stash()["error_msg"] = query.lastError().text();
-  }
 
+  context->stash()["error_msg"] = query.lastError().text();
   return QByteArray();
 }
 
@@ -178,15 +175,13 @@ uint32_t AgreementDAO::insert( Cutelyst::Context* context ) const
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
-  else
-  {
-    auto id = query.lastInsertId().toUInt();
-    auto agreement = agreementFromContext( context, bytes );
-    agreement.id = id;
-    std::lock_guard<std::mutex> lock{ agreementMutex };
-    agreements[id] = std::move( agreement );
-    return id;
-  }
+
+  auto id = query.lastInsertId().toUInt();
+  auto agreement = agreementFromContext( context, bytes );
+  agreement.id = id;
+  std::lock_guard<std::mutex> lock{ agreementMutex };
+  agreements[id] = std::move( agreement );
+  return id;
 }
 
 void AgreementDAO::update( Cutelyst::Context* context ) const
@@ -255,5 +250,6 @@ QString AgreementDAO::remove( uint32_t id ) const
     agreements.remove( id );
     return "Agreement deleted.";
   }
-  else return query.lastError().text();
+
+  return query.lastError().text();
 }

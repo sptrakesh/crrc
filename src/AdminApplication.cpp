@@ -16,6 +16,7 @@
 #include "Contacts.h"
 #include "Logos.h"
 #include "Institutions.h"
+#include "InstitutionDesignations.h"
 #include "Degrees.h"
 #include "Programs.h"
 #include "Agreements.h"
@@ -33,6 +34,7 @@ bool AdminApplication::init()
   new Contacts( this );
   new Logos( this );
   new Institutions( this );
+  new InstitutionDesignations( this );
   new Degrees( this );
   new Programs( this );
   new Agreements( this );

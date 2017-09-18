@@ -157,10 +157,8 @@ QByteArray LogoDAO::contents( Cutelyst::Context* context, const QString& id ) co
     query.first();
     return query.value( 0 ).toByteArray();
   }
-  else
-  {
-    context->stash()["error_msg"] = query.lastError().text();
-  }
+
+  context->stash()["error_msg"] = query.lastError().text();
 
   return QByteArray();
 }
@@ -178,15 +176,13 @@ uint32_t LogoDAO::insert( Cutelyst::Context* context ) const
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
-  else
-  {
-    auto id = query.lastInsertId().toUInt();
-    auto logo = logoFromContext( context, bytes );
-    logo.id = id;
-    std::lock_guard<std::mutex> lock{ logoMutex };
-    logos[id] = std::move( logo );
-    return id;
-  }
+
+  auto id = query.lastInsertId().toUInt();
+  auto logo = logoFromContext( context, bytes );
+  logo.id = id;
+  std::lock_guard<std::mutex> lock{ logoMutex };
+  logos[id] = std::move( logo );
+  return id;
 }
 
 void LogoDAO::update( Cutelyst::Context* context ) const
@@ -226,5 +222,6 @@ QString LogoDAO::remove( uint32_t id ) const
     logos.remove( id );
     return "Logo deleted.";
   }
-  else return query.lastError().text();
+
+  return query.lastError().text();
 }

@@ -1,0 +1,20 @@
+<div>
+  <h3>Designations for {{ object.name }}</h3>
+  <table border="0" cellspacing="5" cellpadding="5">
+    <thead>
+      <tr>
+        <th>Designation</th>
+        <th>Expiration</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for member in members %}
+      <tr>
+        <td>{{ member.designation.title }}</td>
+        <td>{{ member.designation.expiration }}</td>
+      </tr>
+    </tbody>
+    {% endfor %}
+  </table>
+  <a href="/institution/designations/id/{{ object.institution_id }}/edit">Edit Designations</a><br />
+</div>

@@ -1,5 +1,6 @@
 #include "Institutions.h"
 #include "dao/InstitutionDAO.h"
+#include "dao/DesignationDAO.h"
   
 using crrc::Institutions;
 
@@ -20,15 +21,18 @@ void Institutions::base( Cutelyst::Context* c ) const
 
 void Institutions::object( Cutelyst::Context* c, const QString& id ) const
 {
-  dao::InstitutionDAO dao;
-  c->setStash( "object", dao.retrieve( id ) );
+  c->setStash( "object", dao::InstitutionDAO().retrieve( id ) );
 }
 
 void Institutions::create( Cutelyst::Context* c ) const
 {
   const auto id = c->request()->param( "id", "" );
   if ( !id.isEmpty() ) object( c, id );
-  c->setStash( "template", "institutions/form.html" );
+
+  c->stash( {
+    { "template", "institutions/form.html" },
+    { "designations", dao::DesignationDAO().retrieveByType( "CAE" ) }
+  } );
 }
 
 void Institutions::edit( Cutelyst::Context* c ) const
@@ -44,7 +48,7 @@ void Institutions::edit( Cutelyst::Context* c ) const
   dao::InstitutionDAO dao;
   if ( id.isEmpty() )
   {
-    auto cid = dao.insert( c );
+    const auto cid = dao.insert( c );
     id = QString::number( cid );
   }
   else dao.update( c );

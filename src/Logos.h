@@ -8,8 +8,11 @@ namespace crrc
   {
     Q_OBJECT
   public:
-    explicit Logos( QObject* parent = nullptr ) {}
+    explicit Logos( QObject *parent = nullptr ) : Controller( parent ) {}
     ~Logos() = default;
+
+    C_ATTR( index, :Path( "/logos" ) : Args( 0 ) )
+    void index( Cutelyst::Context *c );
 
     C_ATTR( base, :Chained( "/" ) : PathPart( "logos" ) : CaptureArgs( 0 ) )
     void base( Cutelyst::Context* ) const;

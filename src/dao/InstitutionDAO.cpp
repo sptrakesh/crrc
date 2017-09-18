@@ -1,4 +1,5 @@
 #include "InstitutionDAO.h"
+#include "LogoDAO.h"
 #include "constants.h"
 #include <mutex>
 #include <QtCore/QStringBuilder>
@@ -21,6 +22,7 @@ namespace crrc
       QVariant postalCode;
       QVariant country;
       QVariant website;
+      QVariant logoId;
     };
 
     static QMap<uint32_t, Institution> institutions;
@@ -41,6 +43,12 @@ namespace crrc
         record.insert( "postal_code", institution.postalCode );
         record.insert( "country", institution.country );
         record.insert( "website", institution.website );
+
+        if ( !institution.logoId.isNull() )
+        {
+          auto const& logo = LogoDAO().retrieve( institution.logoId.toString() );
+          record.insert( "logo", logo );
+        }
       }
 
       return record;
@@ -68,6 +76,8 @@ namespace crrc
       institution.postalCode = query.value( 5 );
       institution.country = query.value( 6 );
       institution.website = query.value( 7 );
+      institution.logoId = query.value( 8 );
+
       return institution;
     }
 
@@ -82,7 +92,7 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select institution_id, name, address, city, state, postal_code, country, website from institutions order by name", DATABASE_NAME );
+        "select institution_id, name, address, city, state, postal_code, country, website, logo_id from institutions order by name", DATABASE_NAME );
 
       if ( query.exec() )
       {
@@ -97,21 +107,6 @@ namespace crrc
       }
     }
 
-    void loadInstitution( uint32_t id )
-    {
-      auto query = CPreparedSqlQueryThreadForDB(
-        "select institution_id, name, address, city, state, postal_code, country, website from institutions where institution_id = :id",
-        DATABASE_NAME );
-      query.bindValue( ":id", id );
-      if ( query.exec() )
-      {
-        query.next();
-        const auto institution = createInstitution( query );
-        std::lock_guard<std::mutex> lock{ institutionMutex };
-        institutions.insert( id, std::move( institution ) );
-      }
-    }
-
     void bindInstitution( Cutelyst::Context* c, QSqlQuery& query )
     {
       query.bindValue( ":name", c->request()->param( "name" ) );
@@ -123,6 +118,7 @@ namespace crrc
       if ( country.isEmpty() ) country = "USA";
       query.bindValue( ":country", country );
       query.bindValue( ":website", c->request()->param( "website" ) );
+      query.bindValue( ":logo", c->request()->param( "logoId" ) );
     }
 
     Institution institutionFromContext( Cutelyst::Context* context, uint32_t id )
@@ -136,11 +132,13 @@ namespace crrc
       institution.postalCode = context->request()->param( "postalCode" );
       institution.country = context->request()->param( "country" );
       institution.website = context->request()->param( "website" );
+      institution.logoId = context->request()->param( "logoId" );
 
       return institution;
     }
   }
 }
+
 using crrc::dao::InstitutionDAO;
 
 QVariantList InstitutionDAO::retrieveAll( const Mode& mode ) const
@@ -163,7 +161,7 @@ uint32_t InstitutionDAO::insert( Cutelyst::Context* context ) const
 {
   loadInstitutions();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into institutions (name, address, city, state, postal_code, country, website) values (:name, :address, :city, :state, :postalCode, :country, :website)",
+    "insert into institutions (name, address, city, state, postal_code, country, website, logo_id) values (:name, :address, :city, :state, :postalCode, :country, :website, :logo)",
     crrc::DATABASE_NAME );
   bindInstitution( context, query );
 
@@ -174,7 +172,7 @@ uint32_t InstitutionDAO::insert( Cutelyst::Context* context ) const
   }
   else
   {
-    auto id = query.lastInsertId().toUInt();
+    const auto id = query.lastInsertId().toUInt();
     const auto institution = institutionFromContext( context, id );
     std::lock_guard<std::mutex> lock{ institutionMutex };
     institutions[id] = std::move( institution );
@@ -187,14 +185,14 @@ void InstitutionDAO::update( Cutelyst::Context* context ) const
   loadInstitutions();
   auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
-    "update institutions set name=:name, address=:address, city=:city, state=:state, postal_code=:postalCode, country=:country, website=:website where institution_id=:id",
+    "update institutions set name=:name, address=:address, city=:city, state=:state, postal_code=:postalCode, country=:country, website=:website, logo_id=:logo where institution_id=:id",
     crrc::DATABASE_NAME );
   bindInstitution( context, query );
   query.bindValue( ":id", id.toInt() );
 
   if ( query.exec() )
   {
-    auto iid = id.toUInt();
+    const auto iid = id.toUInt();
     const auto institution = institutionFromContext( context, iid );
     std::lock_guard<std::mutex> lock{ institutionMutex };
     institutions[iid] = std::move( institution );
@@ -241,6 +239,13 @@ QString InstitutionDAO::remove( uint32_t id ) const
   if ( query.exec() )
   {
     ContactDAO().removeInstitution( id );
+
+    const auto& institution = institutions.constFind( id );
+    if ( institution != institutions.constEnd() )
+    {
+      LogoDAO().remove( institution.value().logoId.toUInt() );
+    }
+
     std::lock_guard<std::mutex> lock{ institutionMutex };
     institutions.remove( id );
     return "Institution deleted.";
@@ -250,6 +255,7 @@ QString InstitutionDAO::remove( uint32_t id ) const
 
 bool InstitutionDAO::isUnique( const QString& name, const QString& city ) const
 {
+  loadInstitutions();
   for ( const auto& institution : institutions )
   {
     if ( institution.name.toString() == name &&

@@ -1,0 +1,116 @@
+<script type="text/javascript">
+  function checkUnique( form )
+  {
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/institutions/checkUnique' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onreadystatechange = function ()
+    {
+      let element = document.getElementById( 'nameWarning' );
+      let response = xhr.responseText;
+      console.log( `Check to see if institution ${form.name.value} in city ${form.city.value} exists returned ${response}.` );
+
+      if ( 4 === xhr.readyState && 200 === xhr.status )
+      {
+        let available = 'true' === xhr.responseText;
+        if ( !available )
+        {
+          element.style.display = 'inline';
+          form.name.focus();
+        }
+        else
+        {
+          element.style.display = 'none';
+          form.submit();
+        }
+      }
+      else
+      {
+        element.style.display = 'inline';
+        element.innerHTML = 'Unable to access server to validate name/city.  Please try again later';
+      }
+    };
+    xhr.send( encodeURI( `name=${form.name.value}&city=${form.city.value}` ) );
+  }
+
+  function update( form )
+  {
+  }
+
+  function add( form )
+  {
+  }
+</script>
+
+<!--<div style="display: flex; margin: auto; width: 90%; padding: 10px;">-->
+  <!--
+  <h3>Designations for {{ object.name }}</h3>
+  <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+    <tbody>
+      <tr>
+        <td>
+          {% for member in members %}
+          <form method="post" action="/institution/designations/save" onsubmit="return update(this);">
+            <input type="hidden" name="institution_id" value="{{ member.instituion_id }}" />
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <th>Designation</th>
+                <th>Expiration</th>
+                <th>Action</th>
+              </tr>
+              <tr>
+                <td style="width: 60%; border: 1px solid black;">
+                  <input type="checkbox" name="designation_id" value="{{ member.designation.designation_id }}" checked/>{{ member.designation.title }}
+                </td>
+                <td style="width: 20%; border: 1px solid black;">
+                  <select name="expiration" style="width: 10em;" onchange="update( this )">
+                    {% for year in years %}
+                    <option {% if year == member.expiration %}selected{% endif %}>{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td style="width: 20%; border: 1px solid black;">
+                  <input type="submit" value="Update" />
+                </td>
+              </tr>
+            </table>
+          </form>
+          {% endfor %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  -->
+
+  <h3>Add designations to {{ object.name }}</h3>
+  <table border="0" cellpadding="0" cellspacing="0" style="width: 100%;">
+    <tbody>
+      <tr>
+        <td>
+          {% for designation in designations %}
+          <form method="post" action="/institution/designations/save" onsubmit="return update(this);">
+            <input type="hidden" name="institution_id" value="{{ member.instituion_id }}" />
+            <table border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td style="width: 60%; border: 1px solid black;">
+                  <input type="checkbox" name="designation_id" value="{{ member.designation.designation_id }}" />{{ member.designation.title }}
+                </td>
+                <td style="width: 20%; border: 1px solid black;">
+                  <select name="expiration" style="width: 10em;" onchange="update( this )">
+                    {% for year in years %}
+                    <option>{{ year }}</option>
+                    {% endfor %}
+                  </select>
+                </td>
+                <td style="width: 20%; border: 1px solid black;">
+                  <input type="submit" value="Add" />
+                </td>
+              </tr>
+            </table>
+          </form>
+          {% endfor %}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+<!--</div>-->
