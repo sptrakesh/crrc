@@ -29,6 +29,9 @@ namespace crrc
     C_ATTR( edit, :Chained( "base" ) : PathPart( "edit" ) : Args( 0 ) )
     void edit( Cutelyst::Context* c ) const;
 
+    C_ATTR( institutions, :Chained( "base" ) : PathPart( "institutions" ) : Args( 0 ) )
+    void institutions( Cutelyst::Context* c ) const;
+
     C_ATTR( view, :Chained( "object" ) : PathPart( "view" ) : Args( 0 ) )
     void view( Cutelyst::Context* c ) const;
 

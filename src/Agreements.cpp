@@ -1,10 +1,13 @@
 #include "Agreements.h"
 #include "AttachmentController.h"
 #include "dao/AgreementDAO.h"
+#include "dao/InstitutionDAO.h"
 #include "dao/InstitutionAgreementDAO.h"
 
 #include <QtCore/QStringBuilder>
 #include <QtCore/QtDebug>
+#include <QtCore/QJsonDocument>
+#include <QtCore/QJsonObject>
 
 using crrc::Agreements;
 
@@ -30,15 +33,33 @@ void Agreements::object( Cutelyst::Context* c, const QString& id ) const
 
 void Agreements::create( Cutelyst::Context* c ) const
 {
-  c->setStash( "template", "agreements/form.html" );
+  c->stash( {
+    { "institutions", dao::InstitutionDAO().retrieveAll( dao::InstitutionDAO::Mode::Partial ) },
+    { "template", "agreements/form.html" }
+  } );
 }
 
 void Agreements::edit( Cutelyst::Context* c ) const
 {
   const auto& obj = AttachmentController<dao::AgreementDAO>().edit( c );
+  QJsonObject json;
+  json.insert( "id", obj.value( "id" ).toInt() );
+  const auto& bytes = QJsonDocument( json ).toJson();
+
+  c->response()->setContentType( "application/json" );
+  c->response()->setContentLength( bytes.size() );
+  c->response()->setBody( bytes );
+}
+
+void Agreements::institutions( Cutelyst::Context* c ) const
+{
+  const auto dao = dao::AgreementDAO();
+  const auto& result = dao.saveProgram( c );
+  if ( !result.isEmpty() && result != "0" ) c->setStash( "error", result );
+
   c->stash( {
     { "template", "agreements/view.html" },
-    { "object", obj }
+    { "object", dao.retrieve( c->request()->param( "institution_id" ) ) }
   } );
 }
 

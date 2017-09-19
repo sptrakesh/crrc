@@ -1,4 +1,5 @@
 #include "AgreementDAO.h"
+#include "InstitutionDAO.h"
 #include "constants.h"
 #include "functions.h"
 
@@ -21,6 +22,8 @@ namespace crrc
       QVariant document;
       QVariant checksum;
       QVariant updated;
+      QVariant transferInstitutionId;
+      QVariant transfereeInstitutionId;
     };
 
     static QMap<uint32_t, Agreement> agreements;
@@ -32,6 +35,17 @@ namespace crrc
       QVariantHash record;
       record.insert( "id", agreement.id );
       record.insert( "filename", agreement.filename );
+
+      if ( ! agreement.transferInstitutionId.isNull() )
+      {
+        const auto idao = InstitutionDAO();
+        record.insert( "transferInstitution",
+          idao.retrieve( agreement.transferInstitutionId.toString(),
+          InstitutionDAO::Mode::Partial ) );
+        record.insert( "transfereeInstitution",
+          idao.retrieve( agreement.transfereeInstitutionId.toString(),
+          InstitutionDAO::Mode::Partial ) );
+      }
 
       if ( AgreementDAO::Mode::Full == mode )
       {
@@ -65,6 +79,8 @@ namespace crrc
       agreement.filesize = query.value( 3 );
       agreement.checksum = query.value( 4 );
       agreement.updated = query.value( 5 );
+      agreement.transferInstitutionId = query.value( 6 );
+      agreement.transfereeInstitutionId = query.value( 7 );
       return agreement;
     }
 
@@ -79,7 +95,7 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select agreement_id, filename, mimetype, filesize, checksum, updated from agreements order by filename",
+        "select agreement_id, filename, mimetype, filesize, checksum, updated, transfer_institution_id, transferee_institution_id from agreements order by filename",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -249,6 +265,31 @@ QString AgreementDAO::remove( uint32_t id ) const
     std::lock_guard<std::mutex> lock{ agreementMutex };
     agreements.remove( id );
     return "Agreement deleted.";
+  }
+
+  return query.lastError().text();
+}
+
+QString AgreementDAO::saveProgram( Cutelyst::Context* context ) const
+{
+  auto query = CPreparedSqlQueryThreadForDB(
+    "update agreements set transfer_institution_id = :i, transferee_institution_id = :ei where agreement_id = :id",
+    DATABASE_NAME );
+  query.bindValue( ":i", context->request()->param( "transfer_institution_id" ).toUInt() );
+  query.bindValue( ":ei", context->request()->param( "transferee_institution_id" ).toUInt() );
+  query.bindValue( ":id", context->request()->param( "id" ).toUInt() );
+
+  if ( query.exec() )
+  {
+    if ( query.numRowsAffected() > 0 ) return QString();
+
+    query = CPreparedSqlQueryThreadForDB(
+      "insert into agreements (transfer_institution_id, transferee_institution_id, agreement_id) values (:i, :ei, :id)",
+      DATABASE_NAME );
+    query.bindValue( ":i", context->request()->param( "transfer_institution_id" ).toUInt() );
+    query.bindValue( ":ei", context->request()->param( "transferee_institution_id" ).toUInt() );
+    query.bindValue( ":id", context->request()->param( "agreement_id" ).toUInt() );
+    if ( query.exec() ) return ( query.numRowsAffected() > 0 ) ? QString() : QString( "0" );
   }
 
   return query.lastError().text();
