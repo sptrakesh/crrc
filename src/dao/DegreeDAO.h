@@ -13,7 +13,7 @@ namespace crrc
       uint32_t insert( Cutelyst::Context* context ) const;
       void update( Cutelyst::Context* context ) const;
       QVariantList search( Cutelyst::Context* context ) const;
-      QString remove( uint32_t id ) const;
+      uint32_t remove( uint32_t id ) const;
     };
   }
 }

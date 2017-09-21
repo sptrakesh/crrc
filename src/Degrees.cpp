@@ -1,6 +1,9 @@
 #include "Degrees.h"
 #include "dao/DegreeDAO.h"
 
+#include <QtCore/QDebug>
+#include <QtCore/QJsonDocument>
+
 using crrc::Degrees;
 
 void Degrees::index( Cutelyst::Context* c ) const
@@ -21,33 +24,38 @@ void Degrees::object( Cutelyst::Context* c, const QString& id ) const
   c->setStash( "object", dao::DegreeDAO().retrieve( id ) );
 }
 
-void Degrees::create( Cutelyst::Context* c ) const
-{
-  c->setStash( "template", "degrees/form.html" );
-}
-
 void Degrees::edit( Cutelyst::Context* c ) const
 {
-  auto id = c->request()->param( "id", "" );
+  auto id = c->request()->param( "degree_id", "" );
   const auto title = c->request()->param( "title", "" );
+  qDebug() << "Processing POST with id: " << id << ", title: " << title;
+  QJsonObject obj;
+
   if ( title.isEmpty() )
   {
-    c->stash()["error_msg"] = "Degree title required!";
+    obj.insert( "status", false );
+    obj.insert( "id", id );
+    sendJson( c, obj );
     return;
   }
 
   dao::DegreeDAO dao;
   if ( id.isEmpty() )
   {
-    auto cid = dao.insert( c );
-    id = QString::number( cid );
+    qDebug() << "Inserting new degree";
+    const auto cid = dao.insert( c );
+    obj.insert( "id", static_cast<int>( cid ) );
+    obj.insert( "status", true );
   }
-  else dao.update( c );
+  else
+  {
+    qDebug() << "Updating degree";
+    dao.update( c );
+    obj.insert( "status", true );
+    obj.insert( "id", id );
+  }
 
-  c->stash( {
-    { "template", "degrees/view.html" },
-    { "object", dao.retrieve( id ) }
-  } );
+  sendJson( c, obj );
 }
 
 void Degrees::view( Cutelyst::Context* c ) const
@@ -73,18 +81,30 @@ void Degrees::search( Cutelyst::Context* c ) const
   } );
 }
 
-void Degrees::remove( Cutelyst::Context* c )
+void Degrees::remove( Cutelyst::Context* c ) const
 {
-  auto id = c->request()->param( "id", "" );
-  QString statusMsg;
+  auto id = c->request()->param( "degree_id", "" );
+  QJsonObject obj;
 
   if ( ! id.isEmpty() )
   {
-    dao::DegreeDAO dao;
-    statusMsg = dao.remove( id.toUInt() );
+    auto const result = dao::DegreeDAO().remove( id.toUInt() );
+    obj.insert( "count", static_cast<int>( result ) );
+    obj.insert( "id", id.toInt() );
+    obj.insert( "status", true );
   }
-  else statusMsg = "No degree identifier specified!";
+  else
+  {
+    obj.insert( "status", false );
+  }
 
-  c->stash()["status_msg"] = statusMsg;
-  c->response()->redirect( "/degrees" );
+  sendJson( c, obj );
+}
+
+void Degrees::sendJson( Cutelyst::Context* c, const QJsonObject& obj ) const
+{
+  const auto bytes = QJsonDocument( obj ).toJson();
+  c->response()->setContentType( "application/json" );
+  c->response()->setContentLength( bytes.size() );
+  c->response()->setBody( bytes );
 }

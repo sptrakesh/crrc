@@ -5,7 +5,6 @@
   console.log( JSON.stringify( availableTransfereePrograms ) );
 
   var transferPrograms = [];
-  var obj = null;
   {% for relation in relations %}
   transferPrograms.push( { id: {{ relation.transfer_program.program_id }},
     title: '{{ relation.transfer_program.title }}' } );

@@ -1,3 +1,186 @@
+<script type="text/javascript">
+  var titles = [];
+  {% for degree in degrees %}
+  titles.push( '{{ degree.title }}' );
+  {% endfor %}
+
+  function displayDegree( degreeId )
+  {
+    document.getElementById( `dv_${degreeId}` ).style.display = 'inline';
+    return false;
+  }
+
+  function hideDegree( degreeId )
+  {
+    document.getElementById( `dv_${degreeId}` ).style.display = 'none';
+  }
+
+  function displayForm( degreeId )
+  {
+    document.getElementById( `de_${degreeId}` ).style.display = 'inline';
+  }
+
+  function addDegree( json, form )
+  {
+    let content = `<div><a href="#" onclick="return displayDegree( ${json.id} );">${form.title.value}</a></div>
+    <div id="dv_${json.id}" style="display: none;">
+      <h3>Title: ${form.title.value}</h3>
+      <strong>Duration:</strong> ${form.duration.value}<br/>
+      <button onclick="displayForm( ${json.id} )">Edit</button>
+      <button onclick="deleteDegree( ${json.id}, '${form.title.value}' )">Delete</button>
+      <button onclick="hideDegree( ${json.id} )">Close</button>
+      <br/>
+      <q id="dw_${json.id}" class="warning"></q>
+    </div>
+    <div id="de_${json.id}" style="display: none;">
+      <form id="df_${json.id}" onsubmit="return false;">
+        <input type="hidden" name="degree_id" value="${json.id}" />
+        <label class="label">Title:</label>
+        <input type="text" name="title" value="${form.title.value}" required/><br/>
+        <label class="label">Duration:</label>
+        <input type="text" name="duration" value="${form.duration.value}" /><br/>
+        <button onclick="update( ${json.id}, '${form.title.value}' )">Save</button>
+        <button onclick="hideForm( ${json.id} )">Close</button>
+      </form>
+    </div>`;
+
+    let div = document.createElement( 'div' );
+    div.id = `d_${json.id}`;
+    div.innerHTML = content;
+
+    document.getElementById( 'degrees' ).appendChild( div );
+  }
+
+  function update( degreeId, currentTitle )
+  {
+    let form = document.getElementById( `df_${degreeId}` );
+
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', `/degrees/id/${degreeId}/update` );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status )
+        {
+          let element = document.getElementById( `d_${degreeId}` );
+
+          let index = titles.indexOf( currentTitle );
+          if ( index >= 0 ) titles.splice( index, 1 );
+          titles.push( form.title.value );
+
+          element.parentElement.removeChild( element );
+          addDegree( json, form );
+          hideForm( degreeId );
+        }
+        else
+        {
+          document.getElementById( `dw_${degreeId}` ).innerText = 'Unable to update degree.  Please try again later.';
+        }
+      }
+      else
+      {
+        document.getElementById( `dw_${degreeId}` ).innerText = 'Unable to update degree.  Please try again later.';
+      }
+    };
+    xhr.send( encodeURI( `degree_id=${degreeId}&title=${form.title.value}&duration=${form.duration.value}` ) );
+  }
+
+  function deleteDegree( degreeId, title )
+  {
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/degrees/remove' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status && json.count === 1 )
+        {
+          let element = document.getElementById( `d_${degreeId}` );
+          let index = titles.indexOf( title );
+          if ( index >= 0 ) titles.splice( index, 1 );
+          element.parentElement.removeChild( element );
+        }
+        else
+        {
+          document.getElementById( `dw_${degreeId}` ).innerText = 'Unable to delete degree from the server.  Please try again later.';
+        }
+      }
+      else
+      {
+        document.getElementById( `dw_${degreeId}` ).innerText = 'Unable to delete degree from the server.  Please try again later.';
+      }
+    };
+    xhr.send( `degree_id=${degreeId}` );
+  }
+
+  function hideForm( degreeId )
+  {
+    document.getElementById( `de_${degreeId}` ).style.display = 'none';
+  }
+
+  function displayCreate()
+  {
+    document.getElementById( 'create' ).style.display = 'inline';
+    document.getElementById( 'createButton' ).style.display = 'none';
+  }
+
+  function createDegree()
+  {
+    let form = document.getElementById( 'createDegree' );
+
+    if ( titles.indexOf( form.title.value ) === -1 )
+    {
+      let xhr = new XMLHttpRequest();
+      xhr.open( 'POST', '/degrees/create' );
+      xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+      xhr.onload = function ()
+      {
+        if ( xhr.status === 200 )
+        {
+          titles.push( form.title.value );
+          console.log( xhr.responseText );
+          let json = JSON.parse( xhr.responseText );
+          if ( json.status )
+          {
+            addDegree( json, form );
+            hideCreate();
+            document.getElementById( 'createButton' ).style.display = 'inline';
+          }
+          else
+          {
+            document.getElementById( 'createWarning' ).innerText = 'Unable to create degree.  Please try again later.';
+          }
+        }
+        else
+        {
+          document.getElementById( 'createWarning' ).innerText = 'Unable to create degree.  Please try again later.';
+        }
+      };
+      xhr.send( encodeURI( `title=${form.title.value}&duration=${form.duration.value}` ) );
+    }
+    else
+    {
+      document.getElementById( 'createWarning' ).innerText =  `Course with title: ${form.title.value} exists.`;
+    }
+  }
+
+  function hideCreate()
+  {
+    document.getElementById( 'create' ).style.display = 'none';
+    document.getElementById( 'createButton' ).style.display = 'inline';
+    let form = document.getElementById( 'createDegree' );
+    form.title.value = '';
+    form.duration.value = '';
+  }
+</script>
+
 <div>
   <h2>Manage Degrees</h2>
   <div>
@@ -13,13 +196,48 @@
   {% if searchText %}
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
-  <ul>
+  <div id="degrees">
     {% for degree in degrees %}
-    <li><a href="/degrees/id/{{ degree.degree_id }}/view">{{ degree.title }}</a> - <form action="/degrees/remove" method="post" style="display: inline-block;">
-      <input type="hidden" name="id" value="{{ degree.degree_id }}"/>
-      <input type="submit" value="Delete" />
+    <div id="d_{{ degree.degree_id }}">
+      <div><a href="#" onclick="return displayDegree( {{ degree.degree_id }} );">{{ degree.title }}</a></div>
+      <div id="dv_{{ degree.degree_id }}" style="display: none;">
+        <h3>Title: {{ degree.title }}</h3>
+        {% if degree.duration %}
+        <strong>Duration:</strong> {{ degree.duration }}<br/>
+        {% endif %}
+        <button onclick="displayForm( {{ degree.degree_id }} )">Edit</button>
+        <button onclick="deleteDegree( {{ degree.degree_id }}, '{{ degree.title }}' )">Delete</button>
+        <button onclick="hideDegree( {{ degree.degree_id }} )">Close</button>
+        <br/>
+        <q id="dw_{{ degree.degree_id }}" class="warning"></q>
+      </div>
+      <div id="de_{{ degree.degree_id }}" style="display: none;">
+        <form id="df_{{ degree.degree_id }}" onsubmit="return false;">
+          <input type="hidden" name="degree_id" value="{{ degree.degree_id }}" />
+          <label class="label">Title:</label>
+          <input type="text" name="title" value="{{ degree.title }}" required/><br/>
+          <label class="label">Duration:</label>
+          <input type="text" name="duration" value="{{ degree.duration }}" /><br/>
+          <button onclick="update( {{ degree.degree_id }}, '{{ degree.title }}' )">Save</button>
+          <button onclick="hideForm( {{ degree.degree_id }} )">Close</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div id="create" style="display:none">
+    <form id="createDegree" onsubmit="return false;">
+      <label class="label">Title:</label>
+      <input type="text" name="title" required/>
+      <br/>
+      <label class="label">Duration:</label>
+      <input type="text" name="duration" />
+      <br/>
+      <button onclick="createDegree()">Create</button>
+      <button onclick="hideCreate()">Cancel</button>
     </form>
-    </li>
-  </ul>
-  {% endfor %}
+    <q id="createWarning" class="warning"></q>
+  </div>
+  <br/>
+  <button id="createButton" onclick="displayCreate()">Add Degree</button>
 </div>

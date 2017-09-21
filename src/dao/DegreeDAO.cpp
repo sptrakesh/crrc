@@ -138,7 +138,7 @@ uint32_t DegreeDAO::insert( Cutelyst::Context* context ) const
 void DegreeDAO::update( Cutelyst::Context* context ) const
 {
   loadDegrees();
-  auto id = context->request()->param( "id" );
+  auto id = context->request()->param( "degree_id" );
   auto query = CPreparedSqlQueryThreadForDB(
     "update degrees set title=:title, duration=:duration where degree_id=:id",
     crrc::DATABASE_NAME );
@@ -147,7 +147,7 @@ void DegreeDAO::update( Cutelyst::Context* context ) const
 
   if ( query.exec() )
   {
-    Degree degree = degreeFromContext( context );
+    auto degree = degreeFromContext( context );
     degree.id = id.toUInt();
     std::lock_guard<std::mutex> lock{ degreeMutex };
     degrees[id.toUInt()] = std::move( degree );
@@ -185,7 +185,7 @@ QVariantList DegreeDAO::search( Cutelyst::Context* context ) const
   return list;
 }
 
-QString DegreeDAO::remove( uint32_t id ) const
+uint32_t DegreeDAO::remove( uint32_t id ) const
 {
   loadDegrees();
   auto query = CPreparedSqlQueryThreadForDB(
@@ -195,7 +195,9 @@ QString DegreeDAO::remove( uint32_t id ) const
   {
     std::lock_guard<std::mutex> lock{ degreeMutex };
     degrees.remove( id );
-    return "Degree deleted.";
+    return query.numRowsAffected();
   }
-  else return query.lastError().text();
+
+  qDebug() << query.lastError().text();
+  return 0;
 }
