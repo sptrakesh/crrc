@@ -64,7 +64,7 @@ namespace crrc
     QVariantList fromPrograms( const ProgramDAO::Mode& mode )
     {
       QVariantList list;
-      foreach ( Program program, programs )
+      for ( const auto& program : programs )
       {
         list.append( transform( program, mode ) );
       }
@@ -159,30 +159,11 @@ QVariantList ProgramDAO::retrieveByInstitution(
   loadPrograms();
   QVariantList list;
 
-  foreach ( auto& program, programs )
+  for ( const auto& program : programs )
   {
     if ( ! program.institutionId.isNull() && institutionId == program.institutionId.toUInt() )
     {
-      QVariantHash hash;
-      hash.insert( "program_id", program.id );
-      hash.insert( "title", program.title );
-
-      if ( Mode::Full == mode )
-      {
-        hash.insert( "credits", program.credits );
-
-        DegreeDAO ddao;
-        auto degree = ddao.retrieve( program.degreeId.toString() );
-        if ( ! degree.isEmpty() )
-        {
-          QVariantHash deg;
-          deg.insert( "degree_id", program.degreeId.toUInt() );
-          deg.insert( "title", degree.value( "title" ) );
-          hash.insert( "degree", deg );
-        }
-      }
-
-      list.append( hash );
+      list.append( transform( program, mode ) );
     }
   }
 

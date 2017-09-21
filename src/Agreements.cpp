@@ -3,9 +3,11 @@
 #include "dao/AgreementDAO.h"
 #include "dao/InstitutionDAO.h"
 #include "dao/InstitutionAgreementDAO.h"
+#include "dao/ProgramDAO.h"
 
 #include <QtCore/QStringBuilder>
 #include <QtCore/QtDebug>
+#include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
@@ -57,20 +59,44 @@ void Agreements::institutions( Cutelyst::Context* c ) const
   const auto& result = dao.saveProgram( c );
   if ( !result.isEmpty() && result != "0" ) c->setStash( "error", result );
 
-  c->stash( {
-    { "template", "agreements/view.html" },
-    { "object", dao.retrieve( c->request()->param( "institution_id" ) ) }
-  } );
+  c->setStash( "object", dao.retrieve( c->request()->param( "agreement_id" ) ) );
+  view( c );
 }
 
 void Agreements::view( Cutelyst::Context* c ) const
 {
   const auto& object = c->stash( "object" ).toHash();
+  const auto& id = object.value( "id" );
 
-  const auto& list = dao::InstitutionAgreementDAO().retrieve( object.value( "id" ).toString() );
+  const auto& relations = dao::InstitutionAgreementDAO().retrieve( id.toString() );
+
+  dao::ProgramDAO dao;
+  const auto& transferInstitution = object.value( "transferInstitution" );
+  const auto& transfereeInstitution = object.value( "transfereeInstitution" );
+
+  const auto func = [](const QVariantHash& hash, QJsonArray& array)
+  {
+    QJsonObject json;
+    json.insert( "program_id", hash.value( "program_id" ).toInt() );
+    json.insert( "title", hash.value( "title" ).toString() );
+    array << json;
+  };
+
+  const auto& trp = transferInstitution.isNull() ?  QVariantList() :
+    dao.retrieveByInstitution( transferInstitution.toHash().value( "institution_id" ).toUInt(), dao::ProgramDAO::Mode::Partial );
+  QJsonArray transferPrograms;
+  for ( const auto& value : trp ) func( value.toHash(), transferPrograms );
+
+  const auto& treep = transfereeInstitution.isNull() ?  QVariantList() :
+    dao.retrieveByInstitution( transfereeInstitution.toHash().value( "institution_id" ).toUInt(), dao::ProgramDAO::Mode::Partial );
+  QJsonArray transfereePrograms;
+  for ( const auto& value : treep ) func( value.toHash(), transfereePrograms );
+
   c->stash( {
     { "template", "agreements/view.html" },
-    { "relations", list }
+    { "transferPrograms", QJsonDocument( transferPrograms ).toJson() },
+    { "transfereePrograms", QJsonDocument( transfereePrograms ).toJson() },
+    { "relations", relations }
   } );
 }
 

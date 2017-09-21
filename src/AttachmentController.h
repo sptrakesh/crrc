@@ -14,15 +14,14 @@ namespace crrc
 
     QVariantHash edit( Cutelyst::Context* c ) const
     {
-      auto id = c->request()->param( "id", "" );
+      auto id = getId( c );
 
       DAO dao;
       if ( id.isEmpty() )
       {
         auto cid = dao.insert( c );
         id = QString::number( cid );
-      }
-      else dao.update( c );
+      } else dao.update( c );
 
       return dao.retrieve( id );
     }
@@ -53,7 +52,7 @@ namespace crrc
 
     void remove( Cutelyst::Context* c, const QString& redirectUrl ) const
     {
-      auto id = c->request()->param( "id", "" );
+      const auto id = getId( c );
       QString statusMsg;
 
       if ( !id.isEmpty() )
@@ -64,6 +63,16 @@ namespace crrc
 
       c->stash()["status_msg"] = statusMsg;
       c->response()->redirect( redirectUrl );
+    }
+
+  private:
+    QString getId( Cutelyst::Context* context ) const
+    {
+      const auto id = context->request()->param( "id", "" );
+      if ( !id.isEmpty() ) return id;
+      const auto& obj = context->stash( "object" );
+      if ( obj.isNull() ) return id;
+      return obj.toHash().value( "id" ).toString();
     }
   };
 }

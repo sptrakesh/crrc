@@ -1,12 +1,10 @@
 #include "InstitutionAgreements.h"
 #include "dao/AgreementDAO.h"
-#include "dao/InstitutionDAO.h"
 #include "dao/ProgramDAO.h"
 #include "dao/InstitutionAgreementDAO.h"
 
 #include <QtCore/QStringBuilder>
 #include <QtCore/QDebug>
-#include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
 
@@ -32,23 +30,15 @@ void InstitutionAgreements::object( Cutelyst::Context* c, const QString& id ) co
 
 void InstitutionAgreements::create( Cutelyst::Context* c ) const
 {
-  qDebug() << "Agreement: " << c->stash( "object" );
-  const auto& institutions = dao::InstitutionDAO().retrieveAll(
-    dao::InstitutionDAO::Mode::Partial );
+  const auto& object = c->stash( "object" ).toHash();
+  const auto transferInstitution = object.value( "transferInstitution" ).toHash().value( "institution_id" );
+  const auto transfereeInstitution = object.value( "transfereeInstitution" ).toHash().value( "institution_id" );
 
   dao::ProgramDAO pdao;
-  QJsonObject json;
-  foreach ( auto& institution, institutions )
-  {
-    const auto& inst = institution.toHash();
-    const auto id = inst.value( "institution_id" ).toUInt();
-    const auto& p = pdao.retrieveByInstitution( id, dao::ProgramDAO::Mode::Partial );
-    json.insert( QString::number( id ), QJsonArray::fromVariantList( p ) );
-  }
 
   c->stash( {
-    { "institutions", institutions },
-    { "programs", QJsonDocument( json ).toJson( QJsonDocument::Compact ) },
+    { "transferPrograms", pdao.retrieveByInstitution( transferInstitution.toUInt(), dao::ProgramDAO::Mode::Partial ) },
+    { "transfereePrograms", pdao.retrieveByInstitution( transfereeInstitution.toUInt(), dao::ProgramDAO::Mode::Partial ) },
     { "template", "institutions/agreements/form.html" }
   } );
 }
@@ -57,16 +47,14 @@ void InstitutionAgreements::edit( Cutelyst::Context* c ) const
 {
   if ( !validate( c ) ) return;
 
-  dao::InstitutionAgreementDAO dao;
-  dao.insert( c );
+  const auto id = dao::InstitutionAgreementDAO().insert( c );
+  QJsonObject json;
+  json.insert( "id", static_cast<int>( id ) );
+  const auto& output = QJsonDocument( json ).toJson();
 
-  const auto id = c->request()->param( "agreement_id" );
-  const auto tp1 = c->request()->param( "transfer_program_id" );
-  const auto tp2 = c->request()->param( "transferee_program_id" );
-  c->stash( {
-    { "template", "institutions/agreements/view.html" },
-    { "object", dao.retrieve( id % "_" % tp1 % "_" % tp2 ) }
-  } );
+  c->response()->setContentType( "application/json" );
+  c->response()->setContentLength( output.size() );
+  c->response()->setBody( output );
 }
 
 void InstitutionAgreements::view( Cutelyst::Context* c ) const
@@ -94,7 +82,11 @@ void InstitutionAgreements::remove( Cutelyst::Context* c )
 {
   if ( !validate( c ) ) return;
   dao::InstitutionAgreementDAO().remove( c );
-  c->response()->redirect( "/institution/program/relations" );
+
+  const auto response = QString( "true" );
+  c->response()->setContentType( "text/plain" );
+  c->response()->setContentLength( response.size() );
+  c->response()->setBody( response );
 }
 
 bool InstitutionAgreements::validate( Cutelyst::Context* context ) const

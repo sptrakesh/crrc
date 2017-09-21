@@ -202,11 +202,15 @@ uint32_t AgreementDAO::insert( Cutelyst::Context* context ) const
 
 void AgreementDAO::update( Cutelyst::Context* context ) const
 {
-  const auto id = context->request()->param( "id" );
-  const auto doc =  context->request()->upload( "document" );
+  auto id = context->request()->param( "id" );
+  if ( id.isEmpty() )
+  {
+    const auto& obj = context->stash( "object" );
+    if ( !obj.isNull() ) id = obj.toHash().value( "id" ).toString();
+  }
 
   auto query = CPreparedSqlQueryThreadForDB( 
-    "update agreements set mimetype=:mimetype, filesize=:filesize, document=:document, checksum=:checksum, updated=:updated where agreement_id=:id",
+    "update agreements set filename=:filename, mimetype=:mimetype, filesize=:filesize, document=:document, checksum=:checksum, updated=:updated where agreement_id=:id",
     crrc::DATABASE_NAME );
   auto bytes = bindAgreement( context, query );
   query.bindValue( ":id", id.toInt() );
@@ -216,9 +220,6 @@ void AgreementDAO::update( Cutelyst::Context* context ) const
     auto agreement = agreementFromContext( context, bytes );
     auto aid = id.toUInt();
     agreement.id = aid;
-
-    auto old = agreements.find( aid ).value();
-    agreement.filename = old.filename;
 
     std::lock_guard<std::mutex> lock{ agreementMutex };
     agreements[aid] = std::move( agreement );
@@ -272,16 +273,31 @@ QString AgreementDAO::remove( uint32_t id ) const
 
 QString AgreementDAO::saveProgram( Cutelyst::Context* context ) const
 {
+  const auto func = [=]()
+  {
+    auto obj = agreements.find( context->request()->param( "agreement_id" ).toUInt() );
+    if ( obj != agreements.end() )
+    {
+      auto& value = obj.value();
+      value.transferInstitutionId = context->request()->param( "transfer_institution_id" );
+      value.transfereeInstitutionId = context->request()->param( "transferee_institution_id" );
+    }
+  };
+
   auto query = CPreparedSqlQueryThreadForDB(
     "update agreements set transfer_institution_id = :i, transferee_institution_id = :ei where agreement_id = :id",
     DATABASE_NAME );
   query.bindValue( ":i", context->request()->param( "transfer_institution_id" ).toUInt() );
   query.bindValue( ":ei", context->request()->param( "transferee_institution_id" ).toUInt() );
-  query.bindValue( ":id", context->request()->param( "id" ).toUInt() );
+  query.bindValue( ":id", context->request()->param( "agreement_id" ).toUInt() );
 
   if ( query.exec() )
   {
-    if ( query.numRowsAffected() > 0 ) return QString();
+    if ( query.numRowsAffected() > 0 )
+    {
+      func();
+      return QString();
+    }
 
     query = CPreparedSqlQueryThreadForDB(
       "insert into agreements (transfer_institution_id, transferee_institution_id, agreement_id) values (:i, :ei, :id)",
@@ -289,7 +305,16 @@ QString AgreementDAO::saveProgram( Cutelyst::Context* context ) const
     query.bindValue( ":i", context->request()->param( "transfer_institution_id" ).toUInt() );
     query.bindValue( ":ei", context->request()->param( "transferee_institution_id" ).toUInt() );
     query.bindValue( ":id", context->request()->param( "agreement_id" ).toUInt() );
-    if ( query.exec() ) return ( query.numRowsAffected() > 0 ) ? QString() : QString( "0" );
+
+    if ( query.exec() )
+    {
+      if ( query.numRowsAffected() > 0 )
+      {
+        func();
+        return QString();
+      }
+      return QString( "0" );
+    }
   }
 
   return query.lastError().text();

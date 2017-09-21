@@ -6,23 +6,32 @@
     let button = document.getElementById( 'save' );
     button.disabled = true;
 
+    let form = document.forms[0];
+
     let formData = new FormData();
     formData.append( 'document', file );
+    if ( form.id ) formData.append( 'id', form.id.value );
+    console.log( `Form action: ${form.action}` );
 
     let xhr = new XMLHttpRequest();
-    xhr.open( 'POST', '/agreements/edit' );
+    xhr.open( 'POST', form.action );
     xhr.onreadystatechange = function ()
     {
-      if ( 4 === xhr.readyState && 200 === xhr.status )
+      if ( 4 === xhr.readyState )
       {
         console.log( `Agreement upload response: ${xhr.responseText}` );
-        let json = JSON.parse( xhr.responseText );
-        let input = document.createElement( 'input' );
-        input.type = 'hidden';
-        input.value = json.id;
-        input.name = 'agreement_id';
-        input.id = 'agreementId';
-        document.forms[1].appendChild( input );
+        if ( 200 === xhr.status )
+        {
+          let json = JSON.parse( xhr.responseText );
+          let input = document.createElement( 'input' );
+          input.type = 'hidden';
+          input.value = json.id;
+          input.name = 'agreement_id';
+          input.id = 'agreementId';
+          document.forms[1].appendChild( input );
+          document.getElementById( 'uploadForm' ).innerHTML = 'Document uploaded successfully.'
+        }
+        else document.getElementById( 'assignInstitutions' ).style.display = 'none';
       }
 
       button.disabled = false;
@@ -33,22 +42,33 @@
   function validate()
   {
     let form = document.forms[1];
-    let transferInstitution = document.getElementById( 'transfer_institution_id' ).value;
-    if ( ! ( transferInstitution > 0 ) )
+    let element = document.getElementById( 'warning' );
+
+    if ( !form.agreement_id || form.agreement_id.value <= 0 )
     {
-      alert( 'Please select a transfer institution' );
+      element.innerHTML = 'Please upload an agreement document first.';
       return false;
     }
 
-    let transfereeInstitution = document.getElementById( 'transferee_institution_id' ).value;
-    if ( ! ( transfereeInstitution > 0 ) )
+    let id1 = form.transfer_institution_id.value;
+    let id2 = form.transferee_institution_id.value;
+
+    if ( !( id1 > 0 ) )
     {
-      alert( 'Please select a transferee institution' );
+      element.innerHTML = 'Please select a transfer institution';
+      form.transfer_institution_id.focus();
       return false;
     }
-    else if ( transferInstitution === transfereeInstitution )
+
+    if ( !( id2 > 0 ) )
     {
-      alert( 'Please select a different transfer/transferee institution.' );
+      element.innerHTML = 'Please select a transferee institution';
+      form.transferee_institution_id.focus();
+      return false;
+    }
+    else if ( id1 === id2 )
+    {
+      element.innerHTML = 'Please select a different transfer/transferee institution.';
       return false;
     }
 
@@ -60,44 +80,60 @@
   <table border="0" cellspacing="5" cellpadding="5">
     <tr>
       <td>
-        <form id="edit" method="post" action="/agreements/edit" onsubmit="return false;">
-          {% if object %}
-          <h2>Edit Agreement</h2>
-          {% else %}
-          <h2>Create Agreement</h2>
-          {% endif %}
-          <h3>Upload agreement document.</h3>
-          <div>
-            <strong>Note:</strong>
-            Filenames of documents being uploaded need to be unique.  It would be very difficult
-            to distinguish between various documents uploaded to the system if file names
-            were not unique.
-          </div>
-          <input name="document" id="document" type="file" required="required" size="50" accept="application/pdf" />
-          {% if object %}
-          <input type="hidden" name="id" value="{{ object.agreement_id }}" />
-          {% endif %}
-        </form>
+        <div id="uploadForm" style="display: inline;">
+          <form id="edit" method="post" 
+                action={% if object %}"/agreements/id/{{ object.id }}/update/document"{% else %}"/agreements/edit"{% endif %}
+                onsubmit="return false;">
+            {% if object %}
+            <h2>Edit Agreement</h2>
+            {% else %}
+            <h2>Create Agreement</h2>
+            {% endif %}
+            <h3>Upload agreement document.</h3>
+            <div>
+              <strong>Note:</strong>
+              Filenames of documents being uploaded need to be unique.  It would be very difficult
+              to distinguish between various documents uploaded to the system if file names
+              were not unique.
+            </div>
+            <input name="document" id="document" type="file" required="required" size="50" accept="application/pdf" />
+            {% if object %}
+            <input type="hidden" name="id" value="{{ object.id }}" />
+            {% endif %}
+          </form>
+        </div>
       </td>
     </tr>
     <tr>
       <td>
-        <form id="institutions" method="post" action="/agreements/institutions" onsubmit="return false;">
-          <label>Transfer Institution</label>
-          <select name="transfer_institution_id" id="transfer_institution_id" required="required">
-            <option value="0">Select Institution</option>
-            {% for institution in institutions %}
-            <option value="{{ institution.institution_id }}">{{ institution.name }}</option>
-            {% endfor %}
-          </select><br />
-          <label>Transferee Institution</label>
-          <select name="transferee_institution_id" id="transferee_institution_id" required="required">
-            <option value="0">Select Institution</option>
-            {% for institution in institutions %}
-            <option value="{{ institution.institution_id }}">{{ institution.name }}</option>
-            {% endfor %}
-          </select>
-        </form>
+        <div id="assignInstitutions" style="display: inline;">
+          <form id="institutions" method="post" action="/agreements/institutions" onsubmit="return false;">
+            <label class="label">Transfer Institution</label>
+            <select name="transfer_institution_id" id="transfer_institution_id" required="required">
+              <option value="0">Select Institution</option>
+              {% for institution in institutions %}
+              <option value="{{ institution.institution_id }}"
+                      {% if institution.institution_id == object.transferInstitution.institution_id %}selected{% endif %}>
+                {{ institution.name }}
+              </option>
+              {% endfor %}
+            </select><br />
+            <label class="label">Transferee Institution</label>
+            <select name="transferee_institution_id" id="transferee_institution_id" required="required">
+              <option value="0">Select Institution</option>
+              {% for institution in institutions %}
+              <option value="{{ institution.institution_id }}"
+                      {% if institution.institution_id == object.transfereeInstitution.institution_id %}selected{% endif %}>
+                {{ institution.name }}
+              </option>
+              {% endfor %}
+            </select>
+            {% if object %}
+            <input type="hidden" name="agreement_id" value="{{ object.id }}" />
+            {% endif %}
+          </form>
+          <div id="warning" class="warning"></div>
+        </div>
         <button id="save" onclick="validate()">Save</button>
       </td>
     </tr>

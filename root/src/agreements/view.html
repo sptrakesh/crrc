@@ -1,53 +1,318 @@
+<script type="text/javascript">
+  var availableTransferPrograms = {{ transferPrograms }};
+  console.log( JSON.stringify( availableTransferPrograms ) );
+  var availableTransfereePrograms = {{ transfereePrograms }};
+  console.log( JSON.stringify( availableTransfereePrograms ) );
+
+  var transferPrograms = [];
+  var obj = null;
+  {% for relation in relations %}
+  transferPrograms.push( { id: {{ relation.transfer_program.program_id }},
+    title: '{{ relation.transfer_program.title }}' } );
+  for ( var i = 0; i < availableTransferPrograms.length; ++i )
+  {
+    if ( availableTransferPrograms[i].program_id === {{ relation.transfer_program.program_id }} )
+    {
+      availableTransferPrograms.splice( i, 1 );
+      break;
+    }
+  }
+  {% endfor %}
+  console.log( `Transfer programs: ${JSON.stringify( transferPrograms )}` );
+
+  var transfereePrograms = [];
+  {% for relation in relations %}
+  transfereePrograms.push( { id: {{ relation.transferee_program.program_id }},
+    title: '{{ relation.transferee_program.title }}' } );
+  for ( var i = 0; i < availableTransfereePrograms.length; ++i )
+  {
+    if ( availableTransfereePrograms[i].program_id === {{ relation.transferee_program.program_id }} )
+    {
+      availableTransfereePrograms.splice( i, 1 );
+      break;
+    }
+  }
+  {% endfor %}
+  console.log( `Transferee programs: ${JSON.stringify( transfereePrograms )}` );
+
+  function createForm()
+  {
+    let form = document.createElement( 'form' );
+    form.id = 'addRelation';
+    form.onsubmit = 'return false;';
+    let objId = document.createElement( 'input' );
+    objId.type = 'hidden';
+    objId.name = 'agreement_id';
+    objId.value = '{{ object.id }}';
+    form.appendChild( objId );
+
+    let trl = document.createElement( 'label' );
+    trl.className = 'label';
+    trl.textContent = 'Transfer Program';
+    form.appendChild( trl );
+
+    let trs = document.createElement( 'select' );
+    trs.name = 'transfer_program_id';
+    trs.required = true;
+    for ( var i = 0; i < availableTransferPrograms.length; ++i )
+    {
+      let opt = document.createElement( 'option' );
+      opt.value = availableTransferPrograms[i].program_id;
+      opt.appendChild( document.createTextNode( availableTransferPrograms[i].title ) );
+      trs.appendChild( opt );
+    }
+    form.appendChild( trs );
+    form.appendChild( document.createElement( 'br' ) );
+
+    let treel = document.createElement( 'label' );
+    treel.className = 'label';
+    treel.textContent = 'Transferee Program';
+    form.appendChild( treel );
+
+    let trees = document.createElement( 'select' );
+    trees.name = 'transferee_program_id';
+    trees.required = true;
+    for ( var i = 0; i < availableTransfereePrograms.length; ++i )
+    {
+      let opt = document.createElement( 'option' );
+      opt.value = availableTransfereePrograms[i].program_id;
+      opt.appendChild( document.createTextNode( availableTransfereePrograms[i].title ) );
+      trees.appendChild( opt );
+    }
+    form.appendChild( trees );
+
+    return form;
+  }
+
+  function addRelation()
+  {
+    let button = document.getElementById( 'relationButton' );
+    let div = document.getElementById( 'relationFormContainer' );
+
+    if ( 'Add Relation' === button.textContent )
+    {
+      div.innerHTML = '';
+      div.appendChild( createForm() );
+      button.textContent = 'Save';
+
+      document.getElementById( 'cancelButton' ).style.display = 'inline';
+      return;
+    }
+
+    function displayWarning( message )
+    {
+      let q = document.createElement( 'q' );
+      q.id = 'warning';
+      q.className = 'warning';
+      q.textContent = message;
+      div.appendChild( q );
+    }
+
+    function removeFromAvailable( id, arr )
+    {
+      for ( var i = 0; i < arr.length; ++i )
+      {
+        if ( arr[i].program_id == id )
+        {
+          console.log( `Found value matching id: ${id} in ${JSON.stringify( arr[i] )}` );
+          arr.splice( i, 1 );
+          break;
+        }
+        console.log( `No value matching id: ${id} in ${arr[i].program_id}` );
+      }
+    }
+
+    function displayMapping( transferProgramId, transferProgramTitle,
+      transfereeProgramId, transfereeProgramTitle )
+    {
+      let parent = document.getElementById( 'relations' );
+      let wrapper = document.createElement( 'div' );
+      wrapper.id = `pr_${transferProgramId}_${transfereeProgramId}`;
+
+      let tp = document.createElement( 'div' );
+      tp.style = 'float:left; width: 45%; display: inline;';
+      let tpa = document.createElement( 'a' );
+      tpa.href = `/programs/id/${transferProgramId}`;
+      tpa.textContent = transferProgramTitle;
+      tp.appendChild( tpa );
+      wrapper.appendChild( tp );
+
+      let rmd = document.createElement( 'div' );
+      rmd.style = 'float: right; display: inline; width: 5%;';
+      let rmb = document.createElement( 'button' );
+      rmb.onclick = function ()
+      {
+        removeRelation( transferProgramId, transfer_programTitle, transfereeProgramId, transfereeProgramTitle );
+      }
+      rmb.textContent = 'Remove';
+      rmd.appendChild( rmb );
+      wrapper.appendChild( rmd );
+
+      let tep = document.createElement( 'div' );
+      tep.style = 'float:left; width: 45%; display: inline;';
+      let tepa = document.createElement( 'a' );
+      tepa.href = `/programs/id/${transfereeProgramId}`;
+      tepa.textContent = transfereeProgramTitle;
+      tep.appendChild( tepa );
+      wrapper.appendChild( tep );
+
+      let clear = document.createElement( 'div' );
+      clear.style = 'clear: both;';
+      wrapper.appendChild( clear );
+      parent.appendChild( wrapper );
+    }
+
+    let form = document.getElementById( 'addRelation' );
+    let transferProgram = form.transfer_program_id;
+    console.log( `Transfer program index: ${transferProgram.selectedIndex}` );
+    let transfereeProgram = form.transferee_program_id;
+    console.log( `Transferee program index: ${transfereeProgram.selectedIndex}` );
+
+    if ( transferProgram.selectedIndex >= 0 && transfereeProgram.selectedIndex >= 0 )
+    {
+      let transferProgramId = transferProgram.options[transferProgram.selectedIndex].value;
+      let transfereeProgramId = transfereeProgram.options[transfereeProgram.selectedIndex].value;
+
+      let xhr = new XMLHttpRequest();
+      xhr.open( 'POST', '/institution/program/relations/edit' );
+      xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+      xhr.onreadystatechange = function ()
+      {
+        if ( 4 === xhr.readyState )
+        {
+          if ( 200 === xhr.status )
+          {
+            console.log( xhr.responseText );
+            button.textContent = 'Add Relation';
+            div.innerHTML = '';
+            document.getElementById( 'cancelButton' ).style.display = 'none';
+
+            removeFromAvailable( transferProgramId, availableTransferPrograms );
+            removeFromAvailable( transfereeProgramId, availableTransfereePrograms );
+
+            let transferProgramTitle = transferProgram.options[transferProgram.selectedIndex].text;
+            let transfereeProgramTitle = transfereeProgram.options[transfereeProgram.selectedIndex].text;
+            displayMapping( transferProgramId, transferProgramTitle, transfereeProgramId, transfereeProgramTitle );
+          }
+          else
+          {
+            console.log( `Error saving program relationship. ${xhr.status}` );
+            displayWarning( 'Unable to save relationship to the server.  Please try again later.' );
+          }
+        }
+      };
+
+      xhr.send( `agreement_id={{ object.id }}&transfer_program_id=${transferProgramId}&transferee_program_id=${transfereeProgramId}` );
+    }
+    else
+    {
+      if ( transferProgram.selectedIndex < 0 ) transferProgram.focus();
+      else if ( transfereeProgram.selectedIndex < 0 ) transfereeProgram.focus();
+
+      displayWarning( 'Please select both transfer and transferee programs' );
+    }
+  }
+
+  function hideForm()
+  {
+    let div = document.getElementById( 'relationFormContainer' );
+    div.innerHTML = '';
+    document.getElementById( 'cancelButton' ).style.display = 'none';
+    document.getElementById( 'relationButton' ).textContent = 'Add Relation';
+  }
+
+  function removeRelation( transferProgramId, title1, transfereeProgramId, title2 )
+  {
+    console.log( `Remove row with transfer program: ${transferProgramId}, transferee program: ${transfereeProgramId}` );
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/institution/program/relations/remove' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onreadystatechange = function ()
+    {
+      if ( 4 === xhr.readyState )
+      {
+        if ( 200 === xhr.status && xhr.responseText === "true" )
+        {
+          let element = document.getElementById( `pr_${transferProgramId}_${transfereeProgramId}` );
+          element.parentNode.removeChild( element );
+
+          for ( var i = 0; i < transferPrograms.length; ++i )
+          {
+            if ( transferPrograms[i].id == transferProgramId )
+            {
+              transfereePrograms.splice( i, 1 );
+              break;
+            }
+          }
+
+          for ( var i = 0; i < transfereePrograms.length; ++i )
+          {
+            if ( transfereePrograms[i].id == transfereeProgramId )
+            {
+              transfereeeePrograms.splice( i, 1 );
+              break;
+            }
+          }
+
+          availableTransferPrograms.push( { program_id: transferProgramId, title: title1 } );
+          availableTransfereePrograms.push( { program_id: transfereeProgramId, title: title2 } );
+          console.log( `Removed relationship for agreement: {{ object.id }}, transfer program: ${transferProgramId}, transferee program: ${transfereeProgramId}.` );
+        }
+        else console.log( `Could not remove relationship for agreement: {{ object.id }}, transfer program: ${transferProgramId}, transferee program: ${transfereeProgramId}.` );
+      }
+    };
+    xhr.send( `agreement_id={{ object.id }}&transfer_program_id=${transferProgramId}&transferee_program_id=${transfereeProgramId}` );
+  }
+</script>
+
 <div>
-<h3>Title: {{ object.filename }}</h3>
-<strong>Size:</strong> {{ object.filesize }}<br/>
-<strong>Type:</strong> {{ object.mimetype }}<br/>
-<div>
-Click <a href="/agreements/id/{{ object.id }}/display">{{ object.filename }}</a>
-to view/download the articulation agreement.<br/>
-</div>
-<div>
-<form id="details" method="post" action="/agreements/id/{{ object.id }}/update" style="display: inline-block; float: left;">
-<input type="submit" value="Edit"/>
-</form>
-<form action="/agreements/remove" method="post" style="display: inline-block; float: right;">
-<input type="hidden" name="id" value="{{ object.id }}"/>
-<input type="submit" value="Delete" />
-<div style="clear: both;"></div>
-</form>
-</div>
-<br/>
-<h3>Institutional Program Relations</h3>
-<table border="0" cellpadding="5" cellspacing="0">
-<thead>
-<tr>
-<th colspan="2">Transfer</th><th colspan="2">Transferee</th>
-</tr>
-<tr>
-<th>Institution</th><th>Program</th><th>Institution</th><th>Program</th><th>Delete</th>
-</tr>
-</thead>
-<tbody>
-{% for relation in relations %}
-<tr>
-<td><a href="/institutions/id/{{ relation.transfer_program.institution.institution_id }}/view">{{ relation.transfer_program.institution.name }}</a></td>
-<td><a href="/programs/id/{{ relation.transfer_program.program_id }}/view">{{ relation.transfer_program.title }}</a></td>
-<td><a href="/institutions/id/{{ relation.transferee_program.institution.institution_id }}/view">{{ relation.transferee_program.institution.name }}</a></td>
-<td><a href="/programs/id/{{ relation.transferee_program.program_id }}/view">{{ relation.transferee_program.title }}</a></td>
-<td>
-<form method="post" action="/institution/program/relations/remove" style="display: inline-block;">
-<input type="hidden" name="agreement_id" value="{{ relation.agreement_id }}"/>
-<input type="hidden" name="transfer_program_id" value="{{ relation.transfer_program.program_id }}"/>
-<input type="hidden" name="transferee_program_id" value="{{ relation.transferee_program.program_id }}"/>
-<input type="submit" value="Delete" />
-</form>
-</td>
-</tr>
-{% endfor %}
-</tbody>
-</table>
-<form action="/institution/program/relations/id/{{ object.id }}/create" method="post" style="display: inline-block;">
-<input type="hidden" name="id" value="{{ object.id }}"/>
-<input type="submit" value="Add Relation" />
-</form>
+  <h3>Title: {{ object.filename }}</h3>
+  <h3>Transfer Institution: {{ object.transferInstitution.name }}</h3>
+  <h3>Transferee Institution: {{ object.transfereeInstitution.name }}</h3>
+  <strong>Size:</strong> {{ object.filesize }}<br />
+  <strong>Type:</strong> {{ object.mimetype }}<br />
+  <div>
+    Click <a href="/agreements/id/{{ object.id }}/display">{{ object.filename }}</a>
+    to view/download the articulation agreement.<br />
+  </div>
+  <div>
+    <form id="details" method="post" action="/agreements/id/{{ object.id }}/update" style="display: inline-block; float: left;">
+      <input type="submit" value="Edit" />
+    </form>
+    <form action="/agreements/remove" method="post" style="display: inline-block; float: right;">
+      <input type="hidden" name="id" value="{{ object.id }}" />
+      <input type="submit" value="Delete" />
+      <div style="clear: both;"></div>
+    </form>
+  </div>
+  <br />
+  <h3>Institutional Program Relations</h3>
+  <div id="programHeadings">
+    <div style="float:left; width: 45%; display: inline;"><h4>Transfer Program</h4></div>
+    <div style="float: right; display: inline; width: 5%;"><h4>&nbsp;</h4></div>
+    <div style="float:left; width: 45%; display: inline;"><h4>Transferee Program</h4></div>
+    <div style="clear: both;"></div>
+  </div>
+  <div id="relations">
+    {% for relation in relations %}
+    <div id="pr_{{ relation.transfer_program.program_id }}_{{ relation.transferee_program.program_id }}">
+      <div style="float:left; width: 45%; display: inline;">
+        <a href="/programs/id/{{ relation.transfer_program.program_id }}">{{ relation.transfer_program.title }}</a>
+      </div>
+      <div style="float: right; display: inline; width: 5%;">
+        <button onclick="removeRelation({{ relation.transfer_program.program_id }}, '{{ relation.transfer_program.title }}', {{ relation.transferee_program.program_id }}, '{{ relation.transferee_program.title }}')">Remove</button>
+      </div>
+      <div id="transfereeProgram" style="float:left; width: 45%; display: inline;">
+        <a href="/programs/id/{{ relation.transferee_program.program_id }}">{{ relation.transferee_program.title }}</a>
+      </div>
+      <div style="clear: both;"></div>
+    </div>
+    {% endfor %}
+  </div>
+  <div id="relationFormContainer">
+  </div>
+  <div id="buttonsDiv">
+    <button id="relationButton" onclick="addRelation()">Add Relation</button>
+    <button id="cancelButton" style="display: none;" onclick="hideForm()">Cancel</button>
+  </div>
 </div>
