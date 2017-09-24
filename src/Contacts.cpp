@@ -3,15 +3,20 @@
 #include "dao/InstitutionDAO.h"
 #include "dao/UserDAO.h"
 #include "dao/RoleDAO.h"
+#include "dao/functions.h"
+
+#include <QtCore/QDebug>
 
 using crrc::Contacts;
 
 void Contacts::index( Cutelyst::Context* c ) const
 {
   dao::ContactDAO dao;
+  const auto& list = dao::isGlobalAdmin( c ) ? dao.retrieveAll() :
+    dao.retrieveByInstitution( dao::institutionId( c ) );
 
   c->stash( {
-    { "contacts", dao.retrieveAll() },
+    { "contacts", list },
     { "template", "contacts/index.html" }
   } );
 }
@@ -26,14 +31,35 @@ void Contacts::object( Cutelyst::Context* c, const QString& id ) const
 {
   dao::ContactDAO dao;
   const auto obj = dao.retrieve( id );
-  c->setStash( "object", obj );
+
+  switch ( dao::roleId( c ) )
+  {
+  case 1:
+    c->setStash( "object", obj );
+    break;
+  default:
+    auto iid = obj.value( "institution" ).toHash().value( "institution_id" ).toInt();
+    if ( !iid ) iid = -1;
+    c->setStash( "object",
+      ( static_cast<uint32_t>( iid ) == dao::institutionId( c ) ) ? obj : QVariantHash() );
+  }
 }
 
 void Contacts::create( Cutelyst::Context* c ) const
 {
+  if ( dao::isGlobalAdmin( c ) )
+  {
+    c->setStash( "institutions", dao::InstitutionDAO().retrieveAll( dao::InstitutionDAO::Mode::Partial ) );
+  }
+  else
+  {
+    QVariantList list;
+    list << c->stash( "userInstitution" ).toHash();
+    c->setStash( "institutions", list );
+  }
+
   c->stash( {
     { "template", "contacts/form.html" },
-    { "institutions", dao::InstitutionDAO().retrieveAll( dao::InstitutionDAO::Mode::Partial ) },
     { "roles", dao::RoleDAO().retrieveAll() }
   } );
 }
@@ -48,10 +74,22 @@ void Contacts::edit( Cutelyst::Context* c ) const
     return;
   }
 
-  dao::ContactDAO dao;
+  const dao::ContactDAO dao;
+
+  if ( ! dao::isGlobalAdmin( c ) )
+  {
+    auto iid = c->request()->param( "institution" ).toInt();
+    if ( !iid ) iid = -1;
+    if ( static_cast<int32_t>( iid ) != dao::institutionId( c ) )
+    {
+      c->stash()["error_msg"] = "Institution does not match current user!";
+      return;
+    }
+  }
+
   if ( id.isEmpty() )
   {
-    auto cid = dao.insert( c );
+    const auto cid = dao.insert( c );
     id = QString::number( cid );
   }
   else dao.update( c );
@@ -87,6 +125,13 @@ void Contacts::search( Cutelyst::Context* c ) const
 
 void Contacts::remove( Cutelyst::Context* c )
 {
+  if ( ! dao::isGlobalAdmin( c ) )
+  {
+    c->stash()["status_msg"] = "Unauthorized to edit contacts";
+    c->response()->redirect( "/contacts" );
+    return;
+  }
+
   auto id = c->request()->param( "id", "" );
   QString statusMsg;
 
@@ -103,7 +148,9 @@ void Contacts::remove( Cutelyst::Context* c )
 
 void Contacts::isUsernameAvailable( Cutelyst::Context* c )
 {
-  const auto status = dao::UserDAO().isUsernameAvailable( c->request()->param( "username" ) );
+  const auto status = dao::isGlobalAdmin( c ) ?
+    dao::UserDAO().isUsernameAvailable( c->request()->param( "username" ) ) :
+    false;
   const QString string = status ? "true" : "false";
   c->response()->setContentType( "text/plain" );
   c->response()->setContentLength( string.size() );

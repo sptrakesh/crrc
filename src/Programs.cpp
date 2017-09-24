@@ -2,13 +2,17 @@
 #include "dao/ProgramDAO.h"
 #include "dao/InstitutionDAO.h"
 #include "dao/DegreeDAO.h"
+#include "dao/functions.h"
 
 using crrc::Programs;
 
 void Programs::index( Cutelyst::Context* c ) const
 {
+  const auto& list = dao::isGlobalAdmin( c ) ? 
+    dao::ProgramDAO().retrieveAll() :
+    dao::ProgramDAO().retrieveByInstitution( dao::institutionId( c ) );
   c->stash( {
-    { "programs", dao::ProgramDAO().retrieveAll() },
+    { "programs", list },
     { "template", "programs/index.html" }
   } );
 }
@@ -21,15 +25,28 @@ void Programs::base( Cutelyst::Context* c ) const
 
 void Programs::object( Cutelyst::Context* c, const QString& id ) const
 {
-  dao::ProgramDAO dao;
-  c->setStash( "object", dao.retrieve( id ) );
+  const auto& obj = dao::ProgramDAO().retrieve( id );
+
+  int32_t iid = dao::institutionId( c );
+  if ( !iid ) iid = -1;
+
+  if ( dao::isGlobalAdmin( c ) || 
+    iid == obj.value( "institution" ).toHash().value( "institution_id" ).toInt() )
+  {
+    c->setStash( "object", obj );
+  }
 }
 
 void Programs::create( Cutelyst::Context* c ) const
 {
+  const auto mode = dao::InstitutionDAO::Mode::Partial;
+  const auto& list = dao::isGlobalAdmin( c ) ?
+    dao::InstitutionDAO().retrieveAll( mode ) :
+    QVariantList( { dao::InstitutionDAO().retrieve( QString::number( dao::institutionId( c ) ), mode ) } );
+
   c->stash( {
     { "template", "programs/form.html" },
-    { "institutions", dao::InstitutionDAO().retrieveAll( dao::InstitutionDAO::Mode::Partial ) },
+    { "institutions", list },
     { "degrees", dao::DegreeDAO().retrieveAll() }
   } );
 }
@@ -44,10 +61,12 @@ void Programs::edit( Cutelyst::Context* c ) const
     return;
   }
 
+  if ( !checkInstitution( c ) ) return;
+
   dao::ProgramDAO dao;
   if ( id.isEmpty() )
   {
-    auto cid = dao.insert( c );
+    const auto cid = dao.insert( c );
     id = QString::number( cid );
   }
   else dao.update( c );
@@ -56,11 +75,6 @@ void Programs::edit( Cutelyst::Context* c ) const
     { "template", "programs/view.html" },
     { "object", dao.retrieve( id ) }
   } );
-}
-
-void Programs::view( Cutelyst::Context* c ) const
-{
-  c->setStash( "template", "programs/view.html" );
 }
 
 void Programs::search( Cutelyst::Context* c ) const
@@ -83,16 +97,37 @@ void Programs::search( Cutelyst::Context* c ) const
 
 void Programs::remove( Cutelyst::Context* c )
 {
-  auto id = c->request()->param( "id", "" );
-  QString statusMsg;
+  if ( !checkInstitution( c ) ) return;
+
+  auto id = c->request()->param( "program_id", "" );
+  QJsonObject json;
+  json.insert( "id", id );
 
   if ( ! id.isEmpty() )
   {
-    dao::ProgramDAO dao;
-    statusMsg = dao.remove( id.toUInt() );
+    json.insert( "message", dao::ProgramDAO().remove( id.toUInt() ) );
+    json.insert( "status", true );
   }
-  else statusMsg = "No program identifier specified!";
+  else
+  {
+    json.insert( "message", "No program identifier specified!" );
+    json.insert( "status", false );
+  }
 
-  c->stash()["status_msg"] = statusMsg;
-  c->response()->redirect( "/programs" );
+  dao::sendJson( c, json );
+}
+
+bool Programs::checkInstitution( Cutelyst::Context* context ) const
+{
+  if ( dao::isGlobalAdmin( context ) ) return true;
+
+  auto iid = context->request()->param( "institution" ).toInt();
+  if ( !iid ) iid = -1;
+  if ( static_cast<int32_t>( iid ) != dao::institutionId( context ) )
+  {
+    context->stash()["error_msg"] = "Institution does not match current user!";
+    return false;
+  }
+
+  return true;
 }

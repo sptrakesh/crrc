@@ -29,13 +29,13 @@ namespace crrc
     C_ATTR( edit, :Chained( "base" ) : PathPart( "edit" ) : Args( 0 ) )
     void edit( Cutelyst::Context* c ) const;
 
-    C_ATTR( view, :Chained( "object" ) : PathPart( "view" ) : Args( 0 ) )
-    void view( Cutelyst::Context* c ) const;
-
     C_ATTR( search, :Chained( "base" ) : PathPart( "search" ) : Args( 0 ) )
     void search( Cutelyst::Context* c ) const;
 
     C_ATTR( remove, :Chained( "base" ) : PathPart( "remove" ) : Args( 0 ) )
     void remove( Cutelyst::Context* c );
+
+  private:
+    bool checkInstitution( Cutelyst::Context* context ) const;
   };
 }

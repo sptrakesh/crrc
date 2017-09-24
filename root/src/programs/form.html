@@ -1,72 +1,62 @@
-<div style="display: flex; margin: auto; width: 90%; padding: 10px;">
-<form id="edit" method="post" action="/programs/edit">
-{% if object %}
-<h2>Edit Program</h2>
-{% else %}
-<h2>Create Program</h2>
-{% endif %}
-  
-<table>
+<script type="text/javascript">
+  function saveProgram( form )
+  {
+    if ( ! form.institution.value > 0 )
+    {
+      let element = document.getElementById( 'warning' );
+      element.innerText = 'Please select a valid institution';
+      element.style.display = 'inline';
+      form.institution.focus();
+      return false;
+    }
 
-<tr>
-<td align="right">Title:</td>
-<td><input name="title" id="title" type="text" size="35" width="50" required="required"
-{% if object %}
-value="{{ object.title }}"
-{% endif %}
-/></td>
-</tr>
-  
-<tr>  
-<td align="right">Credits:</td>
-<td><input name="credits" id="credits" type="text" size="35" width="250"
-{% if object %}
-value="{{ object.credits }}"
-{% endif %}
-/></td>
-</tr>
-  
-  
-<tr>
-<td align="right">Institution:</td>
-<td><select name="institution" id="institution">
-<option value="0">Select Institution</option>
-{% for institution in institutions %}
-<option value="{{ institution.institution_id }}"
-{% ifequal institution.institution_id object.institution.institution_id %}
-selected="selected"
-{% endifequal %}
->{{ institution.name}}
-{% if institution.city %}
-({{ institution.city}})
-{% endif %}
-</option>
-{% endfor %}
-</select>
-</td>
-</tr>
-  
-  
-<tr>
-<td align="right">Degree:</td>
-<td><select name="degree" id="degree">
-<option value="0">Select Degree</option>
-{% for degree in degrees %}
-<option value="{{ degree.degree_id }}"
-{% ifequal degree.degree_id object.degree.degree_id %}
-selected="selected"
-{% endifequal %}
->{{ degree.title}}</option>
-{% endfor %}
-</select>
-</td>
-</tr>
-  
-  
-</table>
-{% if object %}
-<input type="hidden" name="id" value="{{ object.program_id }}"/>
-{% endif %}
-<input type="submit" value="Save"/>
-</form>
+    return true;
+  }
+</script>
+
+<div style="display: flex; margin: auto; width: 90%; padding: 10px;">
+  <form id="edit" method="post" action="/programs/edit" onsubmit="return saveProgram( this );">
+    {% if object %}
+    <h2>Edit Program</h2>
+    {% else %}
+    <h2>Create Program</h2>
+    {% endif %}
+
+    <label class="label">Title:</label>
+    <input name="title" id="title" type="text" size="35" width="50" required="required"
+           {% if object %}value="{{ object.title }}"{% endif %} />
+    <br/>
+    <label class="label">Credits:</label>
+    <input name="credits" id="credits" type="text" size="35" width="250"
+           {% if object %}value="{{ object.credits }}"{% endif %} />
+    <br/>
+    <label class="label">Institution:</label>
+    <select name="institution" id="institution">
+      <option value="0">Select Institution</option>
+      {% for institution in institutions %}
+      <option value="{{ institution.institution_id }}"
+              {% if institution.institution_id == object.institution.institution_id %}selected="selected"{% endif %}>
+        {{ institution.name}} {% if institution.city %}({{ institution.city}}){% endif %}
+      </option>
+      {% endfor %}
+    </select>
+    <br/>
+    <label class="label">Degree:</label>
+    <select name="degree" id="degree">
+      <option value="0">Select Degree</option>
+      {% for degree in degrees %}
+      <option value="{{ degree.degree_id }}"
+              {% if degree.degree_id == object.degree.degree_id %}selected="selected"{% endif %}>
+        {{ degree.title}}
+      </option>
+      {% endfor %}
+    </select>
+    <br/>
+    {% if object %}
+    <input type="hidden" name="id" value="{{ object.program_id }}" />
+    {% endif %}
+    <input type="submit" value="Save" />
+    <br/>
+    <q id="warning" class="warning" style="display: none;"></q>
+  </form>
 </div>

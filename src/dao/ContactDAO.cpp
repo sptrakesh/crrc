@@ -7,6 +7,7 @@
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
+#include "functions.h"
 
 
 namespace crrc
@@ -191,6 +192,33 @@ QVariantHash ContactDAO::retrieve( const QString& id, const Mode& mode ) const
     transform( iter.value(), mode ) : QVariantHash();
 }
 
+QVariantHash ContactDAO::retrieveByUser( uint32_t id, const Mode& mode ) const
+{
+  loadContacts();
+
+  for ( const auto& contact : contacts )
+  {
+    if ( id == contact.userId.toUInt() ) return transform( contact, mode );
+  }
+
+  return QVariantHash();
+}
+
+QVariantList ContactDAO::retrieveByInstitution( uint32_t id, const Mode& mode ) const
+{
+  QVariantList list;
+  if ( !id ) return list;
+
+  loadContacts();
+
+  for ( const auto& contact : contacts )
+  {
+    if ( id == contact.institutionId.toUInt() ) list << transform( contact, mode );
+  }
+
+  return list;
+}
+
 uint32_t ContactDAO::insert( Cutelyst::Context* context ) const
 {
   loadContacts();
@@ -238,11 +266,15 @@ void ContactDAO::update( Cutelyst::Context* context ) const
 QVariantList ContactDAO::search( Cutelyst::Context* context, const Mode& mode ) const
 {
   loadContacts();
+
+  bool ignoreCheck = isGlobalAdmin( context );
+  const uint32_t iid = ( ignoreCheck ) ? 0 : institutionId( context );
+
   const auto text = context->request()->param( "text", "" );
   const QString clause = "%" % text % "%";
 
   auto query = CPreparedSqlQueryThreadForDB(
-   "select contact_id from contacts where name like :text order by name",
+   "select contact_id, institution_id from contacts where name like :text order by name",
     DATABASE_NAME );
 
   query.bindValue( ":text", clause );
@@ -252,8 +284,12 @@ QVariantList ContactDAO::search( Cutelyst::Context* context, const Mode& mode ) 
   {
     while ( query.next() )
     {
-      auto contact = retrieve( query.value( 0 ).toString(), mode );
-      list.append( contact );
+      const auto qid = query.value( 1 ).toUInt();
+      if ( ignoreCheck || qid == iid )
+      {
+        auto contact = retrieve( query.value( 0 ).toString(), mode );
+        list.append( contact );
+      }
     }
   }
   else

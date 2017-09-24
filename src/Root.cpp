@@ -1,4 +1,6 @@
 #include "Root.h"
+#include "dao/ContactDAO.h"
+#include "dao/UserDAO.h"
 
 #include <QtCore/QtDebug>
 #include <QtNetwork/QNetworkCookie>
@@ -28,7 +30,16 @@ bool Root::Auto( Cutelyst::Context* c )
   const auto& user = Cutelyst::Authentication::user( c );
   if ( ! user.isEmpty() )
   {
-    c->setStash( "user", user );
+    const auto& u = dao::UserDAO().retrieve( user.value( "user_id" ).toString() );
+    const auto& contact = dao::ContactDAO().retrieveByUser( user.value( "user_id" ).toUInt() );
+    const auto& institution = contact.value( "institution" );
+
+    c->stash({
+      { "user", u },
+      { "userInstitution", institution },
+      { "globalAdminRole", 1u },
+      { "institutionAdminRole", 2u }
+    } );
     return true;
   }
 

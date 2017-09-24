@@ -1,3 +1,53 @@
+<script type="text/javascript">
+  function displayProgram( programId )
+  {
+    document.getElementById( `pv_${programId}` ).style.display = 'inline';
+    return false;
+  }
+
+  function hideProgram( programId )
+  {
+    document.getElementById( `pv_${programId}` ).style.display = 'none';
+  }
+
+  function deleteProgram( programId )
+  {
+    function displayWarning()
+    {
+      let warning = document.getElementById( `pw_${programId}` );
+      warning.style.display = 'inline';
+      warning.innerText = 'Unable to delete program.  Please try again later.'
+    }
+
+    if ( !confirm( 'Do you wish to permanently delete program?' ) ) return false;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/programs/remove' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status )
+        {
+          let element = document.getElementById( `p_${programId}` );
+          element.parentNode.removeChild( element );
+        }
+        else displayWarning();
+      }
+      else
+      {
+        console.log( `Delete program response status: ${xhr.status} ${xhr.statusText} text: ${xhr.responseText }` );
+        displayWarning();
+      }
+    };
+    xhr.send( `program_id=${programId}` );
+    return false;
+  }
+</script>
+
 <div>
   <h2>Manage Programs</h2>
   <div>
@@ -13,13 +63,28 @@
   {% if searchText %}
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
-  <ul>
+  <div id="programs">
     {% for program in programs %}
-    <li><a href="/programs/id/{{ program.program_id }}/view">{{ program.title }}</a> - <form action="/programs/remove" method="post" style="display: inline-block;">
-      <input type="hidden" name="id" value="{{ program.program_id }}"/>
-      <input type="submit" value="Delete" />
-    </form>
-    </li>
-  </ul>
-  {% endfor %}
+    <div id="p_{{ program.program_id }}">
+      <a href="#" onclick="return displayProgram( {{ program.program_id }} );">{{ program.title }}</a>
+      <div id="pv_{{ program.program_id }}" style="display: none;">
+        <br/>
+        {% if program.credits %}
+        <strong>Credits:</strong> {{ program.credits }}<br/>
+        {% endif %}
+        {% if program.institution %}
+        <strong>Institution:</strong> <a href="/institutions/id/{{ program.institution.institution_id }}/view">{{ program.institution.name }}</a><br/>
+        {% endif %}
+        {% if program.degree %}
+        <strong>Degree:</strong> <a href="/degrees/id/{{ program.degree.degree_id }}/view">{{ program.degree.title }}</a><br/>
+        {% endif %}
+        <button onclick="hideProgram( {{ program.program_id }} )">Close</button>
+        <button onclick="window.location.href='/programs/id/{{ program.program_id }}/update'">Edit</button>
+        <button onclick="deleteProgram( {{ program.program_id }} )">Delete</button>
+        <br/>
+        <q id="pw_{{ program.program_id }}" class="warning" style="display: none;"></q>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
 </div>

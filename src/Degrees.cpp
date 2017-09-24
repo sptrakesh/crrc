@@ -1,5 +1,6 @@
 #include "Degrees.h"
 #include "dao/DegreeDAO.h"
+#include "dao/functions.h"
 
 #include <QtCore/QDebug>
 #include <QtCore/QJsonDocument>
@@ -8,8 +9,7 @@ using crrc::Degrees;
 
 void Degrees::index( Cutelyst::Context* c ) const
 {
-  dao::DegreeDAO dao;
-  c->setStash( "degrees", dao.retrieveAll() );
+  c->setStash( "degrees", dao::DegreeDAO().retrieveAll() );
   c->setStash( "template", "degrees/index.html" );
 }
 
@@ -26,16 +26,24 @@ void Degrees::object( Cutelyst::Context* c, const QString& id ) const
 
 void Degrees::edit( Cutelyst::Context* c ) const
 {
+  if ( ! crrc::dao::isGlobalAdmin( c ) )
+  {
+    QJsonObject obj;
+    obj.insert( "status", false );
+    obj.insert( "message", "Unauthorized" );
+    dao::sendJson( c, obj );
+    return;
+  }
+
   auto id = c->request()->param( "degree_id", "" );
   const auto title = c->request()->param( "title", "" );
-  qDebug() << "Processing POST with id: " << id << ", title: " << title;
   QJsonObject obj;
 
-  if ( title.isEmpty() )
+  if ( title.isEmpty() || title.contains( "'" ) || title.contains( '"' ) )
   {
     obj.insert( "status", false );
     obj.insert( "id", id );
-    sendJson( c, obj );
+    dao::sendJson( c, obj );
     return;
   }
 
@@ -55,7 +63,7 @@ void Degrees::edit( Cutelyst::Context* c ) const
     obj.insert( "id", id );
   }
 
-  sendJson( c, obj );
+  dao::sendJson( c, obj );
 }
 
 void Degrees::view( Cutelyst::Context* c ) const
@@ -86,25 +94,16 @@ void Degrees::remove( Cutelyst::Context* c ) const
   auto id = c->request()->param( "degree_id", "" );
   QJsonObject obj;
 
-  if ( ! id.isEmpty() )
-  {
-    auto const result = dao::DegreeDAO().remove( id.toUInt() );
-    obj.insert( "count", static_cast<int>( result ) );
-    obj.insert( "id", id.toInt() );
-    obj.insert( "status", true );
-  }
-  else
+  if ( id.isEmpty() || ! dao::isGlobalAdmin( c ) )
   {
     obj.insert( "status", false );
+    dao::sendJson( c, obj );
+    return;
   }
 
-  sendJson( c, obj );
-}
-
-void Degrees::sendJson( Cutelyst::Context* c, const QJsonObject& obj ) const
-{
-  const auto bytes = QJsonDocument( obj ).toJson();
-  c->response()->setContentType( "application/json" );
-  c->response()->setContentLength( bytes.size() );
-  c->response()->setBody( bytes );
+  auto const result = dao::DegreeDAO().remove( id.toUInt() );
+  obj.insert( "count", static_cast<int>( result ) );
+  obj.insert( "id", id.toInt() );
+  obj.insert( "status", true );
+  dao::sendJson( c, obj );
 }

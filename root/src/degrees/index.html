@@ -15,6 +15,7 @@
     document.getElementById( `dv_${degreeId}` ).style.display = 'none';
   }
 
+{% if user.role.role_id == globalAdminRole %}
   function displayForm( degreeId )
   {
     document.getElementById( `de_${degreeId}` ).style.display = 'inline';
@@ -30,16 +31,16 @@
       <button onclick="deleteDegree( ${json.id}, '${form.title.value}' )">Delete</button>
       <button onclick="hideDegree( ${json.id} )">Close</button>
       <br/>
-      <q id="dw_${json.id}" class="warning"></q>
+      <q id="dw_${json.id}" class="warning" style="display: none;"></q>
     </div>
     <div id="de_${json.id}" style="display: none;">
-      <form id="df_${json.id}" onsubmit="return false;">
+      <form id="df_${json.id}" onsubmit="return update( ${json.id}, '${form.title.value}' );">
         <input type="hidden" name="degree_id" value="${json.id}" />
         <label class="label">Title:</label>
-        <input type="text" name="title" value="${form.title.value}" required/><br/>
+        <input type="text" name="title" value="${form.title.value}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
         <label class="label">Duration:</label>
         <input type="text" name="duration" value="${form.duration.value}" /><br/>
-        <button onclick="update( ${json.id}, '${form.title.value}' )">Save</button>
+        <input type="submit" value="Save" />
         <button onclick="hideForm( ${json.id} )">Close</button>
       </form>
     </div>`;
@@ -53,7 +54,15 @@
 
   function update( degreeId, currentTitle )
   {
+    function showWarning( message )
+    {
+      let cw = document.getElementById( `dw_${degreeId}` )
+      cw.innerText = message;
+      cs.style.display = 'inline';
+    }
+
     let form = document.getElementById( `df_${degreeId}` );
+    if ( !form.title.validity.valid ) return false;
 
     let xhr = new XMLHttpRequest();
     xhr.open( 'POST', `/degrees/id/${degreeId}/update` );
@@ -78,19 +87,22 @@
         }
         else
         {
-          document.getElementById( `dw_${degreeId}` ).innerText = 'Unable to update degree.  Please try again later.';
+          showWarning( 'Unable to update degree with specified values.  Please try changing the title without any quote characters.' );
         }
       }
       else
       {
-        document.getElementById( `dw_${degreeId}` ).innerText = 'Unable to update degree.  Please try again later.';
+        showWarning( 'Unable to update degree.  Please try again later.' );
       }
     };
     xhr.send( encodeURI( `degree_id=${degreeId}&title=${form.title.value}&duration=${form.duration.value}` ) );
+
+    return false;
   }
 
   function deleteDegree( degreeId, title )
   {
+    if ( !confirm( `Do you wish to permanently delete ${title}?` ) ) return false;
     let xhr = new XMLHttpRequest();
     xhr.open( 'POST', '/degrees/remove' );
     xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
@@ -131,9 +143,14 @@
     document.getElementById( 'createButton' ).style.display = 'none';
   }
 
-  function createDegree()
+  function createDegree( form )
   {
-    let form = document.getElementById( 'createDegree' );
+    function showWarning( message )
+    {
+      let cw = document.getElementById( 'createWarning' );
+      cw.style.display = inline;
+      cw.innerText = message;
+    }
 
     if ( titles.indexOf( form.title.value ) === -1 )
     {
@@ -155,20 +172,22 @@
           }
           else
           {
-            document.getElementById( 'createWarning' ).innerText = 'Unable to create degree.  Please try again later.';
+            showWarning( 'Unable to create degree.  Please try again later.' );
           }
         }
         else
         {
-          document.getElementById( 'createWarning' ).innerText = 'Unable to create degree.  Please try again later.';
+          showWarning( 'Unable to access server.  Please try again later.' );
         }
       };
       xhr.send( encodeURI( `title=${form.title.value}&duration=${form.duration.value}` ) );
     }
     else
     {
-      document.getElementById( 'createWarning' ).innerText =  `Course with title: ${form.title.value} exists.`;
+      showWarning( `Course with title: ${form.title.value} exists.` );
     }
+
+    return false;
   }
 
   function hideCreate()
@@ -179,6 +198,7 @@
     form.title.value = '';
     form.duration.value = '';
   }
+{% endif %}
 </script>
 
 <div>
@@ -205,20 +225,22 @@
         {% if degree.duration %}
         <strong>Duration:</strong> {{ degree.duration }}<br/>
         {% endif %}
+        {% if user.role.role_id == globalAdminRole %}
         <button onclick="displayForm( {{ degree.degree_id }} )">Edit</button>
         <button onclick="deleteDegree( {{ degree.degree_id }}, '{{ degree.title }}' )">Delete</button>
+        {% endif %}
         <button onclick="hideDegree( {{ degree.degree_id }} )">Close</button>
         <br/>
-        <q id="dw_{{ degree.degree_id }}" class="warning"></q>
+        <q id="dw_{{ degree.degree_id }}" class="warning" style="display: none;"></q>
       </div>
       <div id="de_{{ degree.degree_id }}" style="display: none;">
-        <form id="df_{{ degree.degree_id }}" onsubmit="return false;">
+        <form id="df_{{ degree.degree_id }}" onsubmit="return update( {{ degree.degree_id }}, '{{ degree.title }}' );">
           <input type="hidden" name="degree_id" value="{{ degree.degree_id }}" />
           <label class="label">Title:</label>
-          <input type="text" name="title" value="{{ degree.title }}" required/><br/>
+          <input type="text" name="title" value="{{ degree.title }}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
           <label class="label">Duration:</label>
           <input type="text" name="duration" value="{{ degree.duration }}" /><br/>
-          <button onclick="update( {{ degree.degree_id }}, '{{ degree.title }}' )">Save</button>
+          <input type="submit" value="Save" />
           <button onclick="hideForm( {{ degree.degree_id }} )">Close</button>
         </form>
       </div>
@@ -226,18 +248,20 @@
     {% endfor %}
   </div>
   <div id="create" style="display:none">
-    <form id="createDegree" onsubmit="return false;">
+    <form id="createDegree" onsubmit="return createDegree(this);">
       <label class="label">Title:</label>
-      <input type="text" name="title" required/>
+      <input type="text" name="title" required pattern="[^'\x22]+" title="Quotes not allowed"/>
       <br/>
       <label class="label">Duration:</label>
       <input type="text" name="duration" />
       <br/>
-      <button onclick="createDegree()">Create</button>
+      <input type="submit" value="Create"/>
       <button onclick="hideCreate()">Cancel</button>
     </form>
-    <q id="createWarning" class="warning"></q>
+    <q id="createWarning" class="warning" style="display: none;"></q>
   </div>
+  {% if user.role.role_id == globalAdminRole %}
   <br/>
   <button id="createButton" onclick="displayCreate()">Add Degree</button>
+  {% endif %}
 </div>

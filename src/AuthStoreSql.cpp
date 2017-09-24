@@ -1,5 +1,6 @@
 #include "AuthStoreSql.h"
 #include "dao/UserDAO.h"
+#include <QtCore/QDebug>
 
 using crrc::AuthStoreSql;
 
