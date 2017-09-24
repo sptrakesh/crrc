@@ -151,6 +151,24 @@ QVariantList AgreementDAO::retrieveAll( const Mode& mode ) const
   return fromAgreements( mode );
 }
 
+QVariantList AgreementDAO::retrieveByInstitution( uint32_t id, const Mode& mode ) const
+{
+  loadAgreements();
+  QVariantList list;
+  if ( !id ) return list;
+
+  for ( const auto& agreement : agreements )
+  {
+    if ( id == agreement.transferInstitutionId.toUInt() || 
+      id == agreement.transfereeInstitutionId.toUInt() )
+    {
+      list << transform( agreement, mode );
+    }
+  }
+
+  return list;
+}
+
 QVariantHash AgreementDAO::retrieve( const QString& id, const Mode& mode ) const
 {
   loadAgreements();

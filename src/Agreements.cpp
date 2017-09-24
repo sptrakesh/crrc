@@ -5,19 +5,19 @@
 #include "dao/InstitutionAgreementDAO.h"
 #include "dao/ProgramDAO.h"
 
-#include <QtCore/QStringBuilder>
 #include <QtCore/QtDebug>
 #include <QtCore/QJsonArray>
-#include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
+#include "dao/functions.h"
 
 using crrc::Agreements;
 
 void Agreements::index( Cutelyst::Context* c ) const
 {
-  dao::AgreementDAO dao;
+  const auto& list = dao::isGlobalAdmin( c ) ?
+    dao::AgreementDAO().retrieveAll() :
+    dao::AgreementDAO().retrieveByInstitution( dao::institutionId( c ) );
   c->stash( {
-    { "agreements", dao.retrieveAll() },
+    { "agreements", list },
     { "template", "agreements/index.html" }
   } );
 }
@@ -35,8 +35,10 @@ void Agreements::object( Cutelyst::Context* c, const QString& id ) const
 
 void Agreements::create( Cutelyst::Context* c ) const
 {
+  const auto mode = dao::InstitutionDAO::Mode::Partial;
+
   c->stash( {
-    { "institutions", dao::InstitutionDAO().retrieveAll( dao::InstitutionDAO::Mode::Partial ) },
+    { "institutions", dao::InstitutionDAO().retrieveAll( mode ) },
     { "template", "agreements/form.html" }
   } );
 }
@@ -47,10 +49,7 @@ void Agreements::edit( Cutelyst::Context* c ) const
   QJsonObject json;
   json.insert( "id", obj.value( "id" ).toInt() );
   const auto& bytes = QJsonDocument( json ).toJson();
-
-  c->response()->setContentType( "application/json" );
-  c->response()->setContentLength( bytes.size() );
-  c->response()->setBody( bytes );
+  dao::sendJson( c, json );
 }
 
 void Agreements::institutions( Cutelyst::Context* c ) const

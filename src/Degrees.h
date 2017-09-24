@@ -39,8 +39,5 @@ namespace crrc
 
     C_ATTR( remove, :Chained( "base" ) : PathPart( "remove" ) : Args( 0 ) )
     void remove( Cutelyst::Context* c ) const;
-
-  private:
-    void sendJson( Cutelyst::Context* c, const QJsonObject& obj ) const;
   };
 }
