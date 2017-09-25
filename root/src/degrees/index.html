@@ -58,7 +58,7 @@
     {
       let cw = document.getElementById( `dw_${degreeId}` )
       cw.innerText = message;
-      cs.style.display = 'inline';
+      cw.style.display = 'inline';
     }
 
     let form = document.getElementById( `df_${degreeId}` );
@@ -148,7 +148,7 @@
     function showWarning( message )
     {
       let cw = document.getElementById( 'createWarning' );
-      cw.style.display = inline;
+      cw.style.display = 'inline';
       cw.innerText = message;
     }
 
@@ -193,6 +193,7 @@
   function hideCreate()
   {
     document.getElementById( 'create' ).style.display = 'none';
+    document.getElementById( 'createWarning' ).style.display = 'none';
     document.getElementById( 'createButton' ).style.display = 'inline';
     let form = document.getElementById( 'createDegree' );
     form.title.value = '';

@@ -442,8 +442,13 @@ function QT_WriteOBJECT_XHTML()
 
 function isEmpty(element)
 {
-  if (element == null) return true;
-  if (element.value == null) return true;
-  if (element.value.length == 0) return true;
-  return false;
+    if (element == null) return true;
+    if (element.value == null) return true;
+    if (element.value.length == 0) return true;
+    return false;
+}
+
+function isEqual( value1, value2 )
+{
+    return ( value1 === value2 ) || ( value1 == value2 );
 }

@@ -1,0 +1,340 @@
+<script type="text/javascript">
+  var departments = [];
+  {% for department in departments %}
+  departments.push( { id: {{ department.department_id }},
+    name: '{{ department.name }}',
+    prefix: '{{ department.prefix }}',
+    institution: {
+      id: {{ department.institution.institution_id }},
+      name: '{{ department.institution.name }}'
+    } } );
+  {% endfor %}
+
+  var institutions = [];
+  {% for institution in institutions %}
+  institutions.push( {
+    id: {{ institution.institution_id }},
+    name: '{{ institution.name }}'
+    } );
+  {% endfor %}
+
+  function indexOfId( departmentId )
+  {
+    for ( var i = 0; i < departments.length; ++i )
+    {
+      if ( isEqual( departments[i].id, departmentId ) ) return i;
+    }
+
+    return -1;
+  }
+
+  function indexOfName( name )
+  {
+    for ( var i = 0; i < departments.length; ++i )
+    {
+      if ( isEqual( departments[i].name, name ) ) return i;
+    }
+
+    return -1;
+  }
+
+  function institutionIndex( institutionId )
+  {
+    for ( var i = 0; i < institutions.length; ++i )
+    {
+      if ( isEqual( institutions[i].id, institutionId ) ) return i;
+    }
+
+    return -1;
+  }
+
+  function displayDepartment( departmentId )
+  {
+    document.getElementById( `dv_${departmentId}` ).style.display = 'inline';
+    return false;
+  }
+
+  function hideDepartment( departmentId )
+  {
+    document.getElementById( `dv_${departmentId}` ).style.display = 'none';
+  }
+
+  function displayForm( departmentId )
+  {
+    document.getElementById( `de_${departmentId}` ).style.display = 'inline';
+  }
+
+  function addDepartment( json, form )
+  {
+    let content = `<div><a href="#" onclick="return displayDepartment( ${json.id} );">${form.name.value}</a></div>
+    <div id="dv_${json.id}" style="display: none;">
+      <h3>Name: ${form.name.value}</h3>
+      <strong>Prefix:</strong> ${form.prefix.value}<br/>
+      <button onclick="displayForm( ${json.id} )">Edit</button>
+      <button onclick="deleteDepartment( ${json.id}, '${form.name.value}' )">Delete</button>
+      <button onclick="hideDepartment( ${json.id} )">Close</button>
+      <br/>
+      <q id="dw_${json.id}" class="warning" style="display: none;"></q>
+    </div>
+    <div id="de_${json.id}" style="display: none;">
+      <form id="df_${json.id}" onsubmit="return update( ${json.id} );">
+        <input type="hidden" name="department_id" value="${json.id}" />
+        <input type="hidden" name="institution" value="${form.institution.value}" />
+        <label class="label">Name:</label>
+        <input type="text" name="name" value="${form.name.value}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
+        <label class="label">Prefix:</label>
+        <input type="text" name="prefix" value="${form.prefix.value}" /><br/>
+        <input type="submit" value="Save" />
+        <button onclick="hideForm( ${json.id} )">Close</button>
+      </form>
+    </div>`;
+
+    let div = document.createElement( 'div' );
+    div.id = `d_${json.id}`;
+    div.innerHTML = content;
+
+    document.getElementById( 'departments' ).appendChild( div );
+  }
+
+  function update( departmentId )
+  {
+    function showWarning( message )
+    {
+      let cw = document.getElementById( `dw_${departmentId}` )
+      cw.innerText = message;
+      cw.style.display = 'inline';
+    }
+
+    let form = document.getElementById( `df_${departmentId}` );
+    let existingIndex = indexOfName( form.name.value );
+    if ( existingIndex != -1 && departments[existingIndex].id != form.department_id.value )
+    {
+      showWarning( `Department with name: ${form.name.value} exists.` );
+      return false;
+    }
+
+    if ( !form.name.validity.valid ) return false;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/institution/departments/save' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status )
+        {
+          let element = document.getElementById( `d_${departmentId}` );
+
+          let index = indexOfId( form.department_id.value );
+          departments[index].name = form.name.value;
+
+          element.parentElement.removeChild( element );
+          addDepartment( json, form );
+          hideForm( departmentId );
+        }
+        else
+        {
+          showWarning( 'Unable to update department with specified values.  Please try changing the name without any quote characters.' );
+        }
+      }
+      else
+      {
+        showWarning( 'Unable to update department.  Please try again later.' );
+      }
+    };
+    xhr.send( encodeURI( `department_id=${departmentId}&name=${form.name.value}&prefix=${form.prefix.value}&institution_id=${form.institution.value}` ) );
+
+    return false;
+  }
+
+  function deleteDepartment( departmentId, name )
+  {
+    if ( !confirm( `Do you wish to permanently delete ${name}?` ) ) return false;
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/institution/departments/remove' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status && json.count === 1 )
+        {
+          let element = document.getElementById( `d_${departmentId}` );
+          let index = indexOfId( departmentId );
+          if ( index >= 0 ) departments.splice( index, 1 );
+          element.parentElement.removeChild( element );
+        }
+        else
+        {
+          document.getElementById( `dw_${departmentId}` ).innerText = 'Unable to delete department from the server.  Please try again later.';
+        }
+      }
+      else
+      {
+        document.getElementById( `dw_${departmentId}` ).innerText = 'Unable to delete department from the server.  Please try again later.';
+      }
+    };
+    xhr.send( `department_id=${departmentId}` );
+  }
+
+  function hideForm( departmentId )
+  {
+    document.getElementById( `de_${departmentId}` ).style.display = 'none';
+  }
+
+  function displayCreate()
+  {
+    document.getElementById( 'create' ).style.display = 'inline';
+    document.getElementById( 'createButton' ).style.display = 'none';
+  }
+
+  function createDepartment( form )
+  {
+    function showWarning( message )
+    {
+      let cw = document.getElementById( 'createWarning' );
+      cw.style.display = 'inline';
+      cw.innerText = message;
+    }
+
+    if ( indexOfName( form.name.value ) != -1 )
+    {
+      showWarning( `Department with name: ${form.name.value} exists.` );
+      return false;
+    }
+
+    if ( form.institution.value == 0 )
+    {
+      showWarning( 'Please select a valid institution' );
+      form.institution.focus();
+      return false;
+    }
+
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/institution/departments/save' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status )
+        {
+          let instIndex = institutionIndex( form.institution.value );
+
+          departments.push( { id: json.id,
+            name: form.name.value,
+            prefix: form.prefix.value,
+            institution: {
+              id: form.institution.value,
+              name: institutions[instIndex].name
+            } } );
+          addDepartment( json, form );
+          hideCreate();
+          document.getElementById( 'createButton' ).style.display = 'inline';
+        }
+        else
+        {
+          showWarning( 'Unable to create department.  Please try again later.' );
+        }
+      }
+      else
+      {
+        showWarning( 'Unable to access server.  Please try again later.' );
+      }
+    };
+    xhr.send( encodeURI( `department_id=${form.department_id.value}&name=${form.name.value}&prefix=${form.prefix.value}&institution_id=${form.institution.value}` ) );
+
+    return false;
+  }
+
+  function hideCreate()
+  {
+    document.getElementById( 'create' ).style.display = 'none';
+    document.getElementById( 'createButton' ).style.display = 'inline';
+    document.getElementById( 'createWarning' ).style.display = 'none';
+    let form = document.getElementById( 'createDepartment' );
+    form.name.value = '';
+    form.prefix.value = '';
+  }
+</script>
+
+<div>
+  <h2>Manage Departments</h2>
+  <div>
+    <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
+    <div style="display:inline-block; float: right; padding: 10px;">
+      <form name="search" method="post" action="/departments/search">
+      <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
+      </form>
+    </div>
+    <div style="clear: both;"></div>
+  </div>
+  {% if searchText %}
+  <h3>Search results for ({{ searchText }})</h3>
+  {% endif %}
+  <div id="departments">
+    {% for department in departments %}
+    <div id="d_{{ department.department_id }}">
+      <div><a href="#" onclick="return displayDepartment( {{ department.department_id }} );">{{ department.name }}</a></div>
+      <div id="dv_{{ department.department_id }}" style="display: none;">
+        <h3>Name: {{ department.name }}</h3>
+        {% if department.prefix %}
+        <strong>Prefix:</strong> {{ department.prefix }}<br/>
+        {% endif %}
+        <button onclick="displayForm( {{ department.department_id }} )">Edit</button>
+        <button onclick="deleteDepartment( {{ department.department_id }}, '{{ department.name }}' )">Delete</button>
+        <button onclick="hideDepartment( {{ department.department_id }} )">Close</button>
+        <br/>
+        <q id="dw_{{ department.department_id }}" class="warning" style="display: none;"></q>
+      </div>
+      <div id="de_{{ department.department_id }}" style="display: none;">
+        <form id="df_{{ department.department_id }}" onsubmit="return update( {{ department.department_id }} );">
+          <input type="hidden" name="department_id" value="{{ department.department_id }}" />
+          <input type="hidden" name="institution" value="{{ department.institution.institution_id }}" />
+          <label class="label">Name:</label>
+          <input type="text" name="name" value="{{ department.name }}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
+          <label class="label">Prefix:</label>
+          <input type="text" name="prefix" value="{{ department.prefix }}" /><br/>
+          <input type="submit" value="Save" />
+          <button onclick="hideForm( {{ department.department_id }} )">Close</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div id="create" style="display:none">
+    <form id="createDepartment" onsubmit="return createDepartment(this);">
+      <label class="label">Name:</label>
+      <input type="text" name="name" required pattern="[^'\x22]+" title="Quotes not allowed"/>
+      <br/>
+      <label class="label">Prefix:</label>
+      <input type="text" name="prefix" />
+      <br/>
+      {% if object %}
+      <input type="hidden" name="institution" value="{{ object.institution_id }}"/>
+      {% else %}
+      <label class="label">Institution:</label>
+      <select name="institution">
+        <option value="0">Select Institution</option>
+        {% for institution in institutions %}
+        <option value="{{ institution.institution_id }}">{{ institution.name }}</option>
+        {% endfor %}
+      </select>
+      <br/>
+      {% endif %}
+      <input type="hidden" name="department_id" value="0"/>
+      <input type="submit" value="Create"/>
+      <button onclick="hideCreate()">Cancel</button>
+    </form>
+    <q id="createWarning" class="warning" style="display: none;"></q>
+  </div>
+  <br/>
+  <button id="createButton" onclick="displayCreate()">Add Department</button>
+</div>

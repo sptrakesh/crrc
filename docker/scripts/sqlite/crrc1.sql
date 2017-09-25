@@ -57,11 +57,12 @@ create table departments
 (
   department_id integer primary key,
   name text not null,
-  prefix text
+  prefix text,
+  institution_id integer not null references institutions on delete cascade
 );
 
 create index idx_departments_name on departments (name);
-create unique index unq_departments_name_prefix on departments (name, prefix);
+create index idx_departments_institution on departments (institution_id);
 
 alter table agreements add column transfer_institution_id integer references institutions on delete cascade;
 alter table agreements add column transferee_institution_id integer references institutions on delete cascade;

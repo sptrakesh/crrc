@@ -1,5 +1,6 @@
 ﻿#include "DepartmentDAO.h"
 #include "constants.h"
+#include "InstitutionDAO.h"
 
 #include <mutex>
 #include <QtCore/QStringBuilder>
@@ -15,6 +16,7 @@ namespace crrc
       QVariant id;
       QVariant name;
       QVariant prefix;
+      QVariant institutionId;
     };
 
     static QMap<uint32_t, Department> departments;
@@ -27,6 +29,8 @@ namespace crrc
       record.insert( "department_id", department.id );
       record.insert( "name", department.name );
       record.insert( "prefix", department.prefix );
+      record.insert( "institution", InstitutionDAO().retrieve(
+        department.institutionId.toString(), InstitutionDAO::Mode::Partial ) );
 
       return record;
     }
@@ -34,11 +38,7 @@ namespace crrc
     QVariantList fromDepartments()
     {
       QVariantList list;
-      foreach ( Department department, departments )
-      {
-        list.append( transform( department ) );
-      }
-
+      for ( const auto& department : departments ) list.append( transform( department ) );
       return list;
     }
 
@@ -48,6 +48,7 @@ namespace crrc
       department.id = query.value( 0 ).toUInt();
       department.name = query.value( 1 );
       department.prefix = query.value( 2 );
+      department.institutionId = query.value( 3 ).toUInt();
       return department;
     }
 
@@ -62,7 +63,7 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select department_id, name, prefix from departments order by name",
+        "select department_id, name, prefix, institution_id from departments order by institution_id, name",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -82,6 +83,7 @@ namespace crrc
     {
       query.bindValue( ":name", c->request()->param( "name" ) );
       query.bindValue( ":prefix", c->request()->param( "prefix" ) );
+      query.bindValue( ":inst", c->request()->param( "institution_id" ) );
     }
 
     Department departmentFromContext( Cutelyst::Context* context )
@@ -89,6 +91,7 @@ namespace crrc
       Department department;
       department.name = context->request()->param( "name" );
       department.prefix = context->request()->param( "prefix" );
+      department.institutionId = context->request()->param( "institution_id" ).toUInt();
       return department;
     }
   }
@@ -100,6 +103,19 @@ QVariantList DepartmentDAO::retrieveAll() const
 {
   loadDepartments();
   return fromDepartments();
+}
+
+QVariantList DepartmentDAO::retrieveByInstitution( uint32_t institutionId ) const
+{
+  loadDepartments();
+  QVariantList list;
+
+  for ( const auto& department : departments )
+  {
+    if ( institutionId == department.institutionId.toUInt() ) list << transform( department );
+  }
+
+  return list;
 }
 
 QVariantHash DepartmentDAO::retrieve( const QString& id ) const
@@ -114,7 +130,7 @@ uint32_t DepartmentDAO::insert( Cutelyst::Context* context ) const
 {
   loadDepartments();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into departments (name, prefix) values (:name, :prefix)",
+    "insert into departments (name, prefix, institution_id) values (:name, :prefix, :inst)",
     crrc::DATABASE_NAME );
   bindDepartment( context, query );
 
@@ -134,14 +150,45 @@ uint32_t DepartmentDAO::insert( Cutelyst::Context* context ) const
   }
 }
 
-bool DepartmentDAO::isUnique( const QString& name, const QString& prefix ) const
+uint32_t DepartmentDAO::update( Cutelyst::Context* context ) const
 {
   loadDepartments();
-  for ( const auto& department : departments )
+  auto id = context->request()->param( "department_id" );
+  auto query = CPreparedSqlQueryThreadForDB(
+    "update departments set name=:name, prefix=:prefix, institution_id=:inst where department_id=:id",
+    crrc::DATABASE_NAME );
+  bindDepartment( context, query );
+  query.bindValue( ":id", id.toInt() );
+
+  if ( query.exec() && query.numRowsAffected() )
   {
-    if ( department.name.toString() == name &&
-      department.prefix == prefix ) return false;
+    const auto did = id.toUInt();
+    auto department = departmentFromContext( context );
+    department.id = did;
+    std::lock_guard<std::mutex> lock{ departmentMutex };
+    departments[did] = std::move( department );
+  }
+  else context->stash()["error_msg"] = query.lastError().text();
+
+  return query.numRowsAffected();
+}
+
+QString DepartmentDAO::remove( uint32_t id ) const
+{
+  loadDepartments();
+  auto query = CPreparedSqlQueryThreadForDB(
+    "delete from departments where department_id = :id", DATABASE_NAME );
+  query.bindValue( ":id", id );
+  if ( query.exec() )
+  {
+    if ( query.numRowsAffected() )
+    {
+      std::lock_guard<std::mutex> lock{ departmentMutex };
+      departments.remove( id );
+      return QString::number( query.numRowsAffected() );
+    }
+    return QString( "No records matched." );
   }
 
-  return true;
+  return query.lastError().text();
 }

@@ -1,3 +1,10 @@
+<script type="text/javascript">
+  function check( form )
+  {
+    return confirm( 'Do you wish to permanently delete the institution?' );
+  }
+
+</script>
 <div>
   <h2>Manage Institutions</h2>
   <div>
@@ -13,13 +20,13 @@
   {% if searchText %}
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
-  <ul>
+  <div id="institutions">
     {% for institution in institutions %}
-    <li><a href="/institutions/id/{{ institution.institution_id }}/view">{{ institution.name }}</a> - <form action="/institutions/remove" method="post" style="display: inline-block;">
+    <a href="/institutions/id/{{ institution.institution_id }}/view">{{ institution.name }}</a> - <form action="/institutions/remove" method="post" style="display: inline-block;" onsubmit="return check( this );">
       <input type="hidden" name="id" value="{{ institution.institution_id }}"/>
       <input type="submit" value="Delete" />
     </form>
-    </li>
-  </ul>
-  {% endfor %}
+    <br/>
+    {% endfor %}
+  </div>
 </div>
