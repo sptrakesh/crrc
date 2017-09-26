@@ -4,10 +4,11 @@
 #include "dao/InstitutionDAO.h"
 #include "dao/InstitutionAgreementDAO.h"
 #include "dao/ProgramDAO.h"
+#include "dao/functions.h"
 
 #include <QtCore/QtDebug>
 #include <QtCore/QJsonArray>
-#include "dao/functions.h"
+#include <QtCore/QJsonObject>
 
 using crrc::Agreements;
 
@@ -125,5 +126,19 @@ void Agreements::search( Cutelyst::Context* c ) const
 
 void Agreements::remove( Cutelyst::Context* c )
 {
-  AttachmentController<dao::AgreementDAO>().remove( c, "/agreements" );
+  const auto& response = c->request()->param( "response" );
+  if ( ! response.isEmpty() )
+  {
+    AttachmentController<dao::AgreementDAO>().remove( c, "/agreements" );
+    return;
+  }
+
+  AttachmentController<dao::AgreementDAO>().remove( c, "" );
+  const auto& msg = c->stash( "status_msg" ).toString();
+
+  QJsonObject json;
+  json.insert( "id", c->request()->param( "id" ) );
+  json.insert( "status", ( msg == "1" ) );
+  json.insert( "message", msg );
+  dao::sendJson( c, json );
 }

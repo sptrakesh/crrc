@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QtCore/QStringBuilder>
 #include <Cutelyst/Controller>
 
 namespace crrc
@@ -62,7 +63,7 @@ namespace crrc
       else statusMsg = "No agreement identifier specified!";
 
       c->stash()["status_msg"] = statusMsg;
-      c->response()->redirect( redirectUrl );
+      if ( ! redirectUrl.isEmpty() ) c->response()->redirect( redirectUrl );
     }
 
   private:

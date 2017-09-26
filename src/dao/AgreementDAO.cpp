@@ -38,13 +38,12 @@ namespace crrc
 
       if ( ! agreement.transferInstitutionId.isNull() )
       {
+        const auto im = InstitutionDAO::Mode::Partial;
         const auto idao = InstitutionDAO();
         record.insert( "transferInstitution",
-          idao.retrieve( agreement.transferInstitutionId.toString(),
-          InstitutionDAO::Mode::Partial ) );
+          idao.retrieve( agreement.transferInstitutionId.toString(), im ) );
         record.insert( "transfereeInstitution",
-          idao.retrieve( agreement.transfereeInstitutionId.toString(),
-          InstitutionDAO::Mode::Partial ) );
+          idao.retrieve( agreement.transfereeInstitutionId.toString(), im ) );
       }
 
       if ( AgreementDAO::Mode::Full == mode )
@@ -283,7 +282,7 @@ QString AgreementDAO::remove( uint32_t id ) const
   {
     std::lock_guard<std::mutex> lock{ agreementMutex };
     agreements.remove( id );
-    return "Agreement deleted.";
+    return QString::number( query.numRowsAffected() );
   }
 
   return query.lastError().text();

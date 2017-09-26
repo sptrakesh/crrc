@@ -1,6 +1,5 @@
 #include "InstitutionAgreements.h"
 #include "dao/AgreementDAO.h"
-#include "dao/ProgramDAO.h"
 #include "dao/InstitutionAgreementDAO.h"
 
 #include <QtCore/QStringBuilder>
@@ -28,21 +27,6 @@ void InstitutionAgreements::object( Cutelyst::Context* c, const QString& id ) co
   c->setStash( "object", list.first() );
 }
 
-void InstitutionAgreements::create( Cutelyst::Context* c ) const
-{
-  const auto& object = c->stash( "object" ).toHash();
-  const auto transferInstitution = object.value( "transferInstitution" ).toHash().value( "institution_id" );
-  const auto transfereeInstitution = object.value( "transfereeInstitution" ).toHash().value( "institution_id" );
-
-  dao::ProgramDAO pdao;
-
-  c->stash( {
-    { "transferPrograms", pdao.retrieveByInstitution( transferInstitution.toUInt(), dao::ProgramDAO::Mode::Partial ) },
-    { "transfereePrograms", pdao.retrieveByInstitution( transfereeInstitution.toUInt(), dao::ProgramDAO::Mode::Partial ) },
-    { "template", "institutions/agreements/form.html" }
-  } );
-}
-
 void InstitutionAgreements::edit( Cutelyst::Context* c ) const
 {
   if ( !validate( c ) ) return;
@@ -55,27 +39,6 @@ void InstitutionAgreements::edit( Cutelyst::Context* c ) const
   c->response()->setContentType( "application/json" );
   c->response()->setContentLength( output.size() );
   c->response()->setBody( output );
-}
-
-void InstitutionAgreements::view( Cutelyst::Context* c ) const
-{
-  c->setStash( "template", "institutions/agreements/view.html" );
-}
-
-void InstitutionAgreements::search( Cutelyst::Context* c ) const
-{
-  const auto text = c->request()->param( "text", "" );
-
-  if ( text.isEmpty() )
-  {
-    c->response()->redirect( "/institution/program/relations" );
-    return;
-  }
-
-  c->stash( {
-    { "searchText", text },
-    { "template", "institutions/agreements/index.html" }
-  } );
 }
 
 void InstitutionAgreements::remove( Cutelyst::Context* c )

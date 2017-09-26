@@ -41,7 +41,7 @@
 
   function validate()
   {
-    let form = document.forms[1];
+    let form = document.getElementById( 'institutions' );
     let element = document.getElementById( 'warning' );
 
     if ( !form.agreement_id || form.agreement_id.value <= 0 )

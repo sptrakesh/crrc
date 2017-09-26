@@ -1,3 +1,43 @@
+<script type="text/javascript">
+  function deleteAgreement( form )
+  {
+    if ( !confirm( 'Do you want to permanently delete agreement?' ) ) return false;
+
+    function displayWarning()
+    {
+      document.getElementById( `aw_${form.id.value}` ).innerText = 'Unable to delete agreement from the server.  Please try again later.';
+    }
+
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', form.action );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status )
+        {
+          let element = document.getElementById( `av_${form.id.value}` );
+          element.parentElement.removeChild( element );
+        }
+        else
+        {
+          displayWarning();
+        }
+      }
+      else
+      {
+        displayWarning();
+      }
+    };
+    xhr.send( `id=${form.id.value}` );
+
+    return false;
+  }
+</script>
+
 <div>
   <h2>Manage Agreements</h2>
   <div>
@@ -13,13 +53,21 @@
   {% if searchText %}
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
-  <ul>
+  <div id="agreements">
     {% for agreement in agreements %}
-    <li><a href="/agreements/id/{{ agreement.id }}/view">{{ agreement.filename }}</a> - <form action="/agreements/remove" method="post" style="display: inline-block;">
-      <input type="hidden" name="id" value="{{ agreement.id }}"/>
-      <input type="submit" value="Delete" />
-    </form>
-    </li>
-  </ul>
-  {% endfor %}
+    <div id="av_{{ agreement.id }}">
+      {% if agreement.transferInstitution and agreement.transfereeInstitution %}
+      {{ agreement.transferInstitution.name }} -&gt; {{ agreement.transfereeInstitution.name }}
+      <br/>&nbsp;&nbsp;
+      {% endif %}
+      <a href="/agreements/id/{{ agreement.id }}/view">{{ agreement.filename }}</a> - <form action="/agreements/remove" method="post" style="display: inline-block;" onsubmit="return deleteAgreement( this );">
+        <input type="hidden" name="id" value="{{ agreement.id }}"/>
+        <input type="submit" value="Delete" />
+      </form>
+      <br/>
+      <q id="aw_{{ agreement.id }}" style="display: none;"></q>
+      <br/>
+      {% endfor %}
+    </div>
+  </div>
 </div>
