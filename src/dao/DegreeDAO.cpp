@@ -124,15 +124,13 @@ uint32_t DegreeDAO::insert( Cutelyst::Context* context ) const
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
-  else
-  {
-    const auto id = query.lastInsertId().toUInt();
-    auto degree = degreeFromContext( context );
-    degree.id = id;
-    std::lock_guard<std::mutex> lock{ degreeMutex };
-    degrees[id] = std::move( degree );
-    return id;
-  }
+
+  const auto id = query.lastInsertId().toUInt();
+  auto degree = degreeFromContext( context );
+  degree.id = id;
+  std::lock_guard<std::mutex> lock{ degreeMutex };
+  degrees[id] = std::move( degree );
+  return id;
 }
 
 void DegreeDAO::update( Cutelyst::Context* context ) const

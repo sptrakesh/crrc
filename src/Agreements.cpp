@@ -127,7 +127,7 @@ void Agreements::search( Cutelyst::Context* c ) const
 void Agreements::remove( Cutelyst::Context* c )
 {
   const auto& response = c->request()->param( "response" );
-  if ( ! response.isEmpty() )
+  if ( response == "html" )
   {
     AttachmentController<dao::AgreementDAO>().remove( c, "/agreements" );
     return;

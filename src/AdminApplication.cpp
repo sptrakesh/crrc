@@ -70,5 +70,8 @@ bool AdminApplication::postFork()
     qCritical() << "Failed to open database:" << db.lastError().text();
     return false;
   }
+
+  QSqlQuery query( db );
+  db.exec( "PRAGMA foreign_keys = ON;" );
   return true;
 }

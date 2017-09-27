@@ -61,11 +61,7 @@ namespace crrc
     QVariantList fromAgreements( const AgreementDAO::Mode& mode )
     {
       QVariantList list;
-      foreach ( Agreement agreement, agreements )
-      {
-        list.append( transform( agreement, mode ) );
-      }
-
+      for ( const auto& agreement : agreements ) list << transform( agreement, mode );
       return list;
     }
 

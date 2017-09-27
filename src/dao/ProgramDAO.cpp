@@ -87,7 +87,8 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select * from programs order by title", DATABASE_NAME );
+        "select p.*, i.name from programs p left join institutions i on (i.institution_id = p.institution_id) order by i.name, p.title",
+        DATABASE_NAME );
 
       if ( query.exec() )
       {
@@ -140,7 +141,18 @@ using crrc::dao::ProgramDAO;
 QVariantList ProgramDAO::retrieveAll( const Mode& mode ) const
 {
   loadPrograms();
-  return fromPrograms( mode );
+  QVariantList list;
+
+  auto query = CPreparedSqlQueryThreadForDB(
+    "select p.program_id, i.name, p.title from programs p left join institutions i on (i.institution_id = p.institution_id) order by i.name, p.title",
+    DATABASE_NAME );
+
+  if ( query.exec() )
+  {
+    while ( query.next() ) list << retrieve( query.value( 0 ).toString(), mode );
+  }
+
+  return list;
 }
 
 QVariantList ProgramDAO::retrieveByInstitution(
