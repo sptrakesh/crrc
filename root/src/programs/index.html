@@ -78,6 +78,18 @@
         {% if program.degree %}
         <strong>Degree:</strong> <a href="/degrees/id/{{ program.degree.degree_id }}/view">{{ program.degree.title }}</a><br/>
         {% endif %}
+        {% if program.type %}
+        <strong>Type:</strong> {{ program.type }}<br/>
+        {% endif %}
+        {% if program.designation %}
+        <strong>Designation:</strong> {{ program.designation.title }}<br/>
+        {% endif %}
+        {% if program.curriculum_code %}
+        <strong>Curriculum Code:</strong> {{ program.curriculum_code }}<br/>
+        {% endif %}
+        {% if program.url %}
+        <strong>URL:</strong> <a href="{{ program.url }}">{{ program.url }}</a><br/>
+        {% endif %}
         <button onclick="hideProgram( {{ program.program_id }} )">Close</button>
         <button onclick="window.location.href='/programs/id/{{ program.program_id }}/update'">Edit</button>
         <button onclick="deleteProgram( {{ program.program_id }} )">Delete</button>

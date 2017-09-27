@@ -1,6 +1,7 @@
 #include "ProgramDAO.h"
 #include "InstitutionDAO.h"
 #include "DegreeDAO.h"
+#include "DesignationDAO.h"
 #include "constants.h"
 #include "functions.h"
 
@@ -21,6 +22,10 @@ namespace crrc
       QVariant credits;
       QVariant institutionId;
       QVariant degreeId;
+      QVariant type;
+      QVariant designationId;
+      QVariant curriculumCode;
+      QVariant url;
     };
 
     static QMap<uint32_t, Program> programs;
@@ -44,6 +49,16 @@ namespace crrc
         {
           record.insert( "degree", DegreeDAO().retrieve( program.degreeId.toString() ) );
         }
+
+        record.insert( "type", program.type );
+
+        if ( ! program.designationId.isNull() )
+        {
+          record.insert( "designation", DesignationDAO().retrieve( program.designationId.toString() ) );
+        }
+
+        record.insert( "curriculum_code", program.curriculumCode );
+        record.insert( "url", program.url );
       }
 
       return record;
@@ -73,6 +88,14 @@ namespace crrc
       id = query.value( 4 );
       program.degreeId = id.isNull() ? QVariant() : id.toUInt();
 
+      program.type = query.value( 5 );
+
+      id = query.value( 6 );
+      program.designationId = id.isNull() ? QVariant() : id.toUInt();
+
+      program.curriculumCode = query.value( 7 );
+      program.url = query.value( 8 );
+
       return program;
     }
 
@@ -87,7 +110,7 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select p.*, i.name from programs p left join institutions i on (i.institution_id = p.institution_id) order by i.name, p.title",
+        "select p.program_id, p.title, p.credits, p.institution_id, p.degree_id, p.type, p.designation_id, p.curriculum_code, p.url, i.name from programs p left join institutions i on (i.institution_id = p.institution_id) order by i.name, p.title",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -117,6 +140,15 @@ namespace crrc
       const auto did = c->request()->param( "degree", "0" );
       if ( did == "0" ) query.bindValue( ":degreeId", QVariant() );
       else query.bindValue( ":degreeId", did );
+
+      query.bindValue( ":type", c->request()->param( "type" ) );
+
+      const auto deid = c->request()->param( "designation", "0" );
+      if ( deid == "0" ) query.bindValue( ":designationId", QVariant() );
+      else query.bindValue( ":designationId", deid );
+
+      query.bindValue( ":cc", c->request()->param( "curriculum_code" ) );
+      query.bindValue( ":url", c->request()->param( "url" ) );
     }
 
     Program programFromContext( Cutelyst::Context* context )
@@ -130,6 +162,14 @@ namespace crrc
 
       id = context->request()->param( "degree" );
       program.degreeId = ( id != "0" ) ? id.toUInt() : QVariant();
+
+      program.type = context->request()->param( "type" );
+
+      id = context->request()->param( "designation" );
+      program.designationId = ( id != "0" ) ? id.toUInt() : QVariant();
+
+      program.curriculumCode = context->request()->param( "curriculum_code" );
+      program.url = context->request()->param( "url" );
 
       return program;
     }
@@ -187,7 +227,7 @@ uint32_t ProgramDAO::insert( Cutelyst::Context* context ) const
 {
   loadPrograms();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into programs (title, credits, institution_id, degree_id) values (:title, :credits, :institutionId, :degreeId)",
+    "insert into programs (title, credits, institution_id, degree_id, type, designation_id, curriculum_code, url) values (:title, :credits, :institutionId, :degreeId, :type, :designationId, :cc, :url)",
     crrc::DATABASE_NAME );
   bindProgram( context, query );
 
@@ -196,15 +236,13 @@ uint32_t ProgramDAO::insert( Cutelyst::Context* context ) const
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
-  else
-  {
-    const auto id = query.lastInsertId().toUInt();
-    auto program = programFromContext( context );
-    program.id = id;
-    std::lock_guard<std::mutex> lock{ programMutex };
-    programs[id] = std::move( program );
-    return id;
-  }
+
+  const auto id = query.lastInsertId().toUInt();
+  auto program = programFromContext( context );
+  program.id = id;
+  std::lock_guard<std::mutex> lock{ programMutex };
+  programs[id] = std::move( program );
+  return id;
 }
 
 void ProgramDAO::update( Cutelyst::Context* context ) const
@@ -212,18 +250,23 @@ void ProgramDAO::update( Cutelyst::Context* context ) const
   loadPrograms();
   auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
-    "update programs set title=:title, credits=:credits, institution_id=:institutionId, degree_id=:degreeId where program_id=:id",
+    "update programs set title=:title, credits=:credits, institution_id=:institutionId, degree_id=:degreeId, type=:type, designation_id=:designationId, curriculum_code=:cc, url=:url where program_id=:id",
     crrc::DATABASE_NAME );
   bindProgram( context, query );
   query.bindValue( ":id", id.toInt() );
 
   if ( query.exec() )
   {
-    const auto pid = id.toUInt();
-    auto program = programFromContext( context );
-    program.id = pid;
-    std::lock_guard<std::mutex> lock{ programMutex };
-    programs[pid] = std::move( program );
+    if ( query.numRowsAffected() )
+    {
+      const auto pid = id.toUInt();
+      auto program = programFromContext( context );
+      program.id = pid;
+      std::lock_guard<std::mutex> lock{ programMutex };
+      programs[pid] = std::move( program );
+    } 
+
+    context->stash()["error_msg"] = QString::number( query.numRowsAffected() );
   }
   else context->stash()["error_msg"] = query.lastError().text();
 }

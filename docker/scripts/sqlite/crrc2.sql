@@ -10,3 +10,8 @@ create table courses
 );
 
 create index idx_courses_department on courses (department_id);
+
+alter table programs add column type text;
+alter table programs add column designation_id integer references designations on delete set null deferrable;
+alter table programs add column curriculum_code text;
+alter table programs add column url text;

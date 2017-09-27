@@ -52,6 +52,29 @@
       {% endfor %}
     </select>
     <br/>
+    <label class="label">Type:</label>
+    <input name="type" id="type" type="text" size="35" width="250"
+           {% if object %}value="{{ object.type }}"{% endif %} />
+    <br/>
+    <label class="label">Designation:</label>
+    <select name="designation" id="designation">
+      <option value="0">Select Designation</option>
+      {% for designation in designations %}
+      <option value="{{ designation.designation_id }}"
+              {% if designation.designation_id == object.designation.designation_id %}selected="selected"{% endif %}>
+        {{ designation.title}}
+      </option>
+      {% endfor %}
+    </select>
+    <br/>
+    <label class="label">Curriculum Code:</label>
+    <input name="curriculum_code" id="curriculum_code" type="text" size="35" width="250"
+           {% if object %}value="{{ object.curriculum_code }}"{% endif %} />
+    <br/>
+    <label class="label">URL:</label>
+    <input name="url" id="url" type="text" size="35" width="250"
+           {% if object %}value="{{ object.url }}"{% endif %} />
+    <br/>
     {% if object %}
     <input type="hidden" name="id" value="{{ object.program_id }}" />
     {% endif %}

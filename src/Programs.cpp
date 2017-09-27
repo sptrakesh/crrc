@@ -2,6 +2,7 @@
 #include "dao/ProgramDAO.h"
 #include "dao/InstitutionDAO.h"
 #include "dao/DegreeDAO.h"
+#include "dao/DesignationDAO.h"
 #include "dao/functions.h"
 
 using crrc::Programs;
@@ -47,7 +48,8 @@ void Programs::create( Cutelyst::Context* c ) const
   c->stash( {
     { "template", "programs/form.html" },
     { "institutions", list },
-    { "degrees", dao::DegreeDAO().retrieveAll() }
+    { "degrees", dao::DegreeDAO().retrieveAll() },
+    { "designations", dao::DesignationDAO().retrieveAll() }
   } );
 }
 
@@ -71,10 +73,7 @@ void Programs::edit( Cutelyst::Context* c ) const
   }
   else dao.update( c );
 
-  c->stash( {
-    { "template", "programs/view.html" },
-    { "object", dao.retrieve( id ) }
-  } );
+  c->response()->redirect( "/programs" );
 }
 
 void Programs::search( Cutelyst::Context* c ) const
