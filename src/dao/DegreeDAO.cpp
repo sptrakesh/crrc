@@ -1,62 +1,40 @@
 #include "DegreeDAO.h"
+#include "model/Degree.h"
 #include "constants.h"
 
 #include <mutex>
+#include <unordered_map>
+
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
+using crrc::model::Degree;
 
 namespace crrc
 {
   namespace dao
   {
-    struct Degree
-    {
-      QVariant id;
-      QVariant title;
-      QVariant duration;
-    };
-
-    static QMap<uint32_t, Degree> degrees;
+    static std::unordered_map<uint32_t, Degree::Ptr> degrees;
     static std::atomic_bool degreesLoaded{ false };
     static std::mutex degreeMutex;
-
-    QVariantHash transform( const Degree& degree )
-    {
-      QVariantHash record;
-      record.insert( "degree_id", degree.id );
-      record.insert( "title", degree.title );
-      record.insert( "duration", degree.duration );
-
-      return record;
-    }
 
     QVariantList fromDegrees()
     {
       QVariantList list;
-      foreach ( Degree degree, degrees )
+      for ( const auto& iter : degrees )
       {
-        list.append( transform( degree ) );
+        list << asVariant( iter.second.get() );
       }
 
       return list;
-    }
-
-    Degree createDegree( QSqlQuery& query )
-    {
-      Degree degree;
-      degree.id = query.value( 0 ).toUInt();
-      degree.title = query.value( 1 );
-      degree.duration = query.value( 2 );
-      return degree;
     }
 
     void loadDegrees()
     {
       if ( degreesLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ degreeMutex };
-      if ( !degrees.isEmpty() )
+      if ( !degrees.empty() )
       {
         degreesLoaded = true;
         return;
@@ -70,9 +48,9 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto degree = createDegree( query );
-          auto id = degree.id.toUInt();
-          degrees.insert( id, std::move( degree ) );
+          auto degree = Degree::create( query );
+          auto id = degree->getId();
+          degrees[id] = std::move( degree );
         }
 
         degreesLoaded = true;
@@ -84,31 +62,22 @@ namespace crrc
       query.bindValue( ":title", c->request()->param( "title" ) );
       query.bindValue( ":duration", c->request()->param( "duration" ) );
     }
-
-    Degree degreeFromContext( Cutelyst::Context* context )
-    {
-      Degree degree;
-      degree.title = context->request()->param( "title" );
-      degree.duration = context->request()->param( "duration" );
-      return degree;
-    }
   }
 }
 
 using crrc::dao::DegreeDAO;
 
-QVariantList DegreeDAO::retrieveAll() const
+const QVariantList DegreeDAO::retrieveAll() const
 {
   loadDegrees();
   return fromDegrees();
 }
 
-QVariantHash DegreeDAO::retrieve( const QString& id ) const
+const QVariant DegreeDAO::retrieve( uint32_t id ) const
 {
   loadDegrees();
-  const uint32_t cid = id.toUInt();
-  const auto iter = degrees.constFind( cid );
-  return ( iter != degrees.end() ) ? transform( iter.value() ) : QVariantHash();
+  const auto iter = degrees.find( id );
+  return ( iter != degrees.end() ) ? asVariant( iter->second.get() ) : QVariant();
 }
 
 uint32_t DegreeDAO::insert( Cutelyst::Context* context ) const
@@ -126,8 +95,8 @@ uint32_t DegreeDAO::insert( Cutelyst::Context* context ) const
   }
 
   const auto id = query.lastInsertId().toUInt();
-  auto degree = degreeFromContext( context );
-  degree.id = id;
+  auto degree = Degree::create( context );
+  degree->setId( id );
   std::lock_guard<std::mutex> lock{ degreeMutex };
   degrees[id] = std::move( degree );
   return id;
@@ -136,7 +105,7 @@ uint32_t DegreeDAO::insert( Cutelyst::Context* context ) const
 void DegreeDAO::update( Cutelyst::Context* context ) const
 {
   loadDegrees();
-  auto id = context->request()->param( "degree_id" );
+  auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
     "update degrees set title=:title, duration=:duration where degree_id=:id",
     crrc::DATABASE_NAME );
@@ -145,8 +114,7 @@ void DegreeDAO::update( Cutelyst::Context* context ) const
 
   if ( query.exec() )
   {
-    auto degree = degreeFromContext( context );
-    degree.id = id.toUInt();
+    auto degree = Degree::create( context );
     std::lock_guard<std::mutex> lock{ degreeMutex };
     degrees[id.toUInt()] = std::move( degree );
   }
@@ -170,8 +138,8 @@ QVariantList DegreeDAO::search( Cutelyst::Context* context ) const
   {
     while ( query.next() )
     {
-      auto degree = retrieve( query.value( 0 ).toString() );
-      list.append( degree );
+      auto degree = retrieve( query.value( 0 ).toUInt() );
+      if ( !degree.isNull() ) list << degree;
     }
   }
   else
@@ -192,7 +160,7 @@ uint32_t DegreeDAO::remove( uint32_t id ) const
   if ( query.exec() )
   {
     std::lock_guard<std::mutex> lock{ degreeMutex };
-    degrees.remove( id );
+    degrees.erase( id );
     return query.numRowsAffected();
   }
 

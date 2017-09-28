@@ -21,7 +21,7 @@ void Degrees::base( Cutelyst::Context* c ) const
 
 void Degrees::object( Cutelyst::Context* c, const QString& id ) const
 {
-  c->setStash( "object", dao::DegreeDAO().retrieve( id ) );
+  c->setStash( "object", dao::DegreeDAO().retrieve( id.toUInt() ) );
 }
 
 void Degrees::edit( Cutelyst::Context* c ) const
@@ -35,7 +35,7 @@ void Degrees::edit( Cutelyst::Context* c ) const
     return;
   }
 
-  auto id = c->request()->param( "degree_id", "" );
+  auto id = c->request()->param( "id", "" );
   const auto title = c->request()->param( "title", "" );
   QJsonObject obj;
 
@@ -91,7 +91,7 @@ void Degrees::search( Cutelyst::Context* c ) const
 
 void Degrees::remove( Cutelyst::Context* c ) const
 {
-  auto id = c->request()->param( "degree_id", "" );
+  auto id = c->request()->param( "id", "" );
   QJsonObject obj;
 
   if ( id.isEmpty() || ! dao::isGlobalAdmin( c ) )

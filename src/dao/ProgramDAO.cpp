@@ -47,7 +47,7 @@ namespace crrc
 
         if ( ! program.degreeId.isNull() )
         {
-          record.insert( "degree", DegreeDAO().retrieve( program.degreeId.toString() ) );
+          record.insert( "degree", DegreeDAO().retrieve( program.degreeId.toUInt() ) );
         }
 
         record.insert( "type", program.type );

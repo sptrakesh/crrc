@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Cutelyst/context.h>
+#include "model/Degree.h"
 
 namespace crrc
 {
@@ -8,8 +8,8 @@ namespace crrc
   {
     struct DegreeDAO
     {
-      QVariantList retrieveAll() const;
-      QVariantHash retrieve( const QString& id ) const;
+      const QVariantList retrieveAll() const;
+      const QVariant retrieve( uint32_t id ) const;
       uint32_t insert( Cutelyst::Context* context ) const;
       void update( Cutelyst::Context* context ) const;
       QVariantList search( Cutelyst::Context* context ) const;

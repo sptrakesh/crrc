@@ -35,7 +35,7 @@
     </div>
     <div id="de_${json.id}" style="display: none;">
       <form id="df_${json.id}" onsubmit="return update( ${json.id}, '${form.title.value}' );">
-        <input type="hidden" name="degree_id" value="${json.id}" />
+        <input type="hidden" name="id" value="${json.id}" />
         <label class="label">Title:</label>
         <input type="text" name="title" value="${form.title.value}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
         <label class="label">Duration:</label>
@@ -95,7 +95,7 @@
         showWarning( 'Unable to update degree.  Please try again later.' );
       }
     };
-    xhr.send( encodeURI( `degree_id=${degreeId}&title=${form.title.value}&duration=${form.duration.value}` ) );
+    xhr.send( encodeURI( `id=${degreeId}&title=${form.title.value}&duration=${form.duration.value}` ) );
 
     return false;
   }
@@ -129,7 +129,7 @@
         document.getElementById( `dw_${degreeId}` ).innerText = 'Unable to delete degree from the server.  Please try again later.';
       }
     };
-    xhr.send( `degree_id=${degreeId}` );
+    xhr.send( `id=${degreeId}` );
   }
 
   function hideForm( degreeId )
@@ -218,30 +218,30 @@
   {% endif %}
   <div id="degrees">
     {% for degree in degrees %}
-    <div id="d_{{ degree.degree_id }}">
-      <div><a href="#" onclick="return displayDegree( {{ degree.degree_id }} );">{{ degree.title }}</a></div>
-      <div id="dv_{{ degree.degree_id }}" style="display: none;">
+    <div id="d_{{ degree.id }}">
+      <div><a href="#" onclick="return displayDegree( {{ degree.id }} );">{{ degree.title }}</a></div>
+      <div id="dv_{{ degree.id }}" style="display: none;">
         <h3>Title: {{ degree.title }}</h3>
         {% if degree.duration %}
         <strong>Duration:</strong> {{ degree.duration }}<br/>
         {% endif %}
         {% if user.role.role_id == globalAdminRole %}
-        <button onclick="displayForm( {{ degree.degree_id }} )">Edit</button>
-        <button onclick="deleteDegree( {{ degree.degree_id }}, '{{ degree.title }}' )">Delete</button>
+        <button onclick="displayForm( {{ degree.id }} )">Edit</button>
+        <button onclick="deleteDegree( {{ degree.id }}, '{{ degree.title }}' )">Delete</button>
         {% endif %}
-        <button onclick="hideDegree( {{ degree.degree_id }} )">Close</button>
+        <button onclick="hideDegree( {{ degree.id }} )">Close</button>
         <br/>
-        <q id="dw_{{ degree.degree_id }}" class="warning" style="display: none;"></q>
+        <q id="dw_{{ degree.id }}" class="warning" style="display: none;"></q>
       </div>
-      <div id="de_{{ degree.degree_id }}" style="display: none;">
-        <form id="df_{{ degree.degree_id }}" onsubmit="return update( {{ degree.degree_id }}, '{{ degree.title }}' );">
-          <input type="hidden" name="degree_id" value="{{ degree.degree_id }}" />
+      <div id="de_{{ degree.id }}" style="display: none;">
+        <form id="df_{{ degree.id }}" onsubmit="return update( {{ degree.id }}, '{{ degree.title }}' );">
+          <input type="hidden" name="id" value="{{ degree.id }}" />
           <label class="label">Title:</label>
           <input type="text" name="title" value="{{ degree.title }}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
           <label class="label">Duration:</label>
           <input type="text" name="duration" value="{{ degree.duration }}" /><br/>
           <input type="submit" value="Save" />
-          <button onclick="hideForm( {{ degree.degree_id }} )">Close</button>
+          <button onclick="hideForm( {{ degree.id }} )">Close</button>
         </form>
       </div>
     </div>
