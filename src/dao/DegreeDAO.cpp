@@ -114,9 +114,14 @@ void DegreeDAO::update( Cutelyst::Context* context ) const
 
   if ( query.exec() )
   {
-    auto degree = Degree::create( context );
-    std::lock_guard<std::mutex> lock{ degreeMutex };
-    degrees[id.toUInt()] = std::move( degree );
+    if ( query.numRowsAffected() )
+    {
+      auto degree = Degree::create( context );
+      std::lock_guard<std::mutex> lock{ degreeMutex };
+      degrees[id.toUInt()] = std::move( degree );
+    }
+
+    context->stash()["count"] = query.numRowsAffected();
   }
   else context->stash()["error_msg"] = query.lastError().text();
 }

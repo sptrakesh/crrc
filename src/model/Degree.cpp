@@ -1,4 +1,4 @@
-#include "degree.h"
+#include "Degree.h"
 
 using crrc::model::Degree;
 
@@ -22,4 +22,10 @@ Degree::Ptr Degree::create( Cutelyst::Context* context )
   degree->duration = context->request()->param( "duration" );
 
   return degree;
+}
+
+Degree::operator QString() const
+{
+  return QString( "Degree - id: (%1), title: (%2), duration: (%3)" ).
+    arg( id ).arg( title ).arg( duration );
 }

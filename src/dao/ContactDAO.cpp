@@ -4,10 +4,12 @@
 #include "constants.h"
 
 #include <mutex>
+#include <QtCore/QDebug>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 #include "functions.h"
+#include "model/User.h"
 
 
 namespace crrc
@@ -42,7 +44,7 @@ namespace crrc
 
       if ( contact.userId.isValid() )
       {
-        record.insert( "user", UserDAO().retrieve( contact.userId.toString() ) );
+        record.insert( "user", UserDAO().retrieve( contact.userId.toUInt() ) );
       }
 
       if ( contact.institutionId.isValid() )
@@ -69,9 +71,11 @@ namespace crrc
       QVariantList list;
       foreach ( Contact contact, contacts )
       {
+        qDebug() << "Adding contact: " << contact.id;
         list.append( transform( contact, mode ) );
       }
 
+      qDebug() << "Loaded contacts: " << list;
       return list;
     }
 
@@ -89,6 +93,7 @@ namespace crrc
       contact.otherPhone = query.value( 8 );
       contact.userId = query.value( 9 ).toUInt();
       contact.institutionId = query.value( 10 ).toUInt();
+      qDebug() << "Created contact with id: " << contact.id;
       return contact;
     }
 
@@ -136,8 +141,8 @@ namespace crrc
       {
         const UserDAO dao;
         const auto user = dao.retrieveByUsername( username );
-        const QVariant userId = ( user.isEmpty() ) ?
-          dao.insert( c ) : user.value( "user_id" );
+        const auto uptr = qvariant_cast<model::User*>( user );
+        const QVariant userId = ( uptr ) ? uptr->getId() : dao.insert( c );
         query.bindValue( ":uid", userId );
 
         const auto roleId = c->request()->param( "role" );
@@ -165,7 +170,8 @@ namespace crrc
       if ( !username.isEmpty() )
       {
         const auto user = UserDAO().retrieveByUsername( username );
-        if ( !user.isEmpty() ) contact.userId = user.value( "user_id" ).toUInt();
+        const auto uptr = qvariant_cast<model::User*>( user );
+        if ( uptr ) contact.userId = uptr->getUserId();
         else qDebug() << "No user with username: " << username;
       }
 
@@ -198,6 +204,7 @@ QVariantHash ContactDAO::retrieveByUser( uint32_t id, const Mode& mode ) const
 
   for ( const auto& contact : contacts )
   {
+    qDebug() << "Checking contact userId: " << contact.userId.toUInt() << " against specified id: " << id;
     if ( id == contact.userId.toUInt() ) return transform( contact, mode );
   }
 

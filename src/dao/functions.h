@@ -8,6 +8,7 @@
 #include <QtCore/QStringBuilder>
 
 #include <Cutelyst/Controller>
+#include "model/User.h"
 
 
 namespace crrc
@@ -28,8 +29,8 @@ namespace crrc
 
     inline uint32_t roleId( Cutelyst::Context* context )
     {
-      const auto& user = context->stash( "user" ).toHash();
-      return user.value( "role" ).toHash().value( "role_id" ).toUInt();
+      const auto user = qvariant_cast<model::User*>( context->stash( "user" ) );
+      return user->getRoleId();
     }
 
     inline bool isGlobalAdmin( Cutelyst::Context* context )

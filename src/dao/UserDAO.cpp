@@ -1,85 +1,42 @@
 #include "UserDAO.h"
 #include "RoleDAO.h"
 #include "constants.h"
+#include "model/User.h"
 
 #include <mutex>
+#include <unordered_map>
 
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
+using crrc::model::User;
+
 namespace crrc
 {
   namespace dao
   {
-    struct User
-    {
-      QVariant id;
-      QVariant username;
-      QVariant password;
-      QVariant email;
-      QVariant firstName;
-      QVariant lastName;
-      QVariant middleName;
-      QVariant roleId;
-    };
-
-    static QMap<uint32_t, User> users;
+    static std::unordered_map<uint32_t, User::Ptr> users;
     static std::atomic_bool usersLoaded{ false };
     static std::mutex userMutex;
-
-    QVariantHash transform( const User& user )
-    {
-      QVariantHash record;
-      record.insert( "user_id", user.id );
-      record.insert( "username", user.username );
-      record.insert( "password", user.password );
-
-      if ( user.email.isValid() ) record.insert( "email", user.email );
-      if ( user.firstName.isValid() ) record.insert( "first_name", user.email );
-      if ( user.lastName.isValid() ) record.insert( "last_name", user.email );
-      if ( user.middleName.isValid() ) record.insert( "middle_name", user.email );
-
-      if ( user.roleId.isValid() )
-      {
-        const auto role = RoleDAO().retrieve( user.roleId.toString() );
-        if ( !role.isEmpty() ) record.insert( "role", role );
-      }
-
-      return record;
-    }
 
     QVariantList fromUsers()
     {
       QVariantList list;
-      foreach ( User user, users )
+      for ( const auto& iter : users )
       {
-        list.append( transform( user ) );
+        list << asVariant( iter.second.get() );
       }
 
       return list;
-    }
-
-    User createUser( QSqlQuery& query )
-    {
-      User user;
-      user.id = query.value( 0 ).toUInt();
-      user.username = query.value( 1 );
-      user.password = query.value( 2 );
-      user.email = query.value( 3 );
-      user.firstName = query.value( 4 );
-      user.lastName = query.value( 5 );
-      user.middleName = query.value( 6 );
-      user.roleId = query.value( 7 ).toUInt();
-      return user;
     }
 
     void loadUsers()
     {
       if ( usersLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ userMutex };
-      if ( !users.isEmpty() )
+      if ( !users.empty() )
       {
         usersLoaded = true;
         return;
@@ -93,9 +50,9 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto user = createUser( query );
-          auto id = user.id.toUInt();
-          users.insert( id, std::move( user ) );
+          auto user = User::create( query );
+          auto id = user->getId();
+          users[id] = std::move( user );
         }
 
         usersLoaded = true;
@@ -124,21 +81,6 @@ namespace crrc
       }
       else query.bindValue( ":role", QVariant( QVariant::UInt ) );
     }
-
-    User userFromContext( Cutelyst::Context* context )
-    {
-      User user;
-      user.username = context->request()->param( "username" );
-      user.password = context->request()->param( "password" );
-      user.email = context->request()->param( "email" );
-      user.firstName = context->request()->param( "firstName" );
-      user.lastName = context->request()->param( "lastName" );
-      user.middleName = context->request()->param( "middleName" );
-
-      const auto role = context->request()->param( "role" );
-      if ( !role.isEmpty() && role != "-1" ) user.roleId = role.toUInt();
-      return user;
-    }
   }
 }
 
@@ -150,22 +92,20 @@ QVariantList UserDAO::retrieveAll() const
   return fromUsers();
 }
 
-QVariantHash UserDAO::retrieve( const QString& id ) const
+QVariant UserDAO::retrieve( const uint32_t id ) const
 {
   loadUsers();
-  const auto cid = id.toUInt();
-  const auto iter = users.constFind( cid );
+  const auto iter = users.find( id );
 
-  return ( iter != users.end() ) ? 
-    transform( iter.value() ) : QVariantHash();
+  return ( iter != users.end() ) ? asVariant( iter->second.get() ) : QVariant();
 }
 
-QVariantHash UserDAO::retrieveByUsername( const QString& username ) const
+QVariant UserDAO::retrieveByUsername( const QString& username ) const
 {
   loadUsers();
-  for ( const auto user : users.values() )
+  for ( const auto& iter : users )
   {
-    if ( user.username == username ) return transform( user );
+    if ( iter.second->getUsername() == username ) return asVariant( iter.second.get() );
   }
 
   return QVariantHash();
@@ -184,15 +124,13 @@ uint32_t UserDAO::insert( Cutelyst::Context* context ) const
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
-  else
-  {
-    const auto id = query.lastInsertId().toUInt();
-    auto user = userFromContext( context );
-    user.id = id;
-    std::lock_guard<std::mutex> lock{ userMutex };
-    users[id] = std::move( user );
-    return id;
-  }
+
+  const auto id = query.lastInsertId().toUInt();
+  auto user = User::create( context );
+  user->setId( id );
+  std::lock_guard<std::mutex> lock{ userMutex };
+  users[id] = std::move( user );
+  return id;
 }
 
 void UserDAO::update( Cutelyst::Context* context ) const
@@ -207,10 +145,14 @@ void UserDAO::update( Cutelyst::Context* context ) const
 
   if ( query.exec() )
   {
-    auto user = userFromContext( context );
-    user.id = id.toUInt();
-    std::lock_guard<std::mutex> lock{ userMutex };
-    users[id.toUInt()] = std::move( user );
+    if ( query.numRowsAffected() )
+    {
+      auto user = User::create( context );
+      std::lock_guard<std::mutex> lock{ userMutex };
+      users[id.toUInt()] = std::move( user );
+    }
+
+    context->stash()["count"] = query.numRowsAffected();
   }
   else context->stash()["error_msg"] = query.lastError().text();
 }
@@ -232,8 +174,8 @@ QVariantList UserDAO::search( Cutelyst::Context* context ) const
   {
     while ( query.next() )
     {
-      auto user = retrieve( query.value( 0 ).toString() );
-      list.append( user );
+      const auto& user = retrieve( query.value( 0 ).toUInt() );
+      list << user;
     }
   }
   else
@@ -245,7 +187,7 @@ QVariantList UserDAO::search( Cutelyst::Context* context ) const
   return list;
 }
 
-QString UserDAO::remove( uint32_t id ) const
+uint32_t UserDAO::remove( uint32_t id ) const
 {
   loadUsers();
   auto query = CPreparedSqlQueryThreadForDB(
@@ -254,19 +196,21 @@ QString UserDAO::remove( uint32_t id ) const
   if ( query.exec() )
   {
     std::lock_guard<std::mutex> lock{ userMutex };
-    users.remove( id );
-    return "User deleted.";
+    users.erase( id );
+    return query.numRowsAffected();
   }
-  else return query.lastError().text();
+
+  qDebug() << query.lastError().text();
+  return 0;
 }
 
 bool UserDAO::isUsernameAvailable( const QString& username ) const
 {
   loadUsers();
 
-  for ( const auto user : users )
+  for ( const auto& iter : users )
   {
-    if ( user.username == username ) return false;
+    if ( iter.second->getUsername() == username ) return false;
   }
 
   return true;
@@ -274,19 +218,19 @@ bool UserDAO::isUsernameAvailable( const QString& username ) const
 
 bool UserDAO::updateRole( uint32_t userId, uint32_t roleId ) const
 {
+  loadUsers();
+
   auto query = CPreparedSqlQueryThreadForDB(
    "update users set role_id = :roleId where user_id = :userId", DATABASE_NAME );
   query.bindValue( ":roleId", roleId );
   query.bindValue( ":userId", userId );
-  const auto result = query.exec();
+  const auto result = query.exec() && query.numRowsAffected();
 
   if ( result )
   {
-    const auto iter = users.find( userId );
-    auto user = iter.value();
-    user.roleId = roleId;
+    auto iter = users.find( userId );
     std::lock_guard<std::mutex> lock{ userMutex };
-    users[userId] = std::move( user );
+    iter->second->setRoleId( roleId );
   }
   else qWarning() << query.lastError().text();
 
@@ -295,26 +239,26 @@ bool UserDAO::updateRole( uint32_t userId, uint32_t roleId ) const
 
 bool UserDAO::updatePassword( const QString& username, const QString& password ) const
 {
+  loadUsers();
+
   QCryptographicHash hash{ QCryptographicHash::Sha3_512 };
   hash.addData( password.toLocal8Bit() );
   const auto passwd = hash.result().toHex();
-  const auto user = retrieveByUsername( username );
-  const auto userId = user.value( "user_id" ).toUInt();
+
+  const auto& user = retrieveByUsername( username );
+  const auto uptr = qvariant_cast<User*>( user );
 
   auto query = CPreparedSqlQueryThreadForDB(
    "update users set password = :password where user_id = :userId", DATABASE_NAME );
   query.bindValue( ":password", passwd );
-  query.bindValue( ":userId", userId );
+  query.bindValue( ":userId", uptr->getId() );
   const auto result = query.exec();
 
   if ( result )
   {
-    const auto iter = users.find( userId );
-    auto u = iter.value();
-    u.password = passwd;
-    std::lock_guard<std::mutex> lock{ userMutex };
-    users[userId] = std::move( u );
-    qDebug() << "Updated plain text password for user: " << userId;
+    auto iter = users.find( uptr->getId() );
+    iter->second->setPassword( passwd );
+    qDebug() << "Updated plain text password for user: " << uptr->getId();
   }
   else qWarning() << query.lastError().text();
 
