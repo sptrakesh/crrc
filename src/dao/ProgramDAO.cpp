@@ -54,7 +54,7 @@ namespace crrc
 
         if ( ! program.designationId.isNull() )
         {
-          record.insert( "designation", DesignationDAO().retrieve( program.designationId.toString() ) );
+          record.insert( "designation", DesignationDAO().retrieve( program.designationId.toUInt() ) );
         }
 
         record.insert( "curriculum_code", program.curriculumCode );

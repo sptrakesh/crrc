@@ -1,43 +1,43 @@
 <script type="text/javascript">
-  function isEnoughLength(str, length)
+  function isEnoughLength( str, length )
   {
-    if ((str == null) || isNaN(length)) return false;
-    else if (str.length < length) return false;
+    if ( ( str == null ) || isNaN( length ) ) return false;
+    else if ( str.length < length ) return false;
     return true;
   }
 
-  function hasMixedCase(passwd)
+  function hasMixedCase( passwd )
   {
-    return passwd.match(/[a-z]/) && passwd.match(/[A-Z]/);
+    return passwd.match( /[a-z]/ ) && passwd.match( /[A-Z]/ );
   }
 
-  function hasNumeral(passwd)
+  function hasNumeral( passwd )
   {
-    return passwd.match(/[0-9]/);
+    return passwd.match( /[0-9]/ );
   }
 
-  function hasSpecialChars(passwd)
+  function hasSpecialChars( passwd )
   {
-    return passwd.match(/[!,@,#,$,%,^,&,*,?,_,~]/);
+    return passwd.match( /[!,@,#,$,%,^,&,*,?,_,~]/ );
   }
 
-  function checkPasswordStrength(pwd)
+  function checkPasswordStrength( pwd )
   {
-    return (isEnoughLength(pwd, 8) && hasMixedCase(pwd) &&
-      hasNumeral(pwd) && hasSpecialChars(pwd));
+    return ( isEnoughLength( pwd, 8 ) && hasMixedCase( pwd ) &&
+      hasNumeral( pwd ) && hasSpecialChars( pwd ) );
   }
 
-  function checkPassword(form)
+  function checkPassword( form )
   {
     var strength = true;
-    if (form.password)
+    if ( form.password )
     {
-      strength = checkPasswordStrength(form.password.value);
-      let element = document.getElementById('passwordWarning');
+      strength = checkPasswordStrength( form.password.value );
+      let element = document.getElementById( 'passwordWarning' );
 
-      if (!strength)
+      if ( !strength )
       {
-        console.log(`Password (${form.password.value}) fails strength check.`);
+        console.log( `Password (${form.password.value}) fails strength check.` );
         element.style.display = "inline";
         form.password.focus();
       }
@@ -47,11 +47,11 @@
     return strength;
   }
 
-  function checkInstitution(form)
+  function checkInstitution( form )
   {
-    let element = document.getElementById('institutionWarning');
+    let element = document.getElementById( 'institutionWarning' );
 
-    if ("-1" === form.institution.value)
+    if ( "-1" === form.institution.value )
     {
       element.style.display = "inline";
       form.institution.focus();
@@ -64,10 +64,10 @@
 
   function enableRole()
   {
-    let username = document.getElementById('username');
-    if (!isEmpty(username))
+    let username = document.getElementById( 'username' );
+    if ( !isEmpty( username ) )
     {
-      let element = document.getElementById('role');
+      let element = document.getElementById( 'role' );
       element.disabled = false;
     }
   }
@@ -75,26 +75,26 @@
   function validate()
   {
     let form = document.forms[0];
-    let readonly = document.getElementById('username').getAttribute('readonly');
+    let readonly = document.getElementById( 'username' ).getAttribute( 'readonly' );
 
-    if (isEmpty(form.username) || readonly != null)
+    if ( isEmpty( form.username ) || readonly != null )
     {
-      if (checkInstitution(form)) form.submit();
+      if ( checkInstitution( form ) ) form.submit();
       return;
     }
 
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', `/contacts/isUsernameAvailable/?username=${form.username.value}`);
-    xhr.onload = function()
+    xhr.open( 'GET', `/contacts/isUsernameAvailable/?username=${form.username.value}` );
+    xhr.onload = function ()
     {
-      let element = document.getElementById('userNameWarning');
+      let element = document.getElementById( 'userNameWarning' );
       let response = xhr.responseText;
-      console.log(`Check to see if username ${form.username.value} is available returned ${response}.`);
+      console.log( `Check to see if username ${form.username.value} is available returned ${response}.` );
 
-      if (200 === xhr.status)
+      if ( 200 === xhr.status )
       {
         let available = 'true' === xhr.responseText;
-        if (!available)
+        if ( !available )
         {
           element.style.display = 'inline';
           form.username.focus();
@@ -102,7 +102,7 @@
         else
         {
           element.style.display = 'none';
-          if (checkPassword(form) && checkInstitution(form)) form.submit();
+          if ( checkPassword( form ) && checkInstitution( form ) ) form.submit();
         }
       }
       else
@@ -124,53 +124,54 @@
     {% endif %}
     <label class="label">Name:</label>
     <input name="name" id="name" type="text" size="30" width="100" required="required"
-           {% if object %}value="{{ object.name }}"{% endif %} />
+           {% if object %}value="{{ object.name }}" {% endif %} />
     <br />
     <label class="label">Email (Work):</label>
     <input name="workEmail" id="workEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.work_email }}"{% endif %} />
+           {% if object %}value="{{ object.work_email }}" {% endif %} />
     <br />
     <label class="label">Email (Home):</label>
     <input name="homeEmail" id="otherEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.home_email }}"{% endif %} />
+           {% if object %}value="{{ object.home_email }}" {% endif %} />
     <br />
     <label class="label">Email (Other):</label>
     <input name="otherEmail" id="otherEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.other_email }}"{% endif %} />
+           {% if object %}value="{{ object.other_email }}" {% endif %} />
     <br />
     <label class="label">Telephone (Work):</label>
     <input name="workPhone" id="workPhone" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.work_phone }}"{% endif %} />
+           {% if object %}value="{{ object.work_phone }}" {% endif %} />
     <br />
     <label class="label">Telephone (Mobile):</label>
     <input name="mobilePhone" id="mobilePhone" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.mobile_phone }}"{% endif %} />
+           {% if object %}value="{{ object.mobile_phone }}" {% endif %} />
     <br />
     <label class="label">Telephone (Other):</label>
     <input name="otherPhone" id="otherPhone" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.other_phone }}"{% endif %} />
+           {% if object %}value="{{ object.other_phone }}" {% endif %} />
     <br />
     <label class="label">Institution:</label>
     <select name="institution" id="institution">
       <option value="-1">Select Institution</option>
       {% for institution in institutions %}
       <option value="{{ institution.institution_id }}"
-              {% if institution.institution_id == object.institution.institution_id %}selected{% endif %}
-              >{{ institution.name }}</option>
+              {% if institution.institution_id == object.institution.institution_id %}selected{% endif %}>
+        {{ institution.name }}
+      </option>
       {% endfor %}
     </select>
     <q id="institutionWarning" class="warning" style="display: none;">Contact must be associated with an institution.</q>
-    <br/>
+    <br />
     <p><strong>Login Information</strong></p>
     <label class="label">Username:</label>
     <input name="username" id="username" type="text" size="30" width="100"
-           {% if object.user.username %}value="{{ object.user.username }}" readonly="readonly"{% endif %} 
-           onchange="enableRole()"/>
+           {% if object.user.username %}value="{{ object.user.username }}" readonly="readonly" {% endif %}
+           onchange="enableRole()" />
     <q id="userNameWarning" class="warning" style="display: none;">Username not available.  Please try another username.</q>
     <br />
     {% if object.user %}{% else %}
     <label class="label">Password:</label>
-    <input name="password" id="password" type="password" size="30" width="100"/>
+    <input name="password" id="password" type="password" size="30" width="100" />
     <q id="passwordWarning" class="warning" style="display: none;">Password should contain minimum 8 characters, combination of upper and lower case letters, numbers and special characters.</q>
     {% endif %}
     <br />
@@ -178,12 +179,14 @@
     <select name="role" id="role" {% if object.user %}{% else %}disabled{% endif %}>
       <option value="-1">Select Role</option>
       {% for role in roles %}
-      <option value="{{ role.role_id }}"
-{% ifequal role.role_id object.user.role.role_id %}selected="selected"{% endifequal %}>{{ role.role }}</option>
+      <option value="{{ role.id }}"
+              {% ifequal role.id object.user.role.id %}selected="selected" {% endifequal %}>
+        {{ role.role }}
+      </option>
       {% endfor %}
     </select>
     {% if object %}
-    <input type="hidden" name="_role" value="{{ object.user.role.role_id }}" />
+    <input type="hidden" name="_role" value="{{ object.user.role.id }}" />
     <input type="hidden" name="id" value="{{ object.contact_id }}" />
     {% endif %}
     <button onclick="validate()">Save</button>

@@ -9,8 +9,8 @@ namespace crrc
     struct RoleDAO
     {
       QVariantList retrieveAll() const;
-      QVariantHash retrieve( const QString& id ) const;
-      QVariantHash retrieveByRole( const QString& role ) const;
+      QVariant retrieve( const uint32_t id ) const;
+      QVariant retrieveByRole( const QString& role ) const;
     };
   }
 }

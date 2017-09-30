@@ -1,59 +1,38 @@
 ﻿#include "DesignationDAO.h"
 #include "constants.h"
+#include "model/Designation.h"
 
 #include <mutex>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
+#include <unordered_map>
+
+using crrc::model::Designation;
 
 namespace crrc
 {
   namespace dao
   {
-    struct Designation
-    {
-      QVariant id;
-      QVariant type;
-      QVariant title;
-    };
-
-    static QMap<uint32_t, Designation> designations;
+    static std::unordered_map<uint32_t, Designation::Ptr> designations;
     static std::atomic_bool designationsLoaded{ false };
     static std::mutex designationMutex;
-
-    QVariantHash transform( const Designation& designation )
-    {
-      QVariantHash record;
-      record.insert( "designation_id", designation.id );
-      record.insert( "type", designation.type );
-      record.insert( "title", designation.title );
-      return record;
-    }
 
     QVariantList fromDesignations()
     {
       QVariantList list;
-      foreach ( Designation designation, designations )
+      for ( const auto& iter : designations )
       {
-        list.append( transform( designation ) );
+        list << asVariant( iter.second.get() );
       }
 
       return list;
-    }
-
-    Designation createDesignation( QSqlQuery& query )
-    {
-      Designation designation;
-      designation.id = query.value( 0 ).toUInt();
-      designation.type = query.value( 1 );
-      designation.title = query.value( 2 );
-      return designation;
     }
 
     void loadDesignations()
     {
       if ( designationsLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ designationMutex };
-      if ( !designations.isEmpty() )
+      if ( !designations.empty() )
       {
         designationsLoaded = true;
         return;
@@ -67,9 +46,9 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto designation = createDesignation( query );
-          auto id = designation.id.toUInt();
-          designations.insert( id, std::move( designation ) );
+          auto designation = Designation::create( query );
+          auto id = designation->getId();
+          designations[id] = std::move( designation );
         }
 
         designationsLoaded = true;
@@ -86,13 +65,11 @@ QVariantList DesignationDAO::retrieveAll() const
   return fromDesignations();
 }
 
-QVariantHash DesignationDAO::retrieve( const QString& id ) const
+QVariant DesignationDAO::retrieve( const uint32_t id ) const
 {
   loadDesignations();
-  const uint32_t cid = id.toUInt();
-  const auto iter = designations.constFind( cid );
-
-  return ( iter != designations.end() ) ? transform( iter.value() ) : QVariantHash();
+  const auto& iter = designations.find( id );
+  return ( iter != designations.end() ) ? asVariant( iter->second.get() ) : QVariant();
 }
 
 QVariantList DesignationDAO::retrieveByType( const QString& type ) const
@@ -100,9 +77,9 @@ QVariantList DesignationDAO::retrieveByType( const QString& type ) const
   loadDesignations();
   QVariantList list;
 
-  for ( const auto& designation : designations )
+  for ( const auto& iter : designations )
   {
-    if ( type == designation.type.toString() ) list << transform( designation );
+    if ( type == iter.second->getType() ) list << asVariant( iter.second.get() );
   }
 
   return list;

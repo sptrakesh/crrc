@@ -30,12 +30,9 @@ bool Root::Auto( Cutelyst::Context* c )
   const auto& user = Cutelyst::Authentication::user( c );
   if ( ! user.isEmpty() )
   {
-    qDebug() << "User " << user;
     const auto uid = user.value( "id" ).toUInt();
     const auto& u = dao::UserDAO().retrieve( uid );
-    qDebug() << "User id: " << uid;
     const auto& contact = dao::ContactDAO().retrieveByUser( uid );
-    qDebug() << "Contact: " << contact;
     const auto& institution = contact.value( "institution" );
 
     c->stash({

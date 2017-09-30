@@ -2,6 +2,8 @@
 #include "dao/InstitutionDAO.h"
 #include "dao/InstitutionDesignationDAO.h"
 #include "dao/DesignationDAO.h"
+#include "dao/functions.h"
+#include "model/Designation.h"
 
 #include <QtCore/QDate>
 #include <QtCore/QDebug>
@@ -49,15 +51,16 @@ void InstitutionDesignations::edit( Cutelyst::Context* c ) const
   QSet<uint32_t> set;
   for ( const auto& member : members )
   {
-    set << member.toHash().value( "designation" ).toHash().value( "designation_id" ).toUInt();
+    const auto* designation = qvariant_cast<model::Designation*>( member.toHash().value( "designation" ) );
+    set << designation->getId();
   }
 
   const auto& designations = dao::DesignationDAO().retrieveAll();
   QVariantList nonMembers;
-  for ( const auto designation : designations )
+  for ( const auto item : designations )
   {
-    const auto& id = designation.toHash().value( "designation_id" ).toUInt();
-    if ( !set.contains( id ) ) nonMembers << designation;
+    const auto* designation = qvariant_cast<model::Designation*>( item );
+    if ( !set.contains( designation->getId() ) ) nonMembers << item;
   }
 
   c->stash( {
@@ -83,10 +86,5 @@ void InstitutionDesignations::sendJson( Cutelyst::Context* c, const QString& res
   QJsonObject json;
   json.insert( "status", ( result.isEmpty() ? true : false ) );
   if ( !result.isEmpty() ) json.insert( "error", result );
-
-  const auto& bytes = QJsonDocument( json ).toJson();
-
-  c->response()->setContentType( "application/json" );
-  c->response()->setContentLength( bytes.size() );
-  c->response()->setBody( bytes );
+  dao::sendJson( c, json );
 }

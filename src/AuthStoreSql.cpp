@@ -1,6 +1,7 @@
 #include "AuthStoreSql.h"
 #include "dao/UserDAO.h"
 #include "model/User.h"
+#include "model/Role.h"
 
 #include <QtCore/QDebug>
 
@@ -27,7 +28,16 @@ Cutelyst::AuthenticationUser AuthStoreSql::findUser( Cutelyst::Context* c,
     u.insert( "firstName", uptr->getFirstName() );
     u.insert( "lastName", uptr->getLastName() );
     u.insert( "middleName", uptr->getMiddleName() );
-    u.insert( "role", uptr->getRole() );
+
+    const auto qvar = uptr->getRole();
+    if ( !qvar.isNull() )
+    {
+      const auto role = qvariant_cast<model::Role*>( qvar );
+      QVariantMap map;
+      map.insert( "id", role->getId() );
+      map.insert( "role", role->getRole() );
+      u.insert( "role", map );
+    }
 
     return u;
   }

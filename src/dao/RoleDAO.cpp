@@ -1,58 +1,35 @@
 #include "RoleDAO.h"
 #include "constants.h"
+#include "model/Role.h"
 
 #include <mutex>
+#include <unordered_map>
 
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
+
+using crrc::model::Role;
 
 namespace crrc
 {
   namespace dao
   {
-    struct Role
-    {
-      QVariant id;
-      QVariant role;
-    };
-
-    static QMap<uint32_t, Role> roles;
+    static std::unordered_map<uint32_t, Role::Ptr> roles;
     static std::atomic_bool rolesLoaded{ false };
     static std::mutex roleMutex;
-
-    QVariantHash transform( const Role& role )
-    {
-      QVariantHash record;
-      record.insert( "role_id", role.id );
-      record.insert( "role", role.role );
-
-      return record;
-    }
 
     QVariantList fromRoles()
     {
       QVariantList list;
-      foreach ( Role role, roles )
-      {
-        list.append( transform( role ) );
-      }
-
+      for ( const auto& iter : roles ) list << asVariant( iter.second.get() );
       return list;
-    }
-
-    Role createRole( QSqlQuery& query )
-    {
-      Role role;
-      role.id = query.value( 0 ).toUInt();
-      role.role = query.value( 1 );
-      return role;
     }
 
     void loadRoles()
     {
       if ( rolesLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ roleMutex };
-      if ( !roles.isEmpty() )
+      if ( !roles.empty() )
       {
         rolesLoaded = true;
         return;
@@ -65,9 +42,8 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto role = createRole( query );
-          auto id = role.id.toUInt();
-          roles.insert( id, std::move( role ) );
+          auto role = Role::create( query );
+          roles[role->getId()] = std::move( role );
         }
 
         rolesLoaded = true;
@@ -84,23 +60,20 @@ QVariantList RoleDAO::retrieveAll() const
   return fromRoles();
 }
 
-QVariantHash RoleDAO::retrieve( const QString& id ) const
+QVariant RoleDAO::retrieve( const uint32_t id ) const
 {
   loadRoles();
-  const auto cid = id.toUInt();
-  const auto iter = roles.constFind( cid );
-
-  return ( iter != roles.end() ) ? 
-    transform( iter.value() ) : QVariantHash();
+  const auto iter = roles.find( id );
+  return ( iter != roles.end() ) ? asVariant( iter->second.get() ) : QVariant();
 }
 
-QVariantHash RoleDAO::retrieveByRole( const QString& name ) const
+QVariant RoleDAO::retrieveByRole( const QString& name ) const
 {
   loadRoles();
-  for ( const auto role : roles.values() )
+  for ( const auto& iter : roles )
   {
-    if ( role.role == name ) return transform( role );
+    if ( iter.second->getRole() == name ) return asVariant( iter.second.get() );
   }
 
-  return QVariantHash();
+  return QVariant();
 }

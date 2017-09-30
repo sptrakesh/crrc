@@ -22,10 +22,7 @@ namespace crrc
     QVariantList fromDegrees()
     {
       QVariantList list;
-      for ( const auto& iter : degrees )
-      {
-        list << asVariant( iter.second.get() );
-      }
+      for ( const auto& iter : degrees ) list << asVariant( iter.second.get() );
 
       return list;
     }
@@ -49,8 +46,7 @@ namespace crrc
         while ( query.next() )
         {
           auto degree = Degree::create( query );
-          auto id = degree->getId();
-          degrees[id] = std::move( degree );
+          degrees[degree->getId()] = std::move( degree );
         }
 
         degreesLoaded = true;

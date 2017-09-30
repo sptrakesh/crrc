@@ -40,7 +40,7 @@ User::Ptr User::create( Cutelyst::Context* context )
 const QVariant User::getRole() const
 {
   if ( !roleId ) return QVariant();
-  return dao::RoleDAO().retrieve( QString::number( roleId ) );
+  return dao::RoleDAO().retrieve( roleId );
 }
 
 User::operator QString() const

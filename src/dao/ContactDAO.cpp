@@ -204,7 +204,6 @@ QVariantHash ContactDAO::retrieveByUser( uint32_t id, const Mode& mode ) const
 
   for ( const auto& contact : contacts )
   {
-    qDebug() << "Checking contact userId: " << contact.userId.toUInt() << " against specified id: " << id;
     if ( id == contact.userId.toUInt() ) return transform( contact, mode );
   }
 

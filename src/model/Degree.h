@@ -4,7 +4,6 @@
 #include <QtSql/QSqlQuery>
 #include <Cutelyst/Context>
 
-
 namespace crrc
 {
   namespace model
@@ -25,7 +24,7 @@ namespace crrc
       ~Degree() = default;
 
       uint32_t getId() const { return id; }
-      QVariant getDegreeId() const { return id; }
+      QVariant getDegreeId() const { return QVariant{ id }; }
 
       Degree& setId( uint32_t id )
       {

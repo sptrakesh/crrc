@@ -20,7 +20,7 @@ namespace crrc
     {
       QVariantHash record;
       record.insert( "institution_id", id.institutionId );
-      record.insert( "designation", DesignationDAO().retrieve( id.designationId.toString() ) );
+      record.insert( "designation", DesignationDAO().retrieve( id.designationId.toUInt() ) );
       record.insert( "expiration", id.expiration.toInt() );
       return record;
     }

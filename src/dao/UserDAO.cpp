@@ -2,6 +2,7 @@
 #include "RoleDAO.h"
 #include "constants.h"
 #include "model/User.h"
+#include "model/Role.h"
 
 #include <mutex>
 #include <unordered_map>
@@ -76,8 +77,9 @@ namespace crrc
       const auto role = c->request()->param( "role" );
       if ( ! role.isEmpty() && role != "-1" )
       {
-        const auto r = RoleDAO().retrieve( role );
-        query.bindValue( ":role", r.value( "role_id" ).toUInt() );
+        const auto r = RoleDAO().retrieve( role.toUInt() );
+        const auto* rptr = qvariant_cast<model::Role*>( r );
+        query.bindValue( ":role", rptr->getId() );
       }
       else query.bindValue( ":role", QVariant( QVariant::UInt ) );
     }

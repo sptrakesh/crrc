@@ -28,14 +28,23 @@
     let xhr = new XMLHttpRequest();
     xhr.open( 'POST', '/institution/designations/save' );
     xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-    xhr.onreadystatechange = function ()
+    xhr.onload = function ()
     {
-      if ( 4 === xhr.readyState && 200 === xhr.status )
+      if ( 200 === xhr.status )
       {
         console.log( `Added designation.  ${xhr.responseText}` );
         let json = JSON.parse( xhr.responseText );
         if ( json.status ) location.reload( true );
-        else form.disabled = false;
+        else
+        {
+          form.disabled = false;
+          if ( isValid( json.error ) )
+          {
+            let warning = document.getElementById( `dw_${form.institution_id.value}` );
+            warning.style.display = 'inline';
+            warning.innerText = json.error;
+          }
+        }
       }
     };
     xhr.send( encodeURI( `institution_id=${form.institution_id.value}&designation_id=${form.designation_id.value}&expiration=${form.expiration.value}` ) );
@@ -44,15 +53,14 @@
   }
 </script>
 
-
 <table>
   <tr><td><h3>Current designations in {{ object.name }}</h3></td></tr>
-  <tr><td>
+  <tr><td><div id="members">
     {% for member in members %}
     <form method="post" action="/institution/designations/save" onsubmit="return update(this);">
       <input type="hidden" name="institution_id" value="{{ member.institution_id }}" />
       <div style="width:100%;">
-        <div style="float: left; width: 55%;"><input type="checkbox" name="designation_id" value="{{ member.designation.designation_id }}" checked/>{{ member.designation.title }}</div>
+        <div style="float: left; width: 55%;"><input type="checkbox" name="designation_id" value="{{ member.designation.id }}" checked/>{{ member.designation.title }}</div>
         <div style="float: right; width: 20%;"><input type="submit" value="Update" /></div>
         <div style="float: none; width: 20%; display: inline;">
           <select name="expiration" style="width: 5em;">
@@ -65,14 +73,14 @@
       </div>
     </form>
     {% endfor %}
-  </td></tr>
+  </div></td></tr>
   <tr><td><h3>Add designations to {{ object.name }}</h3></td></tr>
-  <tr><td>
+  <tr><td><div id="nonmembers">
     {% for designation in designations %}
     <form method="post" action="/institution/designations/save" onsubmit="return add(this);">
       <input type="hidden" name="institution_id" value="{{ object.institution_id }}" />
       <div style="width:100%;">
-        <div style="float: left; width: 55%;"><input type="hidden" name="designation_id" value="{{ designation.designation_id }}" />{{ designation.title }}</div>
+        <div style="float: left; width: 55%;"><input type="hidden" name="designation_id" value="{{ designation.id }}" />{{ designation.title }}</div>
         <div style="float: right; width: 20%;"><input type="submit" value="Add" /></div>
         <div style="float: none; width: 20%; display: inline;">
           <select name="expiration" style="width: 5em; display: inline;">
@@ -82,7 +90,8 @@
           </select>
         </div>
         <div style="clear: both;"></div>
+        <q id="dw_{{ designation.id }}" class="warning" style="display: none;"></q>
       </div>
     </form>
     {% endfor %}
-</td></tr></table>
+</div></td></tr></table>

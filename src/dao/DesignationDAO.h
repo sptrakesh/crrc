@@ -9,7 +9,7 @@ namespace crrc
     struct DesignationDAO
     {
       QVariantList retrieveAll() const;
-      QVariantHash retrieve( const QString& id ) const;
+      QVariant retrieve( const uint32_t id ) const;
       QVariantList retrieveByType( const QString& type ) const;
     };
   }
