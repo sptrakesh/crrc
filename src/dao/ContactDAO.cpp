@@ -2,6 +2,7 @@
 #include "UserDAO.h"
 #include "InstitutionDAO.h"
 #include "constants.h"
+#include "model/Contact.h"
 
 #include <mutex>
 #include <QtCore/QDebug>
@@ -10,98 +11,30 @@
 #include <Cutelyst/Plugins/Utils/sql.h>
 #include "functions.h"
 #include "model/User.h"
+#include <unordered_map>
 
+using crrc::model::Contact;
 
 namespace crrc
 {
   namespace dao
   {
-    struct Contact
-    {
-      QVariant id;
-      QVariant name;
-      QVariant workEmail;
-      QVariant homeEmail;
-      QVariant otherEmail;
-      QVariant workPhone;
-      QVariant mobilePhone;
-      QVariant homePhone;
-      QVariant otherPhone;
-      QVariant userId;
-      QVariant institutionId;
-    };
-
-    static QMap<uint32_t, Contact> contacts;
+    static std::unordered_map<uint32_t, Contact::Ptr> contacts;
     static std::atomic_bool contactsLoaded{ false };
     static std::mutex contactMutex;
-
-    QVariantHash transform( const Contact& contact, const ContactDAO::Mode& mode )
-    {
-      QVariantHash record;
-      record.insert( "contact_id", contact.id );
-      record.insert( "name", contact.name );
-      record.insert( "work_email", contact.workEmail );
-
-      if ( contact.userId.isValid() )
-      {
-        record.insert( "user", UserDAO().retrieve( contact.userId.toUInt() ) );
-      }
-
-      if ( contact.institutionId.isValid() )
-      {
-        record.insert( "institution", InstitutionDAO().retrieve(
-          contact.institutionId.toString(), InstitutionDAO::Mode::Partial ) );
-      }
-
-      if ( ContactDAO::Mode::Full == mode )
-      {
-        record.insert( "home_email", contact.homeEmail );
-        record.insert( "other_email", contact.otherEmail );
-        record.insert( "work_phone", contact.workPhone );
-        record.insert( "mobile_phone", contact.mobilePhone );
-        record.insert( "home_phone", contact.homePhone );
-        record.insert( "other_phone", contact.otherPhone );
-      }
-
-      return record;
-    }
 
     QVariantList fromContacts( const ContactDAO::Mode& mode )
     {
       QVariantList list;
-      foreach ( Contact contact, contacts )
-      {
-        qDebug() << "Adding contact: " << contact.id;
-        list.append( transform( contact, mode ) );
-      }
-
-      qDebug() << "Loaded contacts: " << list;
+      for ( const auto& iter : contacts ) list << asVariant( iter.second.get() );
       return list;
-    }
-
-    Contact createContact( QSqlQuery& query )
-    {
-      Contact contact;
-      contact.id = query.value( 0 ).toUInt();
-      contact.name = query.value( 1 );
-      contact.workEmail = query.value( 2 );
-      contact.homeEmail = query.value( 3 );
-      contact.otherEmail = query.value( 4 );
-      contact.workPhone = query.value( 5 );
-      contact.mobilePhone = query.value( 6 );
-      contact.homePhone = query.value( 7 );
-      contact.otherPhone = query.value( 8 );
-      contact.userId = query.value( 9 ).toUInt();
-      contact.institutionId = query.value( 10 ).toUInt();
-      qDebug() << "Created contact with id: " << contact.id;
-      return contact;
     }
 
     void loadContacts()
     {
       if ( contactsLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ contactMutex };
-      if ( !contacts.isEmpty() )
+      if ( !contacts.empty() )
       {
         contactsLoaded = true;
         return;
@@ -115,9 +48,8 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto contact = createContact( query );
-          auto id = contact.id.toUInt();
-          contacts.insert( id, std::move( contact ) );
+          auto contact = Contact::create( query );
+          contacts[contact->getId()] = std::move( contact );
         }
 
         contactsLoaded = true;
@@ -152,31 +84,6 @@ namespace crrc
         }
       }
     }
-
-    Contact contactFromContext( Cutelyst::Context* context )
-    {
-      Contact contact;
-      contact.name = context->request()->param( "name" );
-      contact.workEmail = context->request()->param( "workEmail" );
-      contact.homeEmail = context->request()->param( "homeEmail" );
-      contact.otherEmail = context->request()->param( "otherEmail" );
-      contact.workPhone = context->request()->param( "workPhone" );
-      contact.mobilePhone = context->request()->param( "mobilePhone" );
-      contact.homePhone = context->request()->param( "homePhone" );
-      contact.otherPhone = context->request()->param( "otherPhone" );
-      contact.institutionId = context->request()->param( "institution" );
-
-      const auto username = context->request()->param( "username" );
-      if ( !username.isEmpty() )
-      {
-        const auto user = UserDAO().retrieveByUsername( username );
-        const auto uptr = qvariant_cast<model::User*>( user );
-        if ( uptr ) contact.userId = uptr->getUserId();
-        else qDebug() << "No user with username: " << username;
-      }
-
-      return contact;
-    }
   }
 }
 
@@ -188,26 +95,24 @@ QVariantList ContactDAO::retrieveAll( const Mode& mode ) const
   return fromContacts( mode );
 }
 
-QVariantHash ContactDAO::retrieve( const QString& id, const Mode& mode ) const
+QVariant ContactDAO::retrieve( const uint32_t id, const Mode& mode ) const
 {
   loadContacts();
-  const auto cid = id.toUInt();
-  const auto iter = contacts.constFind( cid );
-
-  return ( iter != contacts.end() ) ? 
-    transform( iter.value(), mode ) : QVariantHash();
+  const auto iter = contacts.find( id );
+  return ( iter != contacts.end() ) ? asVariant( iter->second.get() ) : QVariant();
 }
 
-QVariantHash ContactDAO::retrieveByUser( uint32_t id, const Mode& mode ) const
+QVariant ContactDAO::retrieveByUser( uint32_t id, const Mode& mode ) const
 {
+  if ( !id ) return QVariant();
   loadContacts();
 
-  for ( const auto& contact : contacts )
+  for ( const auto& iter : contacts )
   {
-    if ( id == contact.userId.toUInt() ) return transform( contact, mode );
+    if ( id == iter.second->getUserId() ) return asVariant( iter.second.get() );
   }
 
-  return QVariantHash();
+  return QVariant();
 }
 
 QVariantList ContactDAO::retrieveByInstitution( uint32_t id, const Mode& mode ) const
@@ -217,9 +122,9 @@ QVariantList ContactDAO::retrieveByInstitution( uint32_t id, const Mode& mode ) 
 
   loadContacts();
 
-  for ( const auto& contact : contacts )
+  for ( const auto& iter : contacts )
   {
-    if ( id == contact.institutionId.toUInt() ) list << transform( contact, mode );
+    if ( id == iter.second->getInstitutionId() ) list << iter.second->getInstitution();
   }
 
   return list;
@@ -238,33 +143,38 @@ uint32_t ContactDAO::insert( Cutelyst::Context* context ) const
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
-  else
-  {
-    const auto id = query.lastInsertId().toUInt();
-    auto contact = contactFromContext( context );
-    contact.id = id;
-    std::lock_guard<std::mutex> lock{ contactMutex };
-    contacts[id] = std::move( contact );
-    return id;
-  }
+
+  const auto id = query.lastInsertId().toUInt();
+  auto contact = Contact::create( context );
+  contact->setId( id );
+  std::lock_guard<std::mutex> lock{ contactMutex };
+  contacts[id] = std::move( contact );
+  return id;
 }
 
 void ContactDAO::update( Cutelyst::Context* context ) const
 {
   loadContacts();
-  auto id = context->request()->param( "id" );
+  const auto id = context->request()->param( "id" ).toUInt();
   auto query = CPreparedSqlQueryThreadForDB(
     "update contacts set name=:name, work_email=:oe, home_email=:he, other_email=:oem, work_phone=:op, mobile_phone=:mp, home_phone=:hp, other_phone=:oph, user_id = :uid, institution_id = :inst where contact_id=:id",
     crrc::DATABASE_NAME );
   bindContact( context, query );
-  query.bindValue( ":id", id.toInt() );
+  query.bindValue( ":id", id );
 
   if ( query.exec() )
   {
-    auto contact = contactFromContext( context );
-    contact.id = id.toUInt();
-    std::lock_guard<std::mutex> lock{ contactMutex };
-    contacts[id.toUInt()] = std::move( contact );
+    if ( query.numRowsAffected() )
+    {
+      auto contact = Contact::create( context );
+      const auto& role = context->request()->param( "role" );
+      const uint32_t roleId = ( role == "-1" ) ? 0 : role.toUInt();
+      UserDAO().updateRole( contact->getUserId(), roleId );
+      std::lock_guard<std::mutex> lock{ contactMutex };
+      contacts[id] = std::move( contact );
+    }
+
+    context->stash()["count"] = query.numRowsAffected();
   }
   else context->stash()["error_msg"] = query.lastError().text();
 }
@@ -273,7 +183,7 @@ QVariantList ContactDAO::search( Cutelyst::Context* context, const Mode& mode ) 
 {
   loadContacts();
 
-  bool ignoreCheck = isGlobalAdmin( context );
+  const bool ignoreCheck = isGlobalAdmin( context );
   const uint32_t iid = ( ignoreCheck ) ? 0 : institutionId( context );
 
   const auto text = context->request()->param( "text", "" );
@@ -293,7 +203,7 @@ QVariantList ContactDAO::search( Cutelyst::Context* context, const Mode& mode ) 
       const auto qid = query.value( 1 ).toUInt();
       if ( ignoreCheck || qid == iid )
       {
-        auto contact = retrieve( query.value( 0 ).toString(), mode );
+        auto contact = retrieve( query.value( 0 ).toUInt(), mode );
         list.append( contact );
       }
     }
@@ -307,7 +217,7 @@ QVariantList ContactDAO::search( Cutelyst::Context* context, const Mode& mode ) 
   return list;
 }
 
-QString ContactDAO::remove( uint32_t id ) const
+uint32_t ContactDAO::remove( uint32_t id ) const
 {
   loadContacts();
   auto query = CPreparedSqlQueryThreadForDB(
@@ -315,13 +225,15 @@ QString ContactDAO::remove( uint32_t id ) const
   query.bindValue( ":id", id );
   if ( query.exec() )
   {
-    const auto iter = contacts.constFind( id );
-    if ( iter != contacts.end() ) UserDAO().remove( iter.value().userId.toUInt() );
+    const auto iter = contacts.find( id );
+    if ( iter != contacts.end() ) UserDAO().remove( iter->second->getUserId() );
     std::lock_guard<std::mutex> lock{ contactMutex };
-    contacts.remove( id );
-    return "Contact deleted.";
+    contacts.erase( id );
+    return query.numRowsAffected();
   }
-  else return query.lastError().text();
+
+  qDebug() << query.lastError().text();
+  return 0;
 }
 
 void ContactDAO::removeInstitution( uint32_t id ) const
@@ -329,15 +241,15 @@ void ContactDAO::removeInstitution( uint32_t id ) const
   auto query = CPreparedSqlQueryThreadForDB(
     "update contacts set institution_id = null where institution_id = :id", DATABASE_NAME );
   query.bindValue( ":id", id );
-  if ( query.exec() )
+  if ( query.exec() && query.numRowsAffected() )
   {
     std::lock_guard<std::mutex> lock{ contactMutex };
 
-    for ( auto& contact : contacts )
+    for ( const auto& iter : contacts )
     {
-      if ( contact.institutionId == id )
+      if ( iter.second->getInstitutionId() == id )
       {
-        contact.institutionId = QVariant( QVariant::UInt );
+        iter.second.get()->setInstitutionId( 0 );
       }
     }
   }

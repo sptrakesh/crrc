@@ -224,7 +224,7 @@ bool UserDAO::updateRole( uint32_t userId, uint32_t roleId ) const
 
   auto query = CPreparedSqlQueryThreadForDB(
    "update users set role_id = :roleId where user_id = :userId", DATABASE_NAME );
-  query.bindValue( ":roleId", roleId );
+  query.bindValue( ":roleId", roleId ? roleId : QVariant( QVariant::UInt ) );
   query.bindValue( ":userId", userId );
   const auto result = query.exec() && query.numRowsAffected();
 

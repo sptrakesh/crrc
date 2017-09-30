@@ -4,6 +4,7 @@
 #include "dao/UserDAO.h"
 #include "dao/RoleDAO.h"
 #include "dao/functions.h"
+#include "model/Contact.h"
 
 #include <QtCore/QDebug>
 
@@ -31,7 +32,8 @@ void Contacts::base( Cutelyst::Context* c ) const
 void Contacts::object( Cutelyst::Context* c, const QString& id ) const
 {
   dao::ContactDAO dao;
-  const auto obj = dao.retrieve( id );
+  const auto obj = dao.retrieve( id.toUInt() );
+  const auto* cptr = qvariant_cast<model::Contact*>( obj );
 
   switch ( dao::roleId( c ) )
   {
@@ -39,10 +41,10 @@ void Contacts::object( Cutelyst::Context* c, const QString& id ) const
     c->setStash( "object", obj );
     break;
   default:
-    auto iid = obj.value( "institution" ).toHash().value( "institution_id" ).toInt();
+    auto iid = cptr->getInstitutionId();
     if ( !iid ) iid = -1;
     c->setStash( "object",
-      ( static_cast<uint32_t>( iid ) == dao::institutionId( c ) ) ? obj : QVariantHash() );
+      ( iid == dao::institutionId( c ) ) ? obj : QVariantHash() );
   }
 }
 
@@ -97,7 +99,7 @@ void Contacts::edit( Cutelyst::Context* c ) const
 
   c->stash( {
     { "template", "contacts/view.html" },
-    { "object", dao.retrieve( id ) }
+    { "object", dao.retrieve( id.toUInt() ) }
   } );
 }
 

@@ -30,11 +30,11 @@
   {% endif %}
 
   <div>
-    <form id="details" method="post" action="/contacts/id/{{ object.contact_id }}/update" style="display: inline-block;">
+    <form id="details" method="post" action="/contacts/id/{{ object.id }}/update" style="display: inline-block;">
       <input type="submit" value="Edit" />
     </form>
     <form action="/contacts/remove" method="post" style="display: inline-block;">
-      <input type="hidden" name="id" value="{{ object.contact_id }}" />
+      <input type="hidden" name="id" value="{{ object.id }}" />
       <input type="submit" value="Delete" />
     </form>
   </div>

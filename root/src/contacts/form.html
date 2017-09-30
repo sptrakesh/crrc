@@ -187,7 +187,7 @@
     </select>
     {% if object %}
     <input type="hidden" name="_role" value="{{ object.user.role.id }}" />
-    <input type="hidden" name="id" value="{{ object.contact_id }}" />
+    <input type="hidden" name="id" value="{{ object.id }}" />
     {% endif %}
     <button onclick="validate()">Save</button>
   </form>

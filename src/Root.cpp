@@ -1,6 +1,7 @@
 #include "Root.h"
 #include "dao/ContactDAO.h"
 #include "dao/UserDAO.h"
+#include "model/Contact.h"
 
 #include <QtCore/QtDebug>
 #include <QtNetwork/QNetworkCookie>
@@ -33,7 +34,11 @@ bool Root::Auto( Cutelyst::Context* c )
     const auto uid = user.value( "id" ).toUInt();
     const auto& u = dao::UserDAO().retrieve( uid );
     const auto& contact = dao::ContactDAO().retrieveByUser( uid );
-    const auto& institution = contact.value( "institution" );
+    qDebug() << "Contact: " << contact;
+    const auto* cptr = qvariant_cast<model::Contact*>( contact );
+    qDebug() << "Contact pointer: " << cptr;
+    const auto& institution = cptr ? cptr->getInstitution() : QVariant();
+    qDebug() << "Institution: " << institution;
 
     c->stash({
       { "user", u },
