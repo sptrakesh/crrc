@@ -52,7 +52,7 @@ void Contacts::create( Cutelyst::Context* c ) const
 {
   if ( dao::isGlobalAdmin( c ) )
   {
-    c->setStash( "institutions", dao::InstitutionDAO().retrieveAll( dao::InstitutionDAO::Mode::Partial ) );
+    c->setStash( "institutions", dao::InstitutionDAO().retrieveAll() );
   }
   else
   {

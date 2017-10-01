@@ -90,6 +90,21 @@ QString InstitutionDesignationDAO::remove( Cutelyst::Context* context ) const
   return query.exec() ? QString() : query.lastError().text();
 }
 
+uint32_t InstitutionDesignationDAO::remove( uint32_t institutionId ) const
+{
+  auto query = CPreparedSqlQueryThreadForDB( 
+    "delete from institution_designations where institution_id = :iid",
+    crrc::DATABASE_NAME );
+  query.bindValue( ":iid", institutionId );
+  if ( query.exec() )
+  {
+    return query.numRowsAffected();
+  }
+
+  qDebug() << query.lastError().text();
+  return 0;
+}
+
 QString InstitutionDesignationDAO::update( Cutelyst::Context* context ) const
 {
   auto query = CPreparedSqlQueryThreadForDB( 

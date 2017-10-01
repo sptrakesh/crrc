@@ -16,5 +16,9 @@
     </tbody>
     {% endfor %}
   </table>
-  <a href="/institution/designations/id/{{ object.institution_id }}/edit">Edit Designations</a><br />
+  {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
+    {% if globalAdminRole == user.role.id or userInstitution.id == object.id %}
+  <a href="/institution/designations/id/{{ object.id }}/edit">Edit Designations</a><br />
+    {% endif %}
+  {% endif %}
 </div>

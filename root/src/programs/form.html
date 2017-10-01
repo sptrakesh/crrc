@@ -34,8 +34,8 @@
     <select name="institution" id="institution">
       <option value="0">Select Institution</option>
       {% for institution in institutions %}
-      <option value="{{ institution.institution_id }}"
-              {% if institution.institution_id == object.institution.institution_id %}selected="selected"{% endif %}>
+      <option value="{{ institution.id }}"
+              {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
         {{ institution.name}} {% if institution.city %}({{ institution.city}}){% endif %}
       </option>
       {% endfor %}

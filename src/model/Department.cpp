@@ -9,7 +9,7 @@ Department::Ptr Department::create( QSqlQuery& query )
   ptr->id = query.value( 0 ).toUInt();
   ptr->name = query.value( 1 ).toString();
   ptr->prefix = query.value( 2 ).toString();
-  ptr->institutionId = query.value( 2 ).toUInt();
+  ptr->institutionId = query.value( 3 ).toUInt();
   return ptr;
 }
 
@@ -28,5 +28,5 @@ Department::Ptr Department::create( Cutelyst::Context* context )
 
 QVariant Department::getInstitution() const
 {
-  return ( institutionId > 0 ) ? dao::InstitutionDAO().retrieve( QString::number( institutionId ) ) : QVariant();
+  return ( institutionId > 0 ) ? dao::InstitutionDAO().retrieve( institutionId ) : QVariant();
 }

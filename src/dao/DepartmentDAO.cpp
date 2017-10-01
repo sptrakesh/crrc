@@ -57,7 +57,7 @@ namespace crrc
     {
       query.bindValue( ":name", c->request()->param( "name" ) );
       query.bindValue( ":prefix", c->request()->param( "prefix" ) );
-      query.bindValue( ":inst", c->request()->param( "institution_id" ) );
+      query.bindValue( ":inst", c->request()->param( "institutionId" ) );
     }
   }
 }
@@ -115,7 +115,7 @@ uint32_t DepartmentDAO::insert( Cutelyst::Context* context ) const
 uint32_t DepartmentDAO::update( Cutelyst::Context* context ) const
 {
   loadDepartments();
-  auto id = context->request()->param( "department_id" );
+  auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
     "update departments set name=:name, prefix=:prefix, institution_id=:inst where department_id=:id",
     crrc::DATABASE_NAME );

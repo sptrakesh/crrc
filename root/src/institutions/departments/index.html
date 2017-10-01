@@ -1,11 +1,13 @@
+{% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
+  {% if globalAdminRole == user.role.id or userInstitution.id == object.id %}
 <script type="text/javascript">
   var departments = [];
   {% for department in departments %}
-  departments.push( { id: {{ department.department_id }},
+  departments.push( { id: {{ department.id }},
     name: '{{ department.name }}',
     prefix: '{{ department.prefix }}',
     institution: {
-      id: {{ department.institution.institution_id }},
+      id: {{ department.institution.id }},
       name: '{{ department.institution.name }}'
     } } );
   {% endfor %}
@@ -13,7 +15,7 @@
   var institutions = [];
   {% for institution in institutions %}
   institutions.push( {
-    id: {{ institution.institution_id }},
+    id: {{ institution.id }},
     name: '{{ institution.name }}'
     } );
   {% endfor %}
@@ -78,8 +80,8 @@
     </div>
     <div id="de_${json.id}" style="display: none;">
       <form id="df_${json.id}" onsubmit="return update( ${json.id} );">
-        <input type="hidden" name="department_id" value="${json.id}" />
-        <input type="hidden" name="institution" value="${form.institution.value}" />
+        <input type="hidden" name="id" value="${json.id}" />
+        <input type="hidden" name="institutionId" value="${form.institutionId.value}" />
         <label class="label">Name:</label>
         <input type="text" name="name" value="${form.name.value}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
         <label class="label">Prefix:</label>
@@ -107,7 +109,7 @@
 
     let form = document.getElementById( `df_${departmentId}` );
     let existingIndex = indexOfName( form.name.value );
-    if ( existingIndex != -1 && departments[existingIndex].id != form.department_id.value )
+    if ( existingIndex != -1 && departments[existingIndex].id != form.id.value )
     {
       showWarning( `Department with name: ${form.name.value} exists.` );
       return false;
@@ -128,7 +130,7 @@
         {
           let element = document.getElementById( `d_${departmentId}` );
 
-          let index = indexOfId( form.department_id.value );
+          let index = indexOfId( form.id.value );
           departments[index].name = form.name.value;
 
           element.parentElement.removeChild( element );
@@ -145,7 +147,7 @@
         showWarning( 'Unable to update department.  Please try again later.' );
       }
     };
-    xhr.send( encodeURI( `department_id=${departmentId}&name=${form.name.value}&prefix=${form.prefix.value}&institution_id=${form.institution.value}` ) );
+    xhr.send( encodeURI( `id=${departmentId}&name=${form.name.value}&prefix=${form.prefix.value}&institutionId=${form.institutionId.value}` ) );
 
     return false;
   }
@@ -179,7 +181,7 @@
         document.getElementById( `dw_${departmentId}` ).innerText = 'Unable to delete department from the server.  Please try again later.';
       }
     };
-    xhr.send( `department_id=${departmentId}` );
+    xhr.send( `id=${departmentId}` );
   }
 
   function hideForm( departmentId )
@@ -208,10 +210,10 @@
       return false;
     }
 
-    if ( form.institution.value == 0 )
+    if ( form.institutionId.value == 0 )
     {
       showWarning( 'Please select a valid institution' );
-      form.institution.focus();
+      form.institutionId.focus();
       return false;
     }
 
@@ -226,13 +228,13 @@
         let json = JSON.parse( xhr.responseText );
         if ( json.status )
         {
-          let instIndex = institutionIndex( form.institution.value );
+          let instIndex = institutionIndex( form.institutionId.value );
 
           departments.push( { id: json.id,
             name: form.name.value,
             prefix: form.prefix.value,
             institution: {
-              id: form.institution.value,
+              id: form.institutionId.value,
               name: institutions[instIndex].name
             } } );
           addDepartment( json, form );
@@ -249,7 +251,7 @@
         showWarning( 'Unable to access server.  Please try again later.' );
       }
     };
-    xhr.send( encodeURI( `department_id=${form.department_id.value}&name=${form.name.value}&prefix=${form.prefix.value}&institution_id=${form.institution.value}` ) );
+    xhr.send( encodeURI( `id=${form.id.value}&name=${form.name.value}&prefix=${form.prefix.value}&institutionId=${form.institutionId.value}` ) );
 
     return false;
   }
@@ -281,29 +283,29 @@
   {% endif %}
   <div id="departments">
     {% for department in departments %}
-    <div id="d_{{ department.department_id }}">
-      <div><a href="#" onclick="return displayDepartment( {{ department.department_id }} );">{{ department.name }}</a></div>
-      <div id="dv_{{ department.department_id }}" style="display: none;">
+    <div id="d_{{ department.id }}">
+      <div><a href="#" onclick="return displayDepartment( {{ department.id }} );">{{ department.name }}</a></div>
+      <div id="dv_{{ department.id }}" style="display: none;">
         <h3>Name: {{ department.name }}</h3>
         {% if department.prefix %}
         <strong>Prefix:</strong> {{ department.prefix }}<br/>
         {% endif %}
-        <button onclick="displayForm( {{ department.department_id }} )">Edit</button>
-        <button onclick="deleteDepartment( {{ department.department_id }}, '{{ department.name }}' )">Delete</button>
-        <button onclick="hideDepartment( {{ department.department_id }} )">Close</button>
+        <button onclick="displayForm( {{ department.id }} )">Edit</button>
+        <button onclick="deleteDepartment( {{ department.id }}, '{{ department.name }}' )">Delete</button>
+        <button onclick="hideDepartment( {{ department.id }} )">Close</button>
         <br/>
-        <q id="dw_{{ department.department_id }}" class="warning" style="display: none;"></q>
+        <q id="dw_{{ department.id }}" class="warning" style="display: none;"></q>
       </div>
-      <div id="de_{{ department.department_id }}" style="display: none;">
-        <form id="df_{{ department.department_id }}" onsubmit="return update( {{ department.department_id }} );">
-          <input type="hidden" name="department_id" value="{{ department.department_id }}" />
-          <input type="hidden" name="institution" value="{{ department.institution.institution_id }}" />
+      <div id="de_{{ department.id }}" style="display: none;">
+        <form id="df_{{ department.id }}" onsubmit="return update( {{ department.id }} );">
+          <input type="hidden" name="id" value="{{ department.id }}" />
+          <input type="hidden" name="institutionId" value="{{ department.institution.id }}" />
           <label class="label">Name:</label>
           <input type="text" name="name" value="{{ department.name }}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
           <label class="label">Prefix:</label>
           <input type="text" name="prefix" value="{{ department.prefix }}" /><br/>
           <input type="submit" value="Save" />
-          <button onclick="hideForm( {{ department.department_id }} )">Close</button>
+          <button onclick="hideForm( {{ department.id }} )">Close</button>
         </form>
       </div>
     </div>
@@ -318,18 +320,18 @@
       <input type="text" name="prefix" />
       <br/>
       {% if object %}
-      <input type="hidden" name="institution" value="{{ object.institution_id }}"/>
+      <input type="hidden" name="institutionId" value="{{ object.id }}"/>
       {% else %}
       <label class="label">Institution:</label>
       <select name="institution">
         <option value="0">Select Institution</option>
         {% for institution in institutions %}
-        <option value="{{ institution.institution_id }}">{{ institution.name }}</option>
+        <option value="{{ institution.id }}">{{ institution.name }}</option>
         {% endfor %}
       </select>
       <br/>
       {% endif %}
-      <input type="hidden" name="department_id" value="0"/>
+      <input type="hidden" name="id" value="0"/>
       <input type="submit" value="Create"/>
       <button onclick="hideCreate()">Cancel</button>
     </form>
@@ -338,3 +340,5 @@
   <br/>
   <button id="createButton" onclick="displayCreate()">Add Department</button>
 </div>
+  {% endif %}
+{% endif %}

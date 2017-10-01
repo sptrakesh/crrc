@@ -22,18 +22,27 @@
   <strong>Website:</strong> <a href="{{ object.website }}">{{ object.website }}</a><br />
   {% endif %}
   <strong>Designations:</strong>
-  <a href="/institution/designations/id/{{ object.institution_id }}/view">View</a> | 
-  <a href="/institution/designations/id/{{ object.institution_id }}/edit">Edit</a><br/>
+  <a href="/institution/designations/id/{{ object.id }}/view">View</a>
+  {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
+    {% if globalAdminRole == user.role.id or userInstitution.id == object.id %}
+  | <a href="/institution/designations/id/{{ object.id }}/edit">Edit</a>
+    {% endif %}
+  {% endif %}
+  <br/>
   <strong>Departments:</strong>
-  <a href="/institution/departments/id/{{ object.institution_id }}/list">View</a><br/>
+  <a href="/institution/departments/id/{{ object.id }}/list">View</a><br/>
 
+  {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
+    {% if globalAdminRole == user.role.id or userInstitution.id == object.id %}
   <div>
-    <form id="details" method="post" action="/institutions/id/{{ object.institution_id }}/update" style="display: inline-block;">
+    <form id="details" method="post" action="/institutions/id/{{ object.id }}/update" style="display: inline-block;">
       <input type="submit" value="Edit" />
     </form>
     <form action="/institutions/remove" method="post" style="display: inline-block;">
-      <input type="hidden" name="id" value="{{ object.institution_id }}" />
+      <input type="hidden" name="id" value="{{ object.id }}" />
       <input type="submit" value="Delete" />
     </form>
   </div>
+    {% endif %}
+  {% endif %}
 </div>

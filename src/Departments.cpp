@@ -15,12 +15,11 @@ void Departments::index( Cutelyst::Context* c )
     dao::DepartmentDAO().retrieveAll() :
     dao::DepartmentDAO().retrieveByInstitution( dao::institutionId( c ) );
 
-  const auto mode = dao::InstitutionDAO::Mode::Partial;
   QVariantList ilist;
-  if ( dao::isGlobalAdmin( c ) ) ilist = dao::InstitutionDAO().retrieveAll( mode );
+  if ( dao::isGlobalAdmin( c ) ) ilist = dao::InstitutionDAO().retrieveAll();
   else
   {
-    ilist << dao::InstitutionDAO().retrieve( QString::number( dao::institutionId( c ) ), mode );
+    ilist << dao::InstitutionDAO().retrieve( dao::institutionId( c ) );
   }
 
   c->stash( {
@@ -37,16 +36,17 @@ void Departments::base( Cutelyst::Context* c ) const
 
 void Departments::object( Cutelyst::Context* c, const QString& id ) const
 {
-  const auto& obj = dao::InstitutionDAO().retrieve( id );
+  const auto& obj = dao::InstitutionDAO().retrieve( id.toUInt() );
   c->setStash( "object", dao::isGlobalAdmin( c ) ? obj :
-    ( id.toUInt() == dao::institutionId( c ) ) ? obj : QVariantHash() );
+    ( id.toUInt() == dao::institutionId( c ) ) ? obj : QVariant() );
 }
 
 void Departments::list( Cutelyst::Context* c ) const
 {
-  const auto& obj = c->stash( "object" ).toHash();
-  const auto &list = obj.isEmpty() ? QVariantList() :
-    dao::DepartmentDAO().retrieveByInstitution( obj.value( "institution_id" ).toUInt() );
+  const auto obj = c->stash( "object" );
+  const auto ptr = qvariant_cast<model::Institution*>( c->stash( "object" ) );
+  const auto id = ptr ? ptr->getId() : 0;
+  const auto& list = ptr ?  dao::DepartmentDAO().retrieveByInstitution( id ) : QVariantList();
   QVariantList ilist{ obj };
 
   c->stash( {
@@ -58,8 +58,8 @@ void Departments::list( Cutelyst::Context* c ) const
 
 void Departments::save( Cutelyst::Context* c ) const
 {
-  const auto& did = c->request()->param( "department_id" );
-  const auto& iid = c->request()->param( "institution_id" );
+  const auto& did = c->request()->param( "id" );
+  const auto& iid = c->request()->param( "institutionId" );
 
   dao::DepartmentDAO dao;
   QJsonObject json;
@@ -97,7 +97,7 @@ void Departments::save( Cutelyst::Context* c ) const
 
 void Departments::remove( Cutelyst::Context* c ) const
 {
-  auto id = c->request()->param( "department_id", "" );
+  auto id = c->request()->param( "id", "" );
   QJsonObject obj;
 
   if ( id.isEmpty() )

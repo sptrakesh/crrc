@@ -1,5 +1,8 @@
 #pragma once
 
+#include "model/User.h"
+#include "model/Institution.h"
+
 #include <QtCore/QDateTime>
 #include <QtCore/QCryptographicHash>
 #include <QtCore/QJsonDocument>
@@ -8,7 +11,6 @@
 #include <QtCore/QStringBuilder>
 
 #include <Cutelyst/Controller>
-#include "model/User.h"
 
 
 namespace crrc
@@ -30,7 +32,7 @@ namespace crrc
     inline uint32_t roleId( Cutelyst::Context* context )
     {
       const auto user = qvariant_cast<model::User*>( context->stash( "user" ) );
-      return user->getRoleId();
+      return user ? user->getRoleId() : 0;
     }
 
     inline bool isGlobalAdmin( Cutelyst::Context* context )
@@ -40,8 +42,8 @@ namespace crrc
 
     inline uint32_t institutionId( Cutelyst::Context* context )
     {
-      const auto& institution = context->stash( "userInstitution" ).toHash();
-      return institution.value( "institution_id" ).toUInt();
+      const auto institution = qvariant_cast<model::Institution*>( context->stash( "userInstitution" ) );
+      return institution ? institution->getId() : 0;
     }
 
     inline void sendJson( Cutelyst::Context* context, const QJsonObject& obj )

@@ -1,92 +1,39 @@
 #include "InstitutionDAO.h"
+#include "ContactDAO.h"
 #include "LogoDAO.h"
 #include "InstitutionDesignationDAO.h"
 #include "constants.h"
+#include "model/Institution.h"
+
 #include <mutex>
+#include <unordered_map>
+
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
-#include "ContactDAO.h"
 
+using crrc::model::Institution;
 
 namespace crrc
 {
   namespace dao
   {
-    struct Institution
-    {
-      QVariant id;
-      QVariant name;
-      QVariant address;
-      QVariant city;
-      QVariant state;
-      QVariant postalCode;
-      QVariant country;
-      QVariant website;
-      QVariant logoId;
-    };
-
-    static QMap<uint32_t, Institution> institutions;
+    static std::unordered_map<uint32_t, Institution::Ptr> institutions;
     static std::atomic_bool institutionsLoaded{ false };
     static std::mutex institutionMutex;
 
-    QVariantHash transform( const Institution& institution, const InstitutionDAO::Mode& mode )
-    {
-      QVariantHash record;
-      record.insert( "institution_id", institution.id );
-      record.insert( "name", institution.name );
-      record.insert( "city", institution.city );
-
-      if ( InstitutionDAO::Mode::Full == mode )
-      {
-        record.insert( "address", institution.address );
-        record.insert( "state", institution.state );
-        record.insert( "postal_code", institution.postalCode );
-        record.insert( "country", institution.country );
-        record.insert( "website", institution.website );
-
-        if ( !institution.logoId.isNull() )
-        {
-          auto const& logo = LogoDAO().retrieve( institution.logoId.toString() );
-          record.insert( "logo", logo );
-        }
-      }
-
-      return record;
-    }
-
-    QVariantList fromInstitutions( const InstitutionDAO::Mode& mode )
+    QVariantList fromInstitutions()
     {
       QVariantList list;
-      foreach ( Institution institution, institutions )
-      {
-        list.append( transform( institution, mode ) );
-      }
-
+      for ( const auto& iter : institutions ) list << asVariant( iter.second.get() );
       return list;
-    }
-
-    Institution createInstitution( QSqlQuery& query )
-    {
-      Institution institution;
-      institution.id = query.value( 0 ).toUInt();
-      institution.name = query.value( 1 );
-      institution.address = query.value( 2 );
-      institution.city = query.value( 3 );
-      institution.state = query.value( 4 );
-      institution.postalCode = query.value( 5 );
-      institution.country = query.value( 6 );
-      institution.website = query.value( 7 );
-      institution.logoId = query.value( 8 );
-
-      return institution;
     }
 
     void loadInstitutions()
     {
       if ( institutionsLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ institutionMutex };
-      if ( !institutions.isEmpty() )
+      if ( !institutions.empty() )
       {
         institutionsLoaded = true;
         return;
@@ -99,9 +46,8 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto institution = createInstitution( query );
-          auto id = institution.id.toUInt();
-          institutions.insert( id, std::move( institution ) );
+          auto institution = Institution::create( query );
+          institutions[institution->getId()] = std::move( institution );
         }
 
         institutionsLoaded = true;
@@ -121,41 +67,23 @@ namespace crrc
       query.bindValue( ":website", c->request()->param( "website" ) );
       query.bindValue( ":logo", c->request()->param( "logoId" ) );
     }
-
-    Institution institutionFromContext( Cutelyst::Context* context, uint32_t id )
-    {
-      Institution institution;
-      institution.id = id;
-      institution.name = context->request()->param( "name" );
-      institution.address = context->request()->param( "address" );
-      institution.city = context->request()->param( "city" );
-      institution.state = context->request()->param( "state" );
-      institution.postalCode = context->request()->param( "postalCode" );
-      institution.country = context->request()->param( "country" );
-      institution.website = context->request()->param( "website" );
-      institution.logoId = context->request()->param( "logoId" );
-
-      return institution;
-    }
   }
 }
 
 using crrc::dao::InstitutionDAO;
 
-QVariantList InstitutionDAO::retrieveAll( const Mode& mode ) const
+QVariantList InstitutionDAO::retrieveAll() const
 {
   loadInstitutions();
-  return fromInstitutions( mode );
+  return fromInstitutions();
 }
 
-QVariantHash InstitutionDAO::retrieve( const QString& id, const Mode& mode ) const
+QVariant InstitutionDAO::retrieve( uint32_t id ) const
 {
   loadInstitutions();
-  uint32_t cid = id.toUInt();
-  const auto iter = institutions.constFind( cid );
+  const auto iter = institutions.find( id );
 
-  return ( iter != institutions.end() ) ? 
-    transform( iter.value(), mode ) : QVariantHash();
+  return ( iter != institutions.end() ) ? asVariant( iter->second.get() ) : QVariant();
 }
 
 uint32_t InstitutionDAO::insert( Cutelyst::Context* context ) const
@@ -171,14 +99,12 @@ uint32_t InstitutionDAO::insert( Cutelyst::Context* context ) const
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
-  else
-  {
-    const auto id = query.lastInsertId().toUInt();
-    const auto institution = institutionFromContext( context, id );
-    std::lock_guard<std::mutex> lock{ institutionMutex };
-    institutions[id] = std::move( institution );
-    return id;
-  }
+
+  const auto id = query.lastInsertId().toUInt();
+  auto institution = Institution::create( context );
+  std::lock_guard<std::mutex> lock{ institutionMutex };
+  institutions[id] = std::move( institution );
+  return id;
 }
 
 void InstitutionDAO::update( Cutelyst::Context* context ) const
@@ -194,14 +120,14 @@ void InstitutionDAO::update( Cutelyst::Context* context ) const
   if ( query.exec() )
   {
     const auto iid = id.toUInt();
-    const auto institution = institutionFromContext( context, iid );
+    auto institution = Institution::create( context );
     std::lock_guard<std::mutex> lock{ institutionMutex };
     institutions[iid] = std::move( institution );
   }
   else context->stash()["error_msg"] = query.lastError().text();
 }
 
-QVariantList InstitutionDAO::search( Cutelyst::Context* context, const Mode& mode ) const
+QVariantList InstitutionDAO::search( Cutelyst::Context* context ) const
 {
   loadInstitutions();
   const auto text = context->request()->param( "text", "" );
@@ -218,7 +144,7 @@ QVariantList InstitutionDAO::search( Cutelyst::Context* context, const Mode& mod
   {
     while ( query.next() )
     {
-      auto institution = retrieve( query.value( 0 ).toString(), mode );
+      auto institution = retrieve( query.value( 0 ).toUInt() );
       list.append( institution );
     }
   }
@@ -231,37 +157,40 @@ QVariantList InstitutionDAO::search( Cutelyst::Context* context, const Mode& mod
   return list;
 }
 
-QString InstitutionDAO::remove( uint32_t id ) const
+uint32_t InstitutionDAO::remove( uint32_t id ) const
 {
   loadInstitutions();
   auto query = CPreparedSqlQueryThreadForDB(
     "delete from institutions where institution_id = :id", DATABASE_NAME );
   query.bindValue( ":id", id );
-  if ( query.exec() )
+
+  if ( query.exec() && query.numRowsAffected() )
   {
     ContactDAO().removeInstitution( id );
-    InstitutionDesignationDAO().retrieve( id );
+    InstitutionDesignationDAO().remove( id );
 
-    const auto& institution = institutions.constFind( id );
-    if ( institution != institutions.constEnd() )
+    const auto iter = institutions.find( id );
+    if ( iter != institutions.end() )
     {
-      LogoDAO().remove( institution.value().logoId.toUInt() );
+      LogoDAO().remove( iter->second->getLogoId() );
     }
 
     std::lock_guard<std::mutex> lock{ institutionMutex };
-    institutions.remove( id );
-    return "Institution deleted.";
+    institutions.erase( id );
+    return query.numRowsAffected();
   }
-  else return query.lastError().text();
+
+  qDebug() << query.lastError().text();
+  return 0;
 }
 
 bool InstitutionDAO::isUnique( const QString& name, const QString& city ) const
 {
   loadInstitutions();
-  for ( const auto& institution : institutions )
+  for ( const auto& iter : institutions )
   {
-    if ( institution.name.toString() == name &&
-      institution.city.toString() == city ) return false;
+    if ( iter.second->getName() == name &&
+      iter.second->getCity() == city ) return false;
   }
 
   return true;

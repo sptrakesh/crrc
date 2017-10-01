@@ -38,8 +38,7 @@ namespace crrc
       record.insert( "program_id", program.id );
       record.insert( "title", program.title );
 
-      record.insert( "institution", InstitutionDAO().retrieve(
-        program.institutionId.toString(), InstitutionDAO::Mode::Partial ) );
+      record.insert( "institution", InstitutionDAO().retrieve( program.institutionId.toUInt() ) );
 
       if ( ProgramDAO::Mode::Full == mode )
       {

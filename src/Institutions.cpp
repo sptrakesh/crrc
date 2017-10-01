@@ -21,7 +21,7 @@ void Institutions::base( Cutelyst::Context* c ) const
 
 void Institutions::object( Cutelyst::Context* c, const QString& id ) const
 {
-  c->setStash( "object", dao::InstitutionDAO().retrieve( id ) );
+  c->setStash( "object", dao::InstitutionDAO().retrieve( id.toUInt() ) );
 }
 
 void Institutions::create( Cutelyst::Context* c ) const
@@ -55,7 +55,7 @@ void Institutions::edit( Cutelyst::Context* c ) const
 
   c->stash( {
     { "template", "institutions/view.html" },
-    { "object", dao.retrieve( id ) }
+    { "object", dao.retrieve( id.toUInt() ) }
   } );
 }
 

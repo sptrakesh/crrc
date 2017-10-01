@@ -38,12 +38,11 @@ namespace crrc
 
       if ( ! agreement.transferInstitutionId.isNull() )
       {
-        const auto im = InstitutionDAO::Mode::Partial;
         const auto idao = InstitutionDAO();
         record.insert( "transferInstitution",
-          idao.retrieve( agreement.transferInstitutionId.toString(), im ) );
+          idao.retrieve( agreement.transferInstitutionId.toUInt() ) );
         record.insert( "transfereeInstitution",
-          idao.retrieve( agreement.transfereeInstitutionId.toString(), im ) );
+          idao.retrieve( agreement.transfereeInstitutionId.toUInt() ) );
       }
 
       if ( AgreementDAO::Mode::Full == mode )

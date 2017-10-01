@@ -1,3 +1,5 @@
+{% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
+  {% if globalAdminRole == user.role.id or userInstitution.id == object.id %}
 <script type="text/javascript">
   function update( form )
   {
@@ -95,3 +97,5 @@
     </form>
     {% endfor %}
 </div></td></tr></table>
+  {% endif %}
+{% endif %}

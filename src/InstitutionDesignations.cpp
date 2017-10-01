@@ -25,12 +25,13 @@ void InstitutionDesignations::base( Cutelyst::Context* c ) const
 
 void InstitutionDesignations::object( Cutelyst::Context* c, const QString& id ) const
 {
-  c->setStash( "object", dao::InstitutionDAO().retrieve( id ) );
+  c->setStash( "object", dao::InstitutionDAO().retrieve( id.toUInt() ) );
 }
 
 void InstitutionDesignations::view( Cutelyst::Context* c ) const
 {
-  const auto id = c->stash( "object" ).toHash().value( "institution_id" ).toUInt();
+  const auto ptr = qvariant_cast<model::Institution*>( c->stash( "object" ) );
+  const auto id = ptr ? ptr->getId() : 0;
   c->stash( {
     { "template", "institutions/designations/view.html" },
     { "members", dao::InstitutionDesignationDAO().retrieve( id ) }
@@ -46,7 +47,8 @@ void InstitutionDesignations::edit( Cutelyst::Context* c ) const
     years << dt.year();
   }
 
-  const auto id = c->stash( "object" ).toHash().value( "institution_id" ).toUInt();
+  const auto ptr = qvariant_cast<model::Institution*>( c->stash( "object" ) );
+  const auto id = ptr ? ptr->getId() : 0;
   const auto& members = dao::InstitutionDesignationDAO().retrieve( id );
   QSet<uint32_t> set;
   for ( const auto& member : members )

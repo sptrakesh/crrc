@@ -22,11 +22,11 @@
   {% endif %}
   <div id="institutions">
     {% for institution in institutions %}
-    <a href="/institutions/id/{{ institution.institution_id }}/view">{{ institution.name }}</a>
+    <a href="/institutions/id/{{ institution.id }}/view">{{ institution.name }}</a>
     {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
-      {% if globalAdminRole == user.role.id or userInstitution.institution_id == institution.institution_id %}
+      {% if globalAdminRole == user.role.id or userInstitution.id == institution.id %}
       - <form action="/institutions/remove" method="post" style="display: inline-block;" onsubmit="return check( this );">
-        <input type="hidden" name="id" value="{{ institution.institution_id }}"/>
+        <input type="hidden" name="id" value="{{ institution.id }}"/>
         <input type="submit" value="Delete" />
       </form>
       {% endif %}

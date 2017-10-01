@@ -36,10 +36,8 @@ void Agreements::object( Cutelyst::Context* c, const QString& id ) const
 
 void Agreements::create( Cutelyst::Context* c ) const
 {
-  const auto mode = dao::InstitutionDAO::Mode::Partial;
-
   c->stash( {
-    { "institutions", dao::InstitutionDAO().retrieveAll( mode ) },
+    { "institutions", dao::InstitutionDAO().retrieveAll() },
     { "template", "agreements/form.html" }
   } );
 }

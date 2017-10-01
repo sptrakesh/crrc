@@ -73,7 +73,7 @@
         <strong>Credits:</strong> {{ program.credits }}<br/>
         {% endif %}
         {% if program.institution %}
-        <strong>Institution:</strong> <a href="/institutions/id/{{ program.institution.institution_id }}/view">{{ program.institution.name }}</a><br/>
+        <strong>Institution:</strong> <a href="/institutions/id/{{ program.institution.id }}/view">{{ program.institution.name }}</a><br/>
         {% endif %}
         {% if program.degree %}
         <strong>Degree:</strong> <a href="/degrees/id/{{ program.degree.degree_id }}/view">{{ program.degree.title }}</a><br/>

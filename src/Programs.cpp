@@ -5,6 +5,8 @@
 #include "dao/DesignationDAO.h"
 #include "dao/functions.h"
 
+#include <QtCore/QDebug>
+
 using crrc::Programs;
 
 void Programs::index( Cutelyst::Context* c ) const
@@ -31,8 +33,11 @@ void Programs::object( Cutelyst::Context* c, const QString& id ) const
   int32_t iid = dao::institutionId( c );
   if ( !iid ) iid = -1;
 
-  if ( dao::isGlobalAdmin( c ) || 
-    iid == obj.value( "institution" ).toHash().value( "institution_id" ).toInt() )
+  const auto& inst = obj.value( "institution" );
+  const auto iptr = qvariant_cast<model::Institution*>( inst );
+  const auto piid = iptr ? iptr->getInstitutionId() : 0;
+
+  if ( dao::isGlobalAdmin( c ) || iid == piid )
   {
     c->setStash( "object", obj );
   }
@@ -40,10 +45,9 @@ void Programs::object( Cutelyst::Context* c, const QString& id ) const
 
 void Programs::create( Cutelyst::Context* c ) const
 {
-  const auto mode = dao::InstitutionDAO::Mode::Partial;
   const auto& list = dao::isGlobalAdmin( c ) ?
-    dao::InstitutionDAO().retrieveAll( mode ) :
-    QVariantList( { dao::InstitutionDAO().retrieve( QString::number( dao::institutionId( c ) ), mode ) } );
+    dao::InstitutionDAO().retrieveAll() :
+    QVariantList( { dao::InstitutionDAO().retrieve( dao::institutionId( c ) ) } );
 
   c->stash( {
     { "template", "programs/form.html" },
@@ -96,8 +100,6 @@ void Programs::search( Cutelyst::Context* c ) const
 
 void Programs::remove( Cutelyst::Context* c )
 {
-  if ( !checkInstitution( c ) ) return;
-
   auto id = c->request()->param( "program_id", "" );
   QJsonObject json;
   json.insert( "id", id );

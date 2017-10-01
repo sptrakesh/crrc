@@ -65,5 +65,5 @@ QVariant Contact::getUser() const
 
 QVariant Contact::getInstitution() const
 {
-  return ( institutionId > 0 ) ? dao::InstitutionDAO().retrieve( QString::number( institutionId ) ) : QVariant();
+  return ( institutionId > 0 ) ? dao::InstitutionDAO().retrieve( institutionId ) : QVariant();
 }
