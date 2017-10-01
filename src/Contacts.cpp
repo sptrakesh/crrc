@@ -15,7 +15,6 @@ void Contacts::index( Cutelyst::Context* c ) const
   dao::ContactDAO dao;
   const auto& list = dao::isGlobalAdmin( c ) ? dao.retrieveAll() :
     dao.retrieveByInstitution( dao::institutionId( c ) );
-  qDebug() << "Contact list: " << list;
 
   c->stash( {
     { "contacts", list },
