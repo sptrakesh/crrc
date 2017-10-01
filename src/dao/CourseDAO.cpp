@@ -36,7 +36,7 @@ namespace crrc
       record.insert( "credits", course.credits );
       record.insert( "description", course.description );
       record.insert( "knowledgeUnit", course.knowledgeUnit.toBool() );
-      record.insert( "department", DepartmentDAO().retrieve( course.departmentId.toString() ) );
+      record.insert( "department", DepartmentDAO().retrieve( course.departmentId.toUInt() ) );
 
       return record;
     }

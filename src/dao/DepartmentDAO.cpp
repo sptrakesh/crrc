@@ -1,62 +1,37 @@
 ﻿#include "DepartmentDAO.h"
 #include "constants.h"
 #include "InstitutionDAO.h"
+#include "model/Department.h"
 
 #include <mutex>
+#include <unordered_map>
+
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
+
+using crrc::model::Department;
 
 namespace crrc
 {
   namespace dao
   {
-    struct Department
-    {
-      QVariant id;
-      QVariant name;
-      QVariant prefix;
-      QVariant institutionId;
-    };
-
-    static QMap<uint32_t, Department> departments;
+    static std::unordered_map<uint32_t, Department::Ptr> departments;
     static std::atomic_bool departmentsLoaded{ false };
     static std::mutex departmentMutex;
-
-    QVariantHash transform( const Department& department )
-    {
-      QVariantHash record;
-      record.insert( "department_id", department.id );
-      record.insert( "name", department.name );
-      record.insert( "prefix", department.prefix );
-      record.insert( "institution", InstitutionDAO().retrieve(
-        department.institutionId.toString(), InstitutionDAO::Mode::Partial ) );
-
-      return record;
-    }
 
     QVariantList fromDepartments()
     {
       QVariantList list;
-      for ( const auto& department : departments ) list.append( transform( department ) );
+      for ( const auto& iter : departments ) list << asVariant( iter.second.get() );
       return list;
-    }
-
-    Department createDepartment( QSqlQuery& query )
-    {
-      Department department;
-      department.id = query.value( 0 ).toUInt();
-      department.name = query.value( 1 );
-      department.prefix = query.value( 2 );
-      department.institutionId = query.value( 3 ).toUInt();
-      return department;
     }
 
     void loadDepartments()
     {
       if ( departmentsLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ departmentMutex };
-      if ( !departments.isEmpty() )
+      if ( !departments.empty() )
       {
         departmentsLoaded = true;
         return;
@@ -70,9 +45,8 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto department = createDepartment( query );
-          auto id = department.id.toUInt();
-          departments.insert( id, std::move( department ) );
+          auto department = Department::create( query );
+          departments[department->getId()] = std::move( department );
         }
 
         departmentsLoaded = true;
@@ -84,15 +58,6 @@ namespace crrc
       query.bindValue( ":name", c->request()->param( "name" ) );
       query.bindValue( ":prefix", c->request()->param( "prefix" ) );
       query.bindValue( ":inst", c->request()->param( "institution_id" ) );
-    }
-
-    Department departmentFromContext( Cutelyst::Context* context )
-    {
-      Department department;
-      department.name = context->request()->param( "name" );
-      department.prefix = context->request()->param( "prefix" );
-      department.institutionId = context->request()->param( "institution_id" ).toUInt();
-      return department;
     }
   }
 }
@@ -110,20 +75,19 @@ QVariantList DepartmentDAO::retrieveByInstitution( uint32_t institutionId ) cons
   loadDepartments();
   QVariantList list;
 
-  for ( const auto& department : departments )
+  for ( const auto& iter : departments )
   {
-    if ( institutionId == department.institutionId.toUInt() ) list << transform( department );
+    if ( institutionId == iter.second->getInstitutionId() ) list << asVariant( iter.second.get() );
   }
 
   return list;
 }
 
-QVariantHash DepartmentDAO::retrieve( const QString& id ) const
+QVariant DepartmentDAO::retrieve( const uint32_t id ) const
 {
   loadDepartments();
-  const uint32_t cid = id.toUInt();
-  const auto iter = departments.constFind( cid );
-  return ( iter != departments.end() ) ? transform( iter.value() ) : QVariantHash();
+  const auto iter = departments.find( id );
+  return ( iter != departments.end() ) ? asVariant( iter->second.get() ) : QVariantHash();
 }
 
 uint32_t DepartmentDAO::insert( Cutelyst::Context* context ) const
@@ -139,15 +103,13 @@ uint32_t DepartmentDAO::insert( Cutelyst::Context* context ) const
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
-  else
-  {
-    const auto id = query.lastInsertId().toUInt();
-    auto department = departmentFromContext( context );
-    department.id = id;
-    std::lock_guard<std::mutex> lock{ departmentMutex };
-    departments[id] = std::move( department );
-    return id;
-  }
+
+  const auto id = query.lastInsertId().toUInt();
+  auto department = Department::create( context );
+  department->setId( id );
+  std::lock_guard<std::mutex> lock{ departmentMutex };
+  departments[id] = std::move( department );
+  return id;
 }
 
 uint32_t DepartmentDAO::update( Cutelyst::Context* context ) const
@@ -163,17 +125,21 @@ uint32_t DepartmentDAO::update( Cutelyst::Context* context ) const
   if ( query.exec() && query.numRowsAffected() )
   {
     const auto did = id.toUInt();
-    auto department = departmentFromContext( context );
-    department.id = did;
+    auto department = Department::create( context );
+    department->setId( did );
     std::lock_guard<std::mutex> lock{ departmentMutex };
     departments[did] = std::move( department );
   }
-  else context->stash()["error_msg"] = query.lastError().text();
+  else
+  {
+    context->stash()["error_msg"] = query.lastError().text();
+    qDebug() << query.lastError().text();
+  }
 
   return query.numRowsAffected();
 }
 
-QString DepartmentDAO::remove( uint32_t id ) const
+uint32_t DepartmentDAO::remove( uint32_t id ) const
 {
   loadDepartments();
   auto query = CPreparedSqlQueryThreadForDB(
@@ -184,11 +150,11 @@ QString DepartmentDAO::remove( uint32_t id ) const
     if ( query.numRowsAffected() )
     {
       std::lock_guard<std::mutex> lock{ departmentMutex };
-      departments.remove( id );
-      return QString::number( query.numRowsAffected() );
+      departments.erase( id );
+      return query.numRowsAffected();
     }
-    return QString( "No records matched." );
   }
 
-  return query.lastError().text();
+  qDebug() << query.lastError().text();
+  return 0;
 }

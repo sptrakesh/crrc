@@ -110,9 +110,9 @@ void Departments::remove( Cutelyst::Context* c ) const
   auto const result = dao::DepartmentDAO().remove( id.toUInt() );
   obj.insert( "id", id.toInt() );
 
-  if ( result == "1" )
+  if ( result )
   {
-    obj.insert( "count", result.toInt() );
+    obj.insert( "count", static_cast<int>( result ) );
     obj.insert( "status", true );
   }
   else obj.insert( "status", false );
