@@ -10,8 +10,7 @@ RUN git clone https://github.com/sptrakesh/crrc.git \
 && cd build \
 && cmake .. \
 && cmake --build . \
-&& cd .. \
-&& sqlite3 crrc.db < /tmp/crrc/sqlite/crrc.sql
+&& cd ..
 
 EXPOSE 80
 ENTRYPOINT ["/tmp/crrc/entrypoint.sh"]
