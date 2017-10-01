@@ -20,7 +20,7 @@ namespace crrc
       static Ptr create( QSqlQuery& query );
       static Ptr create( Cutelyst::Context* context );
 
-      explicit Degree( QObject* parent = nullptr ) : QObject( parent ), id{ 0 } {}
+      explicit Degree( QObject* parent = nullptr ) : QObject( parent ) {}
       ~Degree() = default;
 
       uint32_t getId() const { return id; }
@@ -38,7 +38,7 @@ namespace crrc
       operator QString() const;
 
     private:
-      uint32_t id;
+      uint32_t id = 0;
       QString title;
       QString duration;
     };

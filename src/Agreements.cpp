@@ -5,6 +5,7 @@
 #include "dao/InstitutionAgreementDAO.h"
 #include "dao/ProgramDAO.h"
 #include "dao/functions.h"
+#include "model/Agreement.h"
 
 #include <QtCore/QtDebug>
 #include <QtCore/QJsonArray>
@@ -45,32 +46,36 @@ void Agreements::create( Cutelyst::Context* c ) const
 void Agreements::edit( Cutelyst::Context* c ) const
 {
   const auto& obj = AttachmentController<dao::AgreementDAO>().edit( c );
+  const auto ptr = qvariant_cast<model::Agreement*>( obj );
   QJsonObject json;
-  json.insert( "id", obj.value( "id" ).toInt() );
-  const auto& bytes = QJsonDocument( json ).toJson();
+  if ( ptr ) json.insert( "id", static_cast<int>( ptr->getId() ) );
+  else json.insert( "id", 0 );
   dao::sendJson( c, json );
 }
 
 void Agreements::institutions( Cutelyst::Context* c ) const
 {
   const auto dao = dao::AgreementDAO();
-  const auto& result = dao.saveProgram( c );
-  if ( !result.isEmpty() && result != "0" ) c->setStash( "error", result );
+  const auto result = dao.saveProgram( c );
+  if ( !result ) c->setStash( "error", result );
 
-  c->setStash( "object", dao.retrieve( c->request()->param( "agreement_id" ) ) );
-  view( c );
+  const auto& object = dao.retrieve( c->request()->param( "id" ).toUInt() );
+  if ( ! object.isNull() )
+  {
+    c->setStash( "object", object );
+    view( c );
+  }
+  else c->response()->redirect( "/agreements" );
 }
 
 void Agreements::view( Cutelyst::Context* c ) const
 {
-  const auto& object = c->stash( "object" ).toHash();
-  const auto& id = object.value( "id" );
+  const auto& object = c->stash( "object" );
+  const auto ptr = qvariant_cast<model::Agreement*>( object );
 
-  const auto& relations = dao::InstitutionAgreementDAO().retrieve( id.toString() );
+  const auto& relations = dao::InstitutionAgreementDAO().retrieve( QString::number( ptr->getId() ) );
 
   dao::ProgramDAO dao;
-  const auto& transferInstitution = object.value( "transferInstitution" );
-  const auto& transfereeInstitution = object.value( "transfereeInstitution" );
 
   const auto func = [](const QVariantHash& hash, QJsonArray& array)
   {
@@ -80,13 +85,15 @@ void Agreements::view( Cutelyst::Context* c ) const
     array << json;
   };
 
-  const auto& trp = transferInstitution.isNull() ?  QVariantList() :
-    dao.retrieveByInstitution( transferInstitution.toHash().value( "institution_id" ).toUInt(), dao::ProgramDAO::Mode::Partial );
+  const auto& trp = ptr->getTransferInstitutionId() ?
+    dao.retrieveByInstitution( ptr->getTransferInstitutionId(), dao::ProgramDAO::Mode::Partial ) :
+    QVariantList();
   QJsonArray transferPrograms;
   for ( const auto& value : trp ) func( value.toHash(), transferPrograms );
 
-  const auto& treep = transfereeInstitution.isNull() ?  QVariantList() :
-    dao.retrieveByInstitution( transfereeInstitution.toHash().value( "institution_id" ).toUInt(), dao::ProgramDAO::Mode::Partial );
+  const auto& treep = ptr->getTransfereeInstitutionId() ?
+    dao.retrieveByInstitution( ptr->getTransfereeInstitutionId(), dao::ProgramDAO::Mode::Partial ) :
+    QVariantList();
   QJsonArray transfereePrograms;
   for ( const auto& value : treep ) func( value.toHash(), transfereePrograms );
 

@@ -39,5 +39,5 @@ Institution::Ptr Institution::create( Cutelyst::Context* context )
 
 QVariant Institution::getLogo() const
 {
-  return dao::LogoDAO().retrieve( QString::number( logoId ) );
+  return dao::LogoDAO().retrieve( logoId );
 }

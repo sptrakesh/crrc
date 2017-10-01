@@ -1,5 +1,7 @@
 #pragma once
 
+#include "model/BlobItem.h"
+
 #include <QtCore/QStringBuilder>
 #include <Cutelyst/Controller>
 
@@ -10,10 +12,10 @@ namespace crrc
   {
     void object( Cutelyst::Context* c, const QString& id ) const
     {
-      c->setStash( "object", DAO().retrieve( id ) );
+      c->setStash( "object", DAO().retrieve( id.toUInt() ) );
     }
 
-    QVariantHash edit( Cutelyst::Context* c ) const
+    QVariant edit( Cutelyst::Context* c ) const
     {
       auto id = getId( c );
 
@@ -24,29 +26,30 @@ namespace crrc
         id = QString::number( cid );
       } else dao.update( c );
 
-      return dao.retrieve( id );
+      return dao.retrieve( id.toUInt() );
     }
 
     void display( Cutelyst::Context* c ) const
     {
-      const auto& object = c->stash( "object" ).toHash();
+      const auto& object = c->stash( "object" );
+      const auto ptr = qvariant_cast<model::BlobItem*>( object );
       c->response()->setHeader( "Cache-Control", "must-revalidate" );
-      c->response()->setHeader( "ETag", object.value( "checksum" ).toString() );
-      c->response()->setHeader( "Last-Modified", object.value( "updated" ).toString() );
+      c->response()->setHeader( "ETag", ptr->getChecksum() );
+      c->response()->setHeader( "Last-Modified", ptr->getUpdated() );
 
       const auto& etag = c->request()->header( "ETag" );
       const auto& ifModified = c->request()->header( "If-Modified-Since" );
-      if ( ( !etag.isEmpty() && etag == object.value( "updated" ).toString() ) ||
-        ( !ifModified.isEmpty() && ifModified == object.value( "updated" ).toString() ) )
+      if ( ( !etag.isEmpty() && etag == ptr->getChecksum() ) ||
+        ( !ifModified.isEmpty() && ifModified == ptr->getUpdated() ) )
       {
         c->response()->setStatus( Cutelyst::Response::NotModified );
         return;
       }
 
-      const auto bytes = DAO().contents( c, object.value( "id" ).toString() );
-      c->response()->setContentType( object.value( "mimetype" ).toString() );
-      c->response()->setContentLength( object.value( "filesize" ).toUInt() );
-      const QString disposition = "inline; filename=\"" % object.value( "filename" ).toString() % "\"";
+      const auto bytes = DAO().contents( c, ptr->getId() );
+      c->response()->setContentType( ptr->getMimetype() );
+      c->response()->setContentLength( ptr->getFilesize() );
+      const QString disposition = "inline; filename=\"" % ptr->getFilename() % "\"";
       c->response()->setHeader( "Content-Disposition", disposition );
       c->response()->setBody( bytes );
     }
@@ -54,15 +57,9 @@ namespace crrc
     void remove( Cutelyst::Context* c, const QString& redirectUrl ) const
     {
       const auto id = getId( c );
-      QString statusMsg;
 
-      if ( !id.isEmpty() )
-      {
-        statusMsg = DAO().remove( id.toUInt() );
-      }
-      else statusMsg = "No agreement identifier specified!";
-
-      c->stash()["status_msg"] = statusMsg;
+      if ( !id.isEmpty() ) DAO().remove( id.toUInt() );
+      else c->stash()["error_msg"] = "No agreement identifier specified!";
       if ( ! redirectUrl.isEmpty() ) c->response()->redirect( redirectUrl );
     }
 
@@ -73,7 +70,9 @@ namespace crrc
       if ( !id.isEmpty() ) return id;
       const auto& obj = context->stash( "object" );
       if ( obj.isNull() ) return id;
-      return obj.toHash().value( "id" ).toString();
+
+      const auto ptr = qvariant_cast<model::BlobItem*>( obj );
+      return ptr ? QString::number( ptr->getId() ) : QString();
     }
   };
 }

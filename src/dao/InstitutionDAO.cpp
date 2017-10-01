@@ -180,7 +180,7 @@ uint32_t InstitutionDAO::remove( uint32_t id ) const
     return query.numRowsAffected();
   }
 
-  qDebug() << query.lastError().text();
+  qWarning() << query.lastError().text();
   return 0;
 }
 

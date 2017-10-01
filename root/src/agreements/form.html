@@ -9,7 +9,7 @@
     let form = document.forms[0];
 
     let formData = new FormData();
-    formData.append( 'document', file );
+    formData.append( 'file', file );
     if ( form.id ) formData.append( 'id', form.id.value );
     console.log( `Form action: ${form.action}` );
 
@@ -23,13 +23,20 @@
         if ( 200 === xhr.status )
         {
           let json = JSON.parse( xhr.responseText );
-          let input = document.createElement( 'input' );
-          input.type = 'hidden';
-          input.value = json.id;
-          input.name = 'agreement_id';
-          input.id = 'agreementId';
-          document.forms[1].appendChild( input );
-          document.getElementById( 'uploadForm' ).innerHTML = 'Document uploaded successfully.'
+          if ( json.id )
+          {
+            let input = document.createElement( 'input' );
+            input.type = 'hidden';
+            input.value = json.id;
+            input.name = 'id';
+            input.id = 'agreementId';
+            document.forms[1].appendChild( input );
+            document.getElementById( 'uploadForm' ).innerHTML = 'Document uploaded successfully.';
+          }
+          else
+          {
+            document.getElementById( 'uploadForm' ).innerText = 'Error while uploading document.  Please try again later';
+          }
         }
         else document.getElementById( 'assignInstitutions' ).style.display = 'none';
       }
@@ -44,7 +51,7 @@
     let form = document.getElementById( 'institutions' );
     let element = document.getElementById( 'warning' );
 
-    if ( !form.agreement_id || form.agreement_id.value <= 0 )
+    if ( !form.id || form.id.value <= 0 )
     {
       element.innerHTML = 'Please upload an agreement document first.';
       return false;
@@ -112,8 +119,8 @@
             <select name="transfer_institution_id" id="transfer_institution_id" required="required">
               <option value="0">Select Institution</option>
               {% for institution in institutions %}
-              <option value="{{ institution.institution_id }}"
-                      {% if institution.institution_id == object.transferInstitution.institution_id %}selected{% endif %}>
+              <option value="{{ institution.id }}"
+                      {% if institution.id == object.transferInstitution.id %}selected{% endif %}>
                 {{ institution.name }}
               </option>
               {% endfor %}
@@ -122,14 +129,14 @@
             <select name="transferee_institution_id" id="transferee_institution_id" required="required">
               <option value="0">Select Institution</option>
               {% for institution in institutions %}
-              <option value="{{ institution.institution_id }}"
-                      {% if institution.institution_id == object.transfereeInstitution.institution_id %}selected{% endif %}>
+              <option value="{{ institution.id }}"
+                      {% if institution.id == object.transfereeInstitution.id %}selected{% endif %}>
                 {{ institution.name }}
               </option>
               {% endfor %}
             </select>
             {% if object %}
-            <input type="hidden" name="agreement_id" value="{{ object.id }}" />
+            <input type="hidden" name="id" value="{{ object.id }}" />
             {% endif %}
           </form>
           <div id="warning" class="warning"></div>

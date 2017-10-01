@@ -23,7 +23,7 @@
     button.disabled = true;
 
     let formData = new FormData();
-    formData.append( 'image', file );
+    formData.append( 'file', file );
 
     let xhr = new XMLHttpRequest();
     xhr.open( 'POST', '/logos/create' );
@@ -133,7 +133,7 @@
                  {% if object %}value="{{ object.website }}" {% endif %} />
           <br />
           {% if object %}
-          <input type="hidden" name="id" value="{{ object.institution_id }}" />
+          <input type="hidden" name="id" value="{{ object.id }}" />
           {% endif %}
         </form>
       </td>

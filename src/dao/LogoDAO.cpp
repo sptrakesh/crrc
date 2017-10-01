@@ -1,78 +1,37 @@
 #include "LogoDAO.h"
 #include "constants.h"
-#include "functions.h"
+#include "model/Logo.h"
 
 #include <mutex>
+#include <unordered_map>
+
 #include <QtSql/QtSql>
 #include <Cutelyst/Upload>
 #include <Cutelyst/Plugins/Utils/sql.h>
+#include "functions.h"
 
+using crrc::model::Logo;
 
 namespace crrc
 {
   namespace dao
   {
-    struct Logo
-    {
-      QVariant id;
-      QVariant filename;
-      QVariant mimetype;
-      QVariant filesize;
-      QVariant image;
-      QVariant checksum;
-      QVariant updated;
-    };
-
-    static QMap<uint32_t, Logo> logos;
+    static std::unordered_map<uint32_t, Logo::Ptr> logos;
     static std::atomic_bool logosLoaded{ false };
     static std::mutex logoMutex;
 
-    QVariantHash transform( const Logo& logo, const LogoDAO::Mode& mode )
-    {
-      QVariantHash record;
-      record.insert( "id", logo.id );
-      record.insert( "filename", logo.filename );
-
-      if ( LogoDAO::Mode::Full == mode )
-      {
-        record.insert( "mimetype", logo.mimetype );
-        record.insert( "filesize", logo.filesize );
-        record.insert( "checksum", logo.checksum );
-        record.insert( "updated", logo.updated );
-        record.insert( "image", logo.image );
-      }
-
-      return record;
-    }
-
-    QVariantList fromLogos( const LogoDAO::Mode& mode )
+    QVariantList fromLogos()
     {
       QVariantList list;
-      foreach ( Logo logo, logos )
-      {
-        list.append( transform( logo, mode ) );
-      }
-
+      for ( const auto& iter : logos ) list << asVariant( iter.second.get() );
       return list;
-    }
-
-    Logo createLogo( QSqlQuery& query )
-    {
-      Logo logo;
-      logo.id = query.value( 0 ).toUInt();
-      logo.filename = query.value( 1 );
-      logo.mimetype = query.value( 2 );
-      logo.filesize = query.value( 3 );
-      logo.checksum = query.value( 4 );
-      logo.updated = query.value( 5 );
-      return logo;
     }
 
     void loadLogos()
     {
       if ( logosLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ logoMutex };
-      if ( !logos.isEmpty() )
+      if ( !logos.empty() )
       {
         logosLoaded = true;
         return;
@@ -86,9 +45,9 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto logo = createLogo( query );
-          auto id = logo.id.toUInt();
-          logos.insert( id, std::move( logo ) );
+          auto logo = std::make_unique<Logo>();
+          logo->populate( query );
+          logos[ logo->getId()] = std::move( logo );
         }
 
         logosLoaded = true;
@@ -97,7 +56,7 @@ namespace crrc
 
     QByteArray bindLogo( Cutelyst::Context* c, QSqlQuery& query )
     {
-      auto upload = c->request()->upload( "image" );
+      auto upload = c->request()->upload( "file" );
       if ( !upload ) return QByteArray();
 
       auto bytes = upload->readAll();
@@ -111,46 +70,31 @@ namespace crrc
 
       return bytes;
     }
-
-    Logo logoFromContext( Cutelyst::Context* context, const QByteArray& bytes )
-    {
-      Logo logo;
-      const auto upload = context->request()->upload( "image" );
-      const QFileInfo file{ upload->filename() };
-      logo.filename = file.fileName();
-      logo.mimetype = upload->contentType();
-      logo.filesize = upload->size();
-      logo.checksum = checksum( bytes );
-      logo.updated = httpDate( file.lastModified() );
-      return logo;
-    }
   }
 }
 
 using crrc::dao::LogoDAO;
 
-QVariantList LogoDAO::retrieveAll( const Mode& mode ) const
+QVariantList LogoDAO::retrieveAll() const
 {
   loadLogos();
-  return fromLogos( mode );
+  return fromLogos();
 }
 
-QVariantHash LogoDAO::retrieve( const QString& id, const Mode& mode ) const
+QVariant LogoDAO::retrieve( const uint32_t id ) const
 {
   loadLogos();
-  uint32_t cid = id.toUInt();
-  const auto iter = logos.constFind( cid );
+  const auto iter = logos.find( id );
 
-  return ( iter != logos.end() ) ? 
-    transform( iter.value(), mode ) : QVariantHash();
+  return ( iter != logos.end() ) ? asVariant( iter->second.get() ) : QVariant();
 }
 
-QByteArray LogoDAO::contents( Cutelyst::Context* context, const QString& id ) const
+QByteArray LogoDAO::contents( Cutelyst::Context* context, const uint32_t id ) const
 {
   auto query = CPreparedSqlQueryThreadForDB(
     "select image from logos where logo_id = :id",
     crrc::DATABASE_NAME );
-  query.bindValue( ":id", id.toUInt() );
+  query.bindValue( ":id", id );
 
   if ( query.exec() )
   {
@@ -158,6 +102,7 @@ QByteArray LogoDAO::contents( Cutelyst::Context* context, const QString& id ) co
     return query.value( 0 ).toByteArray();
   }
 
+  qDebug() << query.lastError().text();
   context->stash()["error_msg"] = query.lastError().text();
 
   return QByteArray();
@@ -178,50 +123,56 @@ uint32_t LogoDAO::insert( Cutelyst::Context* context ) const
   }
 
   auto id = query.lastInsertId().toUInt();
-  auto logo = logoFromContext( context, bytes );
-  logo.id = id;
+  auto logo = std::make_unique<Logo>();
+  logo->populate( context, bytes );
+  logo->setId( id );
   std::lock_guard<std::mutex> lock{ logoMutex };
   logos[id] = std::move( logo );
   return id;
 }
 
-void LogoDAO::update( Cutelyst::Context* context ) const
+uint32_t LogoDAO::update( Cutelyst::Context* context ) const
 {
-  const auto id = context->request()->param( "id" );
+  const auto id = context->request()->param( "id" ).toUInt();
   const auto doc =  context->request()->upload( "image" );
 
   auto query = CPreparedSqlQueryThreadForDB( 
     "update logos set mimetype=:mimetype, filesize=:filesize, image=:image, checksum=:checksum, updated=:updated where logo_id=:id",
     crrc::DATABASE_NAME );
   auto bytes = bindLogo( context, query );
-  query.bindValue( ":id", id.toInt() );
+  query.bindValue( ":id", id );
 
   if ( query.exec() )
   {
-    auto logo = logoFromContext( context, bytes );
-    auto aid = id.toUInt();
-    logo.id = aid;
-
-    auto old = logos.find( aid ).value();
-    logo.filename = old.filename;
-
-    std::lock_guard<std::mutex> lock{ logoMutex };
-    logos[aid] = std::move( logo );
+    if ( query.numRowsAffected() )
+    {
+      std::lock_guard<std::mutex> lock{ logoMutex };
+      auto iter = logos.find( id );
+      iter->second->populate( context, bytes );
+      return query.numRowsAffected();
+    }
   }
-  else context->stash()["error_msg"] = query.lastError().text();
+  else
+  {
+    context->stash()["error_msg"] = query.lastError().text();
+    qDebug() << query.lastError().text();
+  }
+
+  return 0;
 }
 
-QString LogoDAO::remove( uint32_t id ) const
+uint32_t LogoDAO::remove( uint32_t id ) const
 {
   auto query = CPreparedSqlQueryThreadForDB(
     "delete from logos where logo_id = :id", DATABASE_NAME );
   query.bindValue( ":id", id );
-  if ( query.exec() )
+  if ( query.exec() && query.numRowsAffected() )
   {
     std::lock_guard<std::mutex> lock{ logoMutex };
-    logos.remove( id );
-    return "Logo deleted.";
+    logos.erase( id );
+    return query.numRowsAffected();
   }
 
-  return query.lastError().text();
+  qDebug() << query.lastError().text();
+  return 0;
 }

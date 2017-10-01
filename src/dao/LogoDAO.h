@@ -8,13 +8,12 @@ namespace crrc
   {
     struct LogoDAO
     {
-      enum class Mode : char { Full, Partial };
-      QVariantList retrieveAll( const Mode& mode = Mode::Full ) const;
-      QVariantHash retrieve( const QString& id, const Mode& mode = Mode::Full ) const;
-      QByteArray contents( Cutelyst::Context* context, const QString& id ) const;
+      QVariantList retrieveAll() const;
+      QVariant retrieve( const uint32_t id ) const;
+      QByteArray contents( Cutelyst::Context* context, const uint32_t id ) const;
       uint32_t insert( Cutelyst::Context* context ) const;
-      void update( Cutelyst::Context* context ) const;
-      QString remove( uint32_t id ) const;
+      uint32_t update( Cutelyst::Context* context ) const;
+      uint32_t remove( uint32_t id ) const;
     };
   }
 }

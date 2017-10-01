@@ -2,87 +2,37 @@
 #include "InstitutionDAO.h"
 #include "constants.h"
 #include "functions.h"
+#include "model/Agreement.h"
 
 #include <mutex>
+#include <unordered_map>
+
 #include <QtSql/QtSql>
 #include <Cutelyst/Upload>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
+using crrc::model::Agreement;
 
 namespace crrc
 {
   namespace dao
   {
-    struct Agreement
-    {
-      QVariant id;
-      QVariant filename;
-      QVariant mimetype;
-      QVariant filesize;
-      QVariant document;
-      QVariant checksum;
-      QVariant updated;
-      QVariant transferInstitutionId;
-      QVariant transfereeInstitutionId;
-    };
-
-    static QMap<uint32_t, Agreement> agreements;
+    static std::unordered_map<uint32_t, Agreement::Ptr> agreements;
     static std::atomic_bool agreementsLoaded{ false };
     static std::mutex agreementMutex;
 
-    QVariantHash transform( const Agreement& agreement, const AgreementDAO::Mode& mode )
-    {
-      QVariantHash record;
-      record.insert( "id", agreement.id );
-      record.insert( "filename", agreement.filename );
-
-      if ( ! agreement.transferInstitutionId.isNull() )
-      {
-        const auto idao = InstitutionDAO();
-        record.insert( "transferInstitution",
-          idao.retrieve( agreement.transferInstitutionId.toUInt() ) );
-        record.insert( "transfereeInstitution",
-          idao.retrieve( agreement.transfereeInstitutionId.toUInt() ) );
-      }
-
-      if ( AgreementDAO::Mode::Full == mode )
-      {
-        record.insert( "mimetype", agreement.mimetype );
-        record.insert( "filesize", agreement.filesize );
-        record.insert( "checksum", agreement.checksum );
-        record.insert( "updated", agreement.updated );
-        record.insert( "document", agreement.document );
-      }
-
-      return record;
-    }
-
-    QVariantList fromAgreements( const AgreementDAO::Mode& mode )
+    QVariantList fromAgreements()
     {
       QVariantList list;
-      for ( const auto& agreement : agreements ) list << transform( agreement, mode );
+      for ( const auto& iter : agreements ) list << asVariant( iter.second.get() );
       return list;
-    }
-
-    Agreement createAgreement( QSqlQuery& query )
-    {
-      Agreement agreement;
-      agreement.id = query.value( 0 ).toUInt();
-      agreement.filename = query.value( 1 );
-      agreement.mimetype = query.value( 2 );
-      agreement.filesize = query.value( 3 );
-      agreement.checksum = query.value( 4 );
-      agreement.updated = query.value( 5 );
-      agreement.transferInstitutionId = query.value( 6 );
-      agreement.transfereeInstitutionId = query.value( 7 );
-      return agreement;
     }
 
     void loadAgreements()
     {
       if ( agreementsLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ agreementMutex };
-      if ( !agreements.isEmpty() )
+      if ( !agreements.empty() )
       {
         agreementsLoaded = true;
         return;
@@ -96,9 +46,8 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto agreement = createAgreement( query );
-          auto id = agreement.id.toUInt();
-          agreements.insert( id, std::move( agreement ) );
+          auto agreement = Agreement::create( query );
+          agreements[agreement->getId()] = std::move( agreement );
         }
 
         agreementsLoaded = true;
@@ -107,11 +56,12 @@ namespace crrc
 
     QByteArray bindAgreement( Cutelyst::Context* c, QSqlQuery& query )
     {
-      auto upload = c->request()->upload( "document" );
+      auto upload = c->request()->upload( "file" );
       if ( !upload ) return QByteArray();
 
       auto bytes = upload->readAll();
       const QFileInfo file{ upload->filename() };
+      qDebug() << "File: " << upload;
       query.bindValue( ":filename", file.fileName() );
       query.bindValue( ":mimetype", upload->contentType() );
       query.bindValue( ":filesize", upload->size() );
@@ -121,64 +71,50 @@ namespace crrc
 
       return bytes;
     }
-
-    Agreement agreementFromContext( Cutelyst::Context* context, const QByteArray& bytes )
-    {
-      Agreement agreement;
-      const auto upload = context->request()->upload( "document" );
-      const QFileInfo file{ upload->filename() };
-      agreement.filename = file.fileName();
-      agreement.mimetype = upload->contentType();
-      agreement.filesize = upload->size();
-      agreement.checksum = checksum( bytes );
-      agreement.updated = httpDate( file.lastModified() );
-      return agreement;
-    }
   }
 }
 
 using crrc::dao::AgreementDAO;
 
-QVariantList AgreementDAO::retrieveAll( const Mode& mode ) const
+QVariantList AgreementDAO::retrieveAll() const
 {
   loadAgreements();
-  return fromAgreements( mode );
+  return fromAgreements();
 }
 
-QVariantList AgreementDAO::retrieveByInstitution( uint32_t id, const Mode& mode ) const
+QVariantList AgreementDAO::retrieveByInstitution( uint32_t id ) const
 {
   loadAgreements();
   QVariantList list;
   if ( !id ) return list;
 
-  for ( const auto& agreement : agreements )
+  for ( const auto& iter : agreements )
   {
-    if ( id == agreement.transferInstitutionId.toUInt() || 
-      id == agreement.transfereeInstitutionId.toUInt() )
+    if ( id == iter.second->getTransferInstitutionId() || 
+      id == iter.second->getTransfereeInstitutionId() )
     {
-      list << transform( agreement, mode );
+      list << asVariant( iter.second.get() );
     }
   }
 
   return list;
 }
 
-QVariantHash AgreementDAO::retrieve( const QString& id, const Mode& mode ) const
+QVariant AgreementDAO::retrieve( const uint32_t id ) const
 {
   loadAgreements();
-  uint32_t cid = id.toUInt();
-  const auto iter = agreements.constFind( cid );
+  const auto iter = agreements.find( id );
 
   return ( iter != agreements.end() ) ? 
-    transform( iter.value(), mode ) : QVariantHash();
+    asVariant( iter->second.get() ) : QVariant();
 }
 
-QByteArray AgreementDAO::contents( Cutelyst::Context* context, const QString& id ) const
+QByteArray AgreementDAO::contents( Cutelyst::Context* context, const uint32_t id ) const
 {
   auto query = CPreparedSqlQueryThreadForDB(
     "select document from agreements where agreement_id = :id",
     crrc::DATABASE_NAME );
-  query.bindValue( ":id", id.toUInt() );
+  query.bindValue( ":id", id );
 
   if ( query.exec() )
   {
@@ -187,38 +123,41 @@ QByteArray AgreementDAO::contents( Cutelyst::Context* context, const QString& id
   }
 
   context->stash()["error_msg"] = query.lastError().text();
+  qWarning() << query.lastError().text();
   return QByteArray();
 }
 
 
 uint32_t AgreementDAO::insert( Cutelyst::Context* context ) const
 {
+  qDebug() << "Inserting new agreement document";
   auto query = CPreparedSqlQueryThreadForDB(
     "insert into agreements (filename, mimetype, filesize, document, checksum, updated) values (:filename, :mimetype, :filesize, :document, :checksum, :updated)",
     crrc::DATABASE_NAME );
   auto bytes = bindAgreement( context, query );
 
-  if ( !query.exec() )
+  if ( query.exec() && query.numRowsAffected() )
   {
-    context->stash()["error_msg"] = query.lastError().text();
-    return 0;
+    auto id = query.lastInsertId().toUInt();
+    auto agreement = Agreement::create( context, bytes );
+    agreement->setId( id );
+    std::lock_guard<std::mutex> lock{ agreementMutex };
+    agreements[id] = std::move( agreement );
+    return id;
   }
 
-  auto id = query.lastInsertId().toUInt();
-  auto agreement = agreementFromContext( context, bytes );
-  agreement.id = id;
-  std::lock_guard<std::mutex> lock{ agreementMutex };
-  agreements[id] = std::move( agreement );
-  return id;
+  context->stash()["error_msg"] = query.lastError().text();
+  qWarning() << query.lastError().text();
+  return 0;
 }
 
-void AgreementDAO::update( Cutelyst::Context* context ) const
+uint32_t AgreementDAO::update( Cutelyst::Context* context ) const
 {
   auto id = context->request()->param( "id" );
   if ( id.isEmpty() )
   {
     const auto& obj = context->stash( "object" );
-    if ( !obj.isNull() ) id = obj.toHash().value( "id" ).toString();
+    if ( !obj.isNull() ) id = ( qvariant_cast<Agreement*>( obj ) )->getId();
   }
 
   auto query = CPreparedSqlQueryThreadForDB( 
@@ -227,19 +166,23 @@ void AgreementDAO::update( Cutelyst::Context* context ) const
   auto bytes = bindAgreement( context, query );
   query.bindValue( ":id", id.toInt() );
 
-  if ( query.exec() )
+  if ( query.exec() && query.numRowsAffected() )
   {
-    auto agreement = agreementFromContext( context, bytes );
-    auto aid = id.toUInt();
-    agreement.id = aid;
+    auto agreement = Agreement::create( context, bytes );
+    const auto aid = id.toUInt();
+    agreement->setId( aid );
 
     std::lock_guard<std::mutex> lock{ agreementMutex };
     agreements[aid] = std::move( agreement );
+    return query.numRowsAffected();
   }
-  else context->stash()["error_msg"] = query.lastError().text();
+
+  qWarning() << query.lastError().text();
+  context->stash()["error_msg"] = query.lastError().text();
+  return 0;
 }
 
-QVariantList AgreementDAO::search( Cutelyst::Context* context, const Mode& mode ) const
+QVariantList AgreementDAO::search( Cutelyst::Context* context ) const
 {
   const auto text = context->request()->param( "text", "" );
   const QString clause = "%" % text % "%";
@@ -253,11 +196,7 @@ QVariantList AgreementDAO::search( Cutelyst::Context* context, const Mode& mode 
 
   if ( query.exec() )
   {
-    while ( query.next() )
-    {
-      auto agreement = retrieve( query.value( 0 ).toString(), mode );
-      list.append( agreement );
-    }
+    while ( query.next() ) list << retrieve( query.value( 0 ).toUInt() );
   }
   else
   {
@@ -268,66 +207,44 @@ QVariantList AgreementDAO::search( Cutelyst::Context* context, const Mode& mode 
   return list;
 }
 
-QString AgreementDAO::remove( uint32_t id ) const
+uint32_t AgreementDAO::remove( uint32_t id ) const
 {
   auto query = CPreparedSqlQueryThreadForDB(
     "delete from agreements where agreement_id = :id", DATABASE_NAME );
   query.bindValue( ":id", id );
-  if ( query.exec() )
+  if ( query.exec() && query.numRowsAffected() )
   {
     std::lock_guard<std::mutex> lock{ agreementMutex };
-    agreements.remove( id );
-    return QString::number( query.numRowsAffected() );
+    agreements.erase( id );
+    return query.numRowsAffected();
   }
 
-  return query.lastError().text();
+  qWarning() << query.lastError().text();
+  return 0;
 }
 
-QString AgreementDAO::saveProgram( Cutelyst::Context* context ) const
+uint32_t AgreementDAO::saveProgram( Cutelyst::Context* context ) const
 {
-  const auto func = [=]()
-  {
-    auto obj = agreements.find( context->request()->param( "agreement_id" ).toUInt() );
-    if ( obj != agreements.end() )
-    {
-      auto& value = obj.value();
-      value.transferInstitutionId = context->request()->param( "transfer_institution_id" );
-      value.transfereeInstitutionId = context->request()->param( "transferee_institution_id" );
-    }
-  };
+  const auto id = context->request()->param( "id" ).toUInt();
 
   auto query = CPreparedSqlQueryThreadForDB(
     "update agreements set transfer_institution_id = :i, transferee_institution_id = :ei where agreement_id = :id",
     DATABASE_NAME );
   query.bindValue( ":i", context->request()->param( "transfer_institution_id" ).toUInt() );
   query.bindValue( ":ei", context->request()->param( "transferee_institution_id" ).toUInt() );
-  query.bindValue( ":id", context->request()->param( "agreement_id" ).toUInt() );
+  query.bindValue( ":id", context->request()->param( "id" ).toUInt() );
 
   if ( query.exec() )
   {
     if ( query.numRowsAffected() > 0 )
     {
-      func();
-      return QString();
-    }
-
-    query = CPreparedSqlQueryThreadForDB(
-      "insert into agreements (transfer_institution_id, transferee_institution_id, agreement_id) values (:i, :ei, :id)",
-      DATABASE_NAME );
-    query.bindValue( ":i", context->request()->param( "transfer_institution_id" ).toUInt() );
-    query.bindValue( ":ei", context->request()->param( "transferee_institution_id" ).toUInt() );
-    query.bindValue( ":id", context->request()->param( "agreement_id" ).toUInt() );
-
-    if ( query.exec() )
-    {
-      if ( query.numRowsAffected() > 0 )
-      {
-        func();
-        return QString();
-      }
-      return QString( "0" );
+      auto iter = agreements.find( id );
+      if ( iter != agreements.end() ) iter->second->updatePrograms( context );
+      return query.numRowsAffected();
     }
   }
 
-  return query.lastError().text();
+  qWarning() << query.lastError().text();
+  context->stash()["error_msg"] = query.lastError().text();
+  return 0;
 }
