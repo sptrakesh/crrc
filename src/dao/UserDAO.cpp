@@ -78,7 +78,7 @@ namespace crrc
       if ( ! role.isEmpty() && role != "-1" )
       {
         const auto r = RoleDAO().retrieve( role.toUInt() );
-        const auto* rptr = qvariant_cast<model::Role*>( r );
+        const auto* rptr = model::Role::from( r );
         query.bindValue( ":role", rptr->getId() );
       }
       else query.bindValue( ":role", QVariant( QVariant::UInt ) );
@@ -248,7 +248,7 @@ bool UserDAO::updatePassword( const QString& username, const QString& password )
   const auto passwd = hash.result().toHex();
 
   const auto& user = retrieveByUsername( username );
-  const auto uptr = qvariant_cast<User*>( user );
+  const auto uptr = User::from( user );
 
   auto query = CPreparedSqlQueryThreadForDB(
    "update users set password = :password where user_id = :userId", DATABASE_NAME );

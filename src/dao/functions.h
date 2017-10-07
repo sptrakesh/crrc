@@ -31,7 +31,7 @@ namespace crrc
 
     inline uint32_t roleId( Cutelyst::Context* context )
     {
-      const auto user = qvariant_cast<model::User*>( context->stash( "user" ) );
+      const auto user = model::User::from( context->stash( "user" ) );
       return user ? user->getRoleId() : 0;
     }
 
@@ -42,7 +42,7 @@ namespace crrc
 
     inline uint32_t institutionId( Cutelyst::Context* context )
     {
-      const auto institution = qvariant_cast<model::Institution*>( context->stash( "userInstitution" ) );
+      const auto institution = model::Institution::from( context->stash( "userInstitution" ) );
       return institution ? institution->getId() : 0;
     }
 

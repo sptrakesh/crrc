@@ -26,6 +26,11 @@ namespace crrc
       static Ptr create( QSqlQuery& query );
       static Ptr create( Cutelyst::Context* context );
 
+      static const Institution* from( const QVariant& variant )
+      {
+        return qvariant_cast<Institution*>( variant );
+      }
+
       explicit Institution( QObject* parent = nullptr ) : QObject( parent ) {}
       ~Institution() = default;
 

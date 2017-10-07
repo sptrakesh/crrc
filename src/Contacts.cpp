@@ -32,7 +32,7 @@ void Contacts::object( Cutelyst::Context* c, const QString& id ) const
 {
   dao::ContactDAO dao;
   const auto obj = dao.retrieve( id.toUInt() );
-  const auto* cptr = qvariant_cast<model::Contact*>( obj );
+  const auto* cptr = model::Contact::from( obj );
 
   switch ( dao::roleId( c ) )
   {

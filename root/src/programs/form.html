@@ -1,7 +1,7 @@
 <script type="text/javascript">
   function saveProgram( form )
   {
-    if ( ! form.institution.value > 0 )
+    if ( !form.institution.selectedIndex > 0 )
     {
       let element = document.getElementById( 'warning' );
       element.innerText = 'Please select a valid institution';
@@ -45,8 +45,8 @@
     <select name="degree" id="degree">
       <option value="0">Select Degree</option>
       {% for degree in degrees %}
-      <option value="{{ degree.degree_id }}"
-              {% if degree.degree_id == object.degree.degree_id %}selected="selected"{% endif %}>
+      <option value="{{ degree.id }}"
+              {% if degree.id == object.degree.id %}selected="selected"{% endif %}>
         {{ degree.title}}
       </option>
       {% endfor %}
@@ -60,23 +60,23 @@
     <select name="designation" id="designation">
       <option value="0">Select Designation</option>
       {% for designation in designations %}
-      <option value="{{ designation.designation_id }}"
-              {% if designation.designation_id == object.designation.designation_id %}selected="selected"{% endif %}>
+      <option value="{{ designation.id }}"
+              {% if designation.id == object.designation.id %}selected="selected"{% endif %}>
         {{ designation.title}}
       </option>
       {% endfor %}
     </select>
     <br/>
     <label class="label">Curriculum Code:</label>
-    <input name="curriculum_code" id="curriculum_code" type="text" size="35" width="250"
-           {% if object %}value="{{ object.curriculum_code }}"{% endif %} />
+    <input name="curriculumCode" id="curriculumCode" type="text" size="35" width="250"
+           {% if object %}value="{{ object.curriculumCode }}"{% endif %} />
     <br/>
     <label class="label">URL:</label>
     <input name="url" id="url" type="text" size="35" width="250"
            {% if object %}value="{{ object.url }}"{% endif %} />
     <br/>
     {% if object %}
-    <input type="hidden" name="id" value="{{ object.program_id }}" />
+    <input type="hidden" name="id" value="{{ object.id }}" />
     {% endif %}
     <input type="submit" value="Save" />
     <br/>

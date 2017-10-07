@@ -45,7 +45,7 @@ Contact::Ptr Contact::create( Cutelyst::Context* context )
   if ( !username.isEmpty() )
   {
     const auto user = dao::UserDAO().retrieveByUsername( username );
-    const auto uptr = qvariant_cast<model::User*>( user );
+    auto uptr = const_cast<model::User*>( model::User::from( user ) );
     if ( uptr )
     {
       ptr->userId = uptr->getId();

@@ -27,6 +27,11 @@ namespace crrc
       static Ptr create( QSqlQuery& query );
       static Ptr create( Cutelyst::Context* context );
 
+      static const Contact* from( const QVariant& variant )
+      {
+        return qvariant_cast<Contact*>( variant );
+      }
+
       explicit Contact( QObject* parent = nullptr ) : QObject( parent ) {}
       ~Contact() = default;
 

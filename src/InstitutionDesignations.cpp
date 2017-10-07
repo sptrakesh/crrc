@@ -30,7 +30,7 @@ void InstitutionDesignations::object( Cutelyst::Context* c, const QString& id ) 
 
 void InstitutionDesignations::view( Cutelyst::Context* c ) const
 {
-  const auto ptr = qvariant_cast<model::Institution*>( c->stash( "object" ) );
+  const auto ptr = model::Institution::from( c->stash( "object" ) );
   const auto id = ptr ? ptr->getId() : 0;
   c->stash( {
     { "template", "institutions/designations/view.html" },
@@ -47,13 +47,13 @@ void InstitutionDesignations::edit( Cutelyst::Context* c ) const
     years << dt.year();
   }
 
-  const auto ptr = qvariant_cast<model::Institution*>( c->stash( "object" ) );
+  const auto ptr = model::Institution::from( c->stash( "object" ) );
   const auto id = ptr ? ptr->getId() : 0;
   const auto& members = dao::InstitutionDesignationDAO().retrieve( id );
   QSet<uint32_t> set;
   for ( const auto& member : members )
   {
-    const auto* designation = qvariant_cast<model::Designation*>( member.toHash().value( "designation" ) );
+    const auto* designation = model::Designation::from( member.toHash().value( "designation" ) );
     set << designation->getId();
   }
 
@@ -61,7 +61,7 @@ void InstitutionDesignations::edit( Cutelyst::Context* c ) const
   QVariantList nonMembers;
   for ( const auto item : designations )
   {
-    const auto* designation = qvariant_cast<model::Designation*>( item );
+    const auto* designation = model::Designation::from( item );
     if ( !set.contains( designation->getId() ) ) nonMembers << item;
   }
 

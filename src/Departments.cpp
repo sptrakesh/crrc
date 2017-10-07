@@ -44,7 +44,7 @@ void Departments::object( Cutelyst::Context* c, const QString& id ) const
 void Departments::list( Cutelyst::Context* c ) const
 {
   const auto obj = c->stash( "object" );
-  const auto ptr = qvariant_cast<model::Institution*>( c->stash( "object" ) );
+  const auto ptr = model::Institution::from( c->stash( "object" ) );
   const auto id = ptr ? ptr->getId() : 0;
   const auto& list = ptr ?  dao::DepartmentDAO().retrieveByInstitution( id ) : QVariantList();
   QVariantList ilist{ obj };

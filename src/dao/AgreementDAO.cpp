@@ -157,7 +157,7 @@ uint32_t AgreementDAO::update( Cutelyst::Context* context ) const
   if ( id.isEmpty() )
   {
     const auto& obj = context->stash( "object" );
-    if ( !obj.isNull() ) id = ( qvariant_cast<Agreement*>( obj ) )->getId();
+    if ( !obj.isNull() ) id = Agreement::from( obj )->getId();
   }
 
   auto query = CPreparedSqlQueryThreadForDB( 

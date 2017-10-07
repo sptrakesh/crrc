@@ -20,6 +20,11 @@ namespace crrc
       static Ptr create( QSqlQuery& query );
       static Ptr create( Cutelyst::Context* context );
 
+      static const Degree* from( const QVariant& variant )
+      {
+        return qvariant_cast<Degree*>( variant );
+      }
+
       explicit Degree( QObject* parent = nullptr ) : QObject( parent ) {}
       ~Degree() = default;
 

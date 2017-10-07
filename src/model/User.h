@@ -26,6 +26,11 @@ namespace crrc
       static Ptr create( QSqlQuery& query );
       static Ptr create( Cutelyst::Context* context );
 
+      static const User* from( const QVariant& variant )
+      {
+        return qvariant_cast<User*>( variant );
+      }
+
       explicit User( QObject* parent = nullptr ) : QObject( parent ),
         id{ 0 }, roleId{ 0 } {}
       ~User() = default;

@@ -34,7 +34,7 @@ bool Root::Auto( Cutelyst::Context* c )
     const auto uid = user.value( "id" ).toUInt();
     const auto& u = dao::UserDAO().retrieve( uid );
     const auto& contact = dao::ContactDAO().retrieveByUser( uid );
-    const auto* cptr = qvariant_cast<model::Contact*>( contact );
+    const auto* cptr = model::Contact::from( contact );
     const auto& institution = cptr ? cptr->getInstitution() : QVariant();
 
     c->stash({

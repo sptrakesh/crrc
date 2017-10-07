@@ -43,7 +43,7 @@
         displayWarning();
       }
     };
-    xhr.send( `program_id=${programId}` );
+    xhr.send( `id=${programId}` );
     return false;
   }
 </script>
@@ -65,9 +65,9 @@
   {% endif %}
   <div id="programs">
     {% for program in programs %}
-    <div id="p_{{ program.program_id }}">
-      <a href="#" onclick="return displayProgram( {{ program.program_id }} );">{% if program.institution %}{{ program.institution.name }} - {% endif %}{{ program.title }}</a>
-      <div id="pv_{{ program.program_id }}" style="display: none;">
+    <div id="p_{{ program.id }}">
+      <a href="#" onclick="return displayProgram( {{ program.id }} );">{% if program.institution %}{{ program.institution.name }} - {% endif %}{{ program.title }}</a>
+      <div id="pv_{{ program.id }}" style="display: none;">
         <br/>
         {% if program.credits %}
         <strong>Credits:</strong> {{ program.credits }}<br/>
@@ -84,17 +84,17 @@
         {% if program.designation %}
         <strong>Designation:</strong> {{ program.designation.title }}<br/>
         {% endif %}
-        {% if program.curriculum_code %}
-        <strong>Curriculum Code:</strong> {{ program.curriculum_code }}<br/>
+        {% if program.curriculumCode %}
+        <strong>Curriculum Code:</strong> {{ program.curriculumCode }}<br/>
         {% endif %}
         {% if program.url %}
         <strong>URL:</strong> <a href="{{ program.url }}">{{ program.url }}</a><br/>
         {% endif %}
-        <button onclick="hideProgram( {{ program.program_id }} )">Close</button>
-        <button onclick="window.location.href='/programs/id/{{ program.program_id }}/update'">Edit</button>
-        <button onclick="deleteProgram( {{ program.program_id }} )">Delete</button>
+        <button onclick="hideProgram( {{ program.id }} )">Close</button>
+        <button onclick="window.location.href='/programs/id/{{ program.id }}/update'">Edit</button>
+        <button onclick="deleteProgram( {{ program.id }} )">Delete</button>
         <br/>
-        <q id="pw_{{ program.program_id }}" class="warning" style="display: none;"></q>
+        <q id="pw_{{ program.id }}" class="warning" style="display: none;"></q>
       </div>
     </div>
     {% endfor %}

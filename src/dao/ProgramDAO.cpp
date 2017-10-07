@@ -4,105 +4,38 @@
 #include "DesignationDAO.h"
 #include "constants.h"
 #include "functions.h"
+#include "model/Program.h"
 
 #include <mutex>
+#include <unordered_map>
+
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
+
+using crrc::model::Program;
 
 
 namespace crrc
 {
   namespace dao
   {
-    struct Program
-    {
-      QVariant id;
-      QVariant title;
-      QVariant credits;
-      QVariant institutionId;
-      QVariant degreeId;
-      QVariant type;
-      QVariant designationId;
-      QVariant curriculumCode;
-      QVariant url;
-    };
-
-    static QMap<uint32_t, Program> programs;
+    static std::unordered_map<uint32_t, Program::Ptr> programs;
     static std::atomic_bool programsLoaded{ false };
     static std::mutex programMutex;
 
-    QVariantHash transform( const Program& program, const ProgramDAO::Mode& mode )
-    {
-      QVariantHash record;
-      record.insert( "program_id", program.id );
-      record.insert( "title", program.title );
-
-      record.insert( "institution", InstitutionDAO().retrieve( program.institutionId.toUInt() ) );
-
-      if ( ProgramDAO::Mode::Full == mode )
-      {
-        record.insert( "credits", program.credits );
-
-        if ( ! program.degreeId.isNull() )
-        {
-          record.insert( "degree", DegreeDAO().retrieve( program.degreeId.toUInt() ) );
-        }
-
-        record.insert( "type", program.type );
-
-        if ( ! program.designationId.isNull() )
-        {
-          record.insert( "designation", DesignationDAO().retrieve( program.designationId.toUInt() ) );
-        }
-
-        record.insert( "curriculum_code", program.curriculumCode );
-        record.insert( "url", program.url );
-      }
-
-      return record;
-    }
-
-    QVariantList fromPrograms( const ProgramDAO::Mode& mode )
+    QVariantList fromPrograms()
     {
       QVariantList list;
-      for ( const auto& program : programs )
-      {
-        list.append( transform( program, mode ) );
-      }
-
+      for ( const auto& iter : programs ) list << asVariant( iter.second.get() );
       return list;
-    }
-
-    Program createProgram( QSqlQuery& query )
-    {
-      Program program;
-      program.id = query.value( 0 ).toUInt();
-      program.title = query.value( 1 );
-      program.credits = query.value( 2 );
-
-      auto id = query.value( 3 );
-      program.institutionId = id.isNull() ? QVariant() : id.toUInt();
-
-      id = query.value( 4 );
-      program.degreeId = id.isNull() ? QVariant() : id.toUInt();
-
-      program.type = query.value( 5 );
-
-      id = query.value( 6 );
-      program.designationId = id.isNull() ? QVariant() : id.toUInt();
-
-      program.curriculumCode = query.value( 7 );
-      program.url = query.value( 8 );
-
-      return program;
     }
 
     void loadPrograms()
     {
       if ( programsLoaded.load() ) return;
       std::lock_guard<std::mutex> lock{ programMutex };
-      if ( !programs.isEmpty() )
+      if ( !programs.empty() )
       {
         programsLoaded = true;
         return;
@@ -116,9 +49,8 @@ namespace crrc
       {
         while ( query.next() )
         {
-          const auto program = createProgram( query );
-          auto id = program.id.toUInt();
-          programs.insert( id, std::move( program ) );
+          auto program = Program::create( query );
+          programs[program->getId()] = std::move( program );
         }
 
         programsLoaded = true;
@@ -149,35 +81,12 @@ namespace crrc
       query.bindValue( ":cc", c->request()->param( "curriculum_code" ) );
       query.bindValue( ":url", c->request()->param( "url" ) );
     }
-
-    Program programFromContext( Cutelyst::Context* context )
-    {
-      Program program;
-      program.title = context->request()->param( "title" );
-      program.credits = context->request()->param( "credits" );
-
-      auto id = context->request()->param( "institution", "0" );
-      program.institutionId = ( id != "0" ) ? id.toUInt() : QVariant();
-
-      id = context->request()->param( "degree" );
-      program.degreeId = ( id != "0" ) ? id.toUInt() : QVariant();
-
-      program.type = context->request()->param( "type" );
-
-      id = context->request()->param( "designation" );
-      program.designationId = ( id != "0" ) ? id.toUInt() : QVariant();
-
-      program.curriculumCode = context->request()->param( "curriculum_code" );
-      program.url = context->request()->param( "url" );
-
-      return program;
-    }
   }
 }
 
 using crrc::dao::ProgramDAO;
 
-QVariantList ProgramDAO::retrieveAll( const Mode& mode ) const
+QVariantList ProgramDAO::retrieveAll() const
 {
   loadPrograms();
   QVariantList list;
@@ -188,23 +97,22 @@ QVariantList ProgramDAO::retrieveAll( const Mode& mode ) const
 
   if ( query.exec() )
   {
-    while ( query.next() ) list << retrieve( query.value( 0 ).toString(), mode );
+    while ( query.next() ) list << retrieve( query.value( 0 ).toUInt() );
   }
 
   return list;
 }
 
-QVariantList ProgramDAO::retrieveByInstitution(
-  uint32_t institutionId, const Mode& mode ) const
+QVariantList ProgramDAO::retrieveByInstitution( uint32_t institutionId ) const
 {
   loadPrograms();
   QVariantList list;
 
-  for ( const auto& program : programs )
+  for ( const auto& iter : programs )
   {
-    if ( ! program.institutionId.isNull() && institutionId == program.institutionId.toUInt() )
+    if ( ! iter.second->getInstitutionId() && institutionId == iter.second->getInstitutionId() )
     {
-      list.append( transform( program, mode ) );
+      list << asVariant( iter.second.get() );
     }
   }
 
@@ -212,14 +120,12 @@ QVariantList ProgramDAO::retrieveByInstitution(
 }
 
 
-QVariantHash ProgramDAO::retrieve( const QString& id, const Mode& mode ) const
+QVariant ProgramDAO::retrieve( const uint32_t id ) const
 {
   loadPrograms();
-  const auto cid = id.toUInt();
-  const auto iter = programs.constFind( cid );
+  const auto iter = programs.find( id );
 
-  return ( iter != programs.end() ) ? 
-    transform( iter.value(), mode ) : QVariantHash();
+  return ( iter != programs.end() ) ? asVariant( iter->second.get() ) : QVariant();
 }
 
 uint32_t ProgramDAO::insert( Cutelyst::Context* context ) const
@@ -232,19 +138,20 @@ uint32_t ProgramDAO::insert( Cutelyst::Context* context ) const
 
   if ( !query.exec() )
   {
+    qWarning() << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
 
   const auto id = query.lastInsertId().toUInt();
-  auto program = programFromContext( context );
-  program.id = id;
+  auto program = Program::create( context );
+  program->setId( id );
   std::lock_guard<std::mutex> lock{ programMutex };
   programs[id] = std::move( program );
   return id;
 }
 
-void ProgramDAO::update( Cutelyst::Context* context ) const
+uint32_t ProgramDAO::update( Cutelyst::Context* context ) const
 {
   loadPrograms();
   auto id = context->request()->param( "id" );
@@ -259,18 +166,23 @@ void ProgramDAO::update( Cutelyst::Context* context ) const
     if ( query.numRowsAffected() )
     {
       const auto pid = id.toUInt();
-      auto program = programFromContext( context );
-      program.id = pid;
+      auto program = Program::create( context );
+      program->setId( pid );
       std::lock_guard<std::mutex> lock{ programMutex };
       programs[pid] = std::move( program );
+      return query.numRowsAffected();
     } 
-
-    context->stash()["error_msg"] = QString::number( query.numRowsAffected() );
   }
-  else context->stash()["error_msg"] = query.lastError().text();
+  else
+  {
+    qWarning() << query.lastError().text();
+    context->stash()["error_msg"] = query.lastError().text();
+  }
+
+  return 0;
 }
 
-QVariantList ProgramDAO::search( Cutelyst::Context* context, const Mode& mode ) const
+QVariantList ProgramDAO::search( Cutelyst::Context* context) const
 {
   loadPrograms();
   const auto text = context->request()->param( "text", "" );
@@ -289,8 +201,8 @@ QVariantList ProgramDAO::search( Cutelyst::Context* context, const Mode& mode ) 
   {
     while ( query.next() )
     {
-      auto program = retrieve( query.value( 0 ).toString(), mode );
-      if ( admin || query.value( 1 ).toUInt() == iid ) list.append( program );
+      auto program = retrieve( query.value( 0 ).toUInt() );
+      if ( admin || query.value( 1 ).toUInt() == iid ) list << program;
     }
   }
   else
@@ -302,7 +214,7 @@ QVariantList ProgramDAO::search( Cutelyst::Context* context, const Mode& mode ) 
   return list;
 }
 
-QString ProgramDAO::remove( uint32_t id ) const
+uint32_t ProgramDAO::remove( uint32_t id ) const
 {
   loadPrograms();
   auto query = CPreparedSqlQueryThreadForDB(
@@ -310,9 +222,15 @@ QString ProgramDAO::remove( uint32_t id ) const
   query.bindValue( ":id", id );
   if ( query.exec() )
   {
-    std::lock_guard<std::mutex> lock{ programMutex };
-    programs.remove( id );
-    return QString::number( query.numRowsAffected() );
+    if ( query.numRowsAffected() )
+    {
+      std::lock_guard<std::mutex> lock{ programMutex };
+      programs.erase( id );
+    }
+
+    return query.numRowsAffected();
   }
-  else return query.lastError().text();
+
+  qWarning() << query.lastError().text();
+  return 0;
 }

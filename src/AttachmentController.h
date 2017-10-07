@@ -32,7 +32,7 @@ namespace crrc
     void display( Cutelyst::Context* c ) const
     {
       const auto& object = c->stash( "object" );
-      const auto ptr = qvariant_cast<model::BlobItem*>( object );
+      const auto ptr = model::BlobItem::from( object );
       c->response()->setHeader( "Cache-Control", "must-revalidate" );
       c->response()->setHeader( "ETag", ptr->getChecksum() );
       c->response()->setHeader( "Last-Modified", ptr->getUpdated() );
@@ -71,7 +71,7 @@ namespace crrc
       const auto& obj = context->stash( "object" );
       if ( obj.isNull() ) return id;
 
-      const auto ptr = qvariant_cast<model::BlobItem*>( obj );
+      const auto ptr = model::BlobItem::from( obj );
       return ptr ? QString::number( ptr->getId() ) : QString();
     }
   };

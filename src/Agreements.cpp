@@ -6,6 +6,7 @@
 #include "dao/ProgramDAO.h"
 #include "dao/functions.h"
 #include "model/Agreement.h"
+#include "model/Program.h"
 
 #include <QtCore/QtDebug>
 #include <QtCore/QJsonArray>
@@ -46,7 +47,7 @@ void Agreements::create( Cutelyst::Context* c ) const
 void Agreements::edit( Cutelyst::Context* c ) const
 {
   const auto& obj = AttachmentController<dao::AgreementDAO>().edit( c );
-  const auto ptr = qvariant_cast<model::Agreement*>( obj );
+  const auto ptr = model::Agreement::from( obj );
   QJsonObject json;
   if ( ptr ) json.insert( "id", static_cast<int>( ptr->getId() ) );
   else json.insert( "id", 0 );
@@ -71,31 +72,32 @@ void Agreements::institutions( Cutelyst::Context* c ) const
 void Agreements::view( Cutelyst::Context* c ) const
 {
   const auto& object = c->stash( "object" );
-  const auto ptr = qvariant_cast<model::Agreement*>( object );
+  const auto ptr = model::Agreement::from( object );
 
   const auto& relations = dao::InstitutionAgreementDAO().retrieve( QString::number( ptr->getId() ) );
 
   dao::ProgramDAO dao;
 
-  const auto func = [](const QVariantHash& hash, QJsonArray& array)
+  const auto func = [](const QVariant& var, QJsonArray& array)
   {
+    const auto ptr = model::Program::from( var );
     QJsonObject json;
-    json.insert( "program_id", hash.value( "program_id" ).toInt() );
-    json.insert( "title", hash.value( "title" ).toString() );
+    json.insert( "program_id", static_cast<int>( ptr->getId() ) );
+    json.insert( "title", ptr->getTitle() );
     array << json;
   };
 
   const auto& trp = ptr->getTransferInstitutionId() ?
-    dao.retrieveByInstitution( ptr->getTransferInstitutionId(), dao::ProgramDAO::Mode::Partial ) :
+    dao.retrieveByInstitution( ptr->getTransferInstitutionId() ) :
     QVariantList();
   QJsonArray transferPrograms;
-  for ( const auto& value : trp ) func( value.toHash(), transferPrograms );
+  for ( const auto& value : trp ) func( value, transferPrograms );
 
   const auto& treep = ptr->getTransfereeInstitutionId() ?
-    dao.retrieveByInstitution( ptr->getTransfereeInstitutionId(), dao::ProgramDAO::Mode::Partial ) :
+    dao.retrieveByInstitution( ptr->getTransfereeInstitutionId() ) :
     QVariantList();
   QJsonArray transfereePrograms;
-  for ( const auto& value : treep ) func( value.toHash(), transfereePrograms );
+  for ( const auto& value : treep ) func( value, transfereePrograms );
 
   c->stash( {
     { "template", "agreements/view.html" },

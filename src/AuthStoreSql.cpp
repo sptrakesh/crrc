@@ -17,7 +17,7 @@ Cutelyst::AuthenticationUser AuthStoreSql::findUser( Cutelyst::Context* c,
 {
   const auto id = userinfo[idField];
   const auto user = dao::UserDAO().retrieveByUsername( id );
-  const auto uptr = qvariant_cast<model::User*>( user );
+  const auto uptr = model::User::from( user );
 
   if ( uptr )
   {
@@ -32,7 +32,7 @@ Cutelyst::AuthenticationUser AuthStoreSql::findUser( Cutelyst::Context* c,
     const auto qvar = uptr->getRole();
     if ( !qvar.isNull() )
     {
-      const auto role = qvariant_cast<model::Role*>( qvar );
+      const auto role = model::Role::from( qvar );
       QVariantMap map;
       map.insert( "id", role->getId() );
       map.insert( "role", role->getRole() );

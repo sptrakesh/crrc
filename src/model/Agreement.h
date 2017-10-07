@@ -18,6 +18,11 @@ namespace crrc
       static Ptr create( QSqlQuery& query );
       static Ptr create( Cutelyst::Context* context, const QByteArray& bytes );
 
+      static const Agreement* from( const QVariant& variant )
+      {
+        return qvariant_cast<Agreement*>( variant );
+      }
+
       explicit Agreement( QObject* parent = nullptr ) : BlobItem( parent ) {}
       ~Agreement() = default;
 

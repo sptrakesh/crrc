@@ -4,6 +4,7 @@
 #include "dao/DegreeDAO.h"
 #include "dao/DesignationDAO.h"
 #include "dao/functions.h"
+#include "model/Program.h"
 
 #include <QtCore/QDebug>
 
@@ -28,16 +29,19 @@ void Programs::base( Cutelyst::Context* c ) const
 
 void Programs::object( Cutelyst::Context* c, const QString& id ) const
 {
-  const auto& obj = dao::ProgramDAO().retrieve( id );
+  const auto& obj = dao::ProgramDAO().retrieve( id.toUInt() );
+  const auto ptr = model::Program::from( obj );
+
+  if ( !ptr )
+  {
+    c->setStash( "object", obj );
+    return;
+  }
 
   int32_t iid = dao::institutionId( c );
   if ( !iid ) iid = -1;
 
-  const auto& inst = obj.value( "institution" );
-  const auto iptr = qvariant_cast<model::Institution*>( inst );
-  const auto piid = iptr ? iptr->getInstitutionId() : 0;
-
-  if ( dao::isGlobalAdmin( c ) || iid == piid )
+  if ( dao::isGlobalAdmin( c ) || iid == ptr->getInstitutionId() )
   {
     c->setStash( "object", obj );
   }
@@ -70,11 +74,7 @@ void Programs::edit( Cutelyst::Context* c ) const
   if ( !checkInstitution( c ) ) return;
 
   dao::ProgramDAO dao;
-  if ( id.isEmpty() )
-  {
-    const auto cid = dao.insert( c );
-    id = QString::number( cid );
-  }
+  if ( id.isEmpty() ) dao.insert( c );
   else dao.update( c );
 
   c->response()->redirect( "/programs" );
@@ -100,14 +100,15 @@ void Programs::search( Cutelyst::Context* c ) const
 
 void Programs::remove( Cutelyst::Context* c )
 {
-  auto id = c->request()->param( "program_id", "" );
+  auto id = c->request()->param( "id", "" );
   QJsonObject json;
   json.insert( "id", id );
 
   if ( ! id.isEmpty() )
   {
-    json.insert( "message", dao::ProgramDAO().remove( id.toUInt() ) );
-    json.insert( "status", true );
+    const auto count = dao::ProgramDAO().remove( id.toUInt() );
+    json.insert( "count", static_cast<int>( count ) );
+    json.insert( "status", count ? true : false );
   }
   else
   {

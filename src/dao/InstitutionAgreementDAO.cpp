@@ -2,6 +2,7 @@
 #include "ProgramDAO.h"
 #include "DegreeDAO.h"
 #include "constants.h"
+#include "model/Program.h"
 
 #include <mutex>
 #include <QtCore/QStringBuilder>
@@ -20,32 +21,9 @@ namespace crrc
       QVariant transfereeProgram;
     };
 
-    QVariantHash createProgramFromId( const QVariant& p )
+    QVariant createProgramFromId( const QVariant& p )
     {
-      QVariantHash transfer;
-      const auto program = ProgramDAO().retrieve( p.toString() );
-      if ( ! program.isEmpty() )
-      {
-        transfer.insert( "program_id", program.value( "program_id" ).toUInt() );
-        transfer.insert( "title", program.value( "title" ) );
-        transfer.insert( "credits", program.value( "credits" ) );
-
-        QVariantHash institution;
-        const auto& inst = program.value( "institution" ).toHash();
-        institution.insert( "institution_id", inst.value( "institution_id" ).toUInt() );
-        institution.insert( "name", inst.value( "name" ) );
-
-        transfer.insert( "institution", institution );
-
-        QVariantHash degree;
-        const auto& deg = program.value( "degree" ).toHash();
-        degree.insert( "degree_id", deg.value( "degree_id" ).toUInt() );
-        degree.insert( "title", deg.value( "title" ) );
-
-        transfer.insert( "degree", degree );
-      }
-
-      return transfer;
+      return ProgramDAO().retrieve( p.toUInt() );
     }
 
     QVariantHash transform( const InstitutionAgreement& institutionAgreement )

@@ -14,6 +14,11 @@ namespace crrc
     public:
       using Ptr = std::unique_ptr<Logo>;
 
+      static const Logo* from( const QVariant& variant )
+      {
+        return qvariant_cast<Logo*>( variant );
+      }
+
       explicit Logo( QObject* parent = nullptr ) : BlobItem( parent ) {}
       ~Logo() = default;
     };

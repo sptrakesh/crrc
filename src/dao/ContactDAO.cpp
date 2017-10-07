@@ -73,7 +73,7 @@ namespace crrc
       {
         const UserDAO dao;
         const auto user = dao.retrieveByUsername( username );
-        const auto uptr = qvariant_cast<model::User*>( user );
+        const auto uptr = model::User::from( user );
         const QVariant userId = ( uptr ) ? uptr->getId() : dao.insert( c );
         query.bindValue( ":uid", userId );
 

@@ -17,6 +17,11 @@ namespace crrc
       Q_PROPERTY( QString updated READ getUpdated )
 
     public:
+      static const BlobItem* from( const QVariant& variant )
+      {
+        return qvariant_cast<BlobItem*>( variant );
+      }
+
       explicit BlobItem( QObject* parent = nullptr ) : QObject( parent ) {}
       ~BlobItem() = default;
 

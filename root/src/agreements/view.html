@@ -6,11 +6,11 @@
 
   var transferPrograms = [];
   {% for relation in relations %}
-  transferPrograms.push( { id: {{ relation.transfer_program.program_id }},
+  transferPrograms.push( { id: {{ relation.transfer_program.id }},
     title: '{{ relation.transfer_program.title }}' } );
   for ( var i = 0; i < availableTransferPrograms.length; ++i )
   {
-    if ( availableTransferPrograms[i].program_id === {{ relation.transfer_program.program_id }} )
+    if ( availableTransferPrograms[i].id === {{ relation.transfer_program.id }} )
     {
       availableTransferPrograms.splice( i, 1 );
       break;
@@ -21,11 +21,11 @@
 
   var transfereePrograms = [];
   {% for relation in relations %}
-  transfereePrograms.push( { id: {{ relation.transferee_program.program_id }},
+  transfereePrograms.push( { id: {{ relation.transferee_program.id }},
     title: '{{ relation.transferee_program.title }}' } );
   for ( var i = 0; i < availableTransfereePrograms.length; ++i )
   {
-    if ( availableTransfereePrograms[i].program_id === {{ relation.transferee_program.program_id }} )
+    if ( availableTransfereePrograms[i].id === {{ relation.transferee_program.id }} )
     {
       availableTransfereePrograms.splice( i, 1 );
       break;
@@ -56,7 +56,7 @@
     for ( var i = 0; i < availableTransferPrograms.length; ++i )
     {
       let opt = document.createElement( 'option' );
-      opt.value = availableTransferPrograms[i].program_id;
+      opt.value = availableTransferPrograms[i].id;
       opt.appendChild( document.createTextNode( availableTransferPrograms[i].title ) );
       trs.appendChild( opt );
     }
@@ -74,7 +74,7 @@
     for ( var i = 0; i < availableTransfereePrograms.length; ++i )
     {
       let opt = document.createElement( 'option' );
-      opt.value = availableTransfereePrograms[i].program_id;
+      opt.value = availableTransfereePrograms[i].id;
       opt.appendChild( document.createTextNode( availableTransfereePrograms[i].title ) );
       trees.appendChild( opt );
     }
@@ -111,13 +111,13 @@
     {
       for ( var i = 0; i < arr.length; ++i )
       {
-        if ( arr[i].program_id == id )
+        if ( arr[i].id == id )
         {
           console.log( `Found value matching id: ${id} in ${JSON.stringify( arr[i] )}` );
           arr.splice( i, 1 );
           break;
         }
-        console.log( `No value matching id: ${id} in ${arr[i].program_id}` );
+        console.log( `No value matching id: ${id} in ${arr[i].id}` );
       }
     }
 
@@ -253,8 +253,8 @@
             }
           }
 
-          availableTransferPrograms.push( { program_id: transferProgramId, title: title1 } );
-          availableTransfereePrograms.push( { program_id: transfereeProgramId, title: title2 } );
+          availableTransferPrograms.push( { id: transferProgramId, title: title1 } );
+          availableTransfereePrograms.push( { id: transfereeProgramId, title: title2 } );
           console.log( `Removed relationship for agreement: {{ object.id }}, transfer program: ${transferProgramId}, transferee program: ${transfereeProgramId}.` );
         }
         else console.log( `Could not remove relationship for agreement: {{ object.id }}, transfer program: ${transferProgramId}, transferee program: ${transfereeProgramId}.` );
@@ -295,15 +295,15 @@
   </div>
   <div id="relations">
     {% for relation in relations %}
-    <div id="pr_{{ relation.transfer_program.program_id }}_{{ relation.transferee_program.program_id }}">
+    <div id="pr_{{ relation.transfer_program.id }}_{{ relation.transferee_program.id }}">
       <div style="float:left; width: 45%; display: inline;">
-        <a href="/programs/id/{{ relation.transfer_program.program_id }}">{{ relation.transfer_program.title }}</a>
+        <a href="/programs/id/{{ relation.transfer_program.id }}">{{ relation.transfer_program.title }}</a>
       </div>
       <div style="float: right; display: inline; width: 5%;">
-        <button onclick="removeRelation({{ relation.transfer_program.program_id }}, '{{ relation.transfer_program.title }}', {{ relation.transferee_program.program_id }}, '{{ relation.transferee_program.title }}')">Remove</button>
+        <button onclick="removeRelation({{ relation.transfer_program.id }}, '{{ relation.transfer_program.title }}', {{ relation.transferee_program.id }}, '{{ relation.transferee_program.title }}')">Remove</button>
       </div>
       <div id="transfereeProgram" style="float:left; width: 45%; display: inline;">
-        <a href="/programs/id/{{ relation.transferee_program.program_id }}">{{ relation.transferee_program.title }}</a>
+        <a href="/programs/id/{{ relation.transferee_program.id }}">{{ relation.transferee_program.title }}</a>
       </div>
       <div style="clear: both;"></div>
     </div>

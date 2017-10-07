@@ -28,7 +28,7 @@ void Logos::object( Cutelyst::Context* c, const QString& id ) const
 void Logos::create( Cutelyst::Context* c ) const
 {
   const auto& logo = AttachmentController<dao::LogoDAO>().edit( c );
-  const auto ptr = qvariant_cast<model::Logo*>( logo );
+  const auto ptr = model::Logo::from( logo );
   QJsonObject json;
   json.insert( "id", static_cast<int>( ptr->getId() ) );
   const auto& bytes = QJsonDocument( json ).toJson();
