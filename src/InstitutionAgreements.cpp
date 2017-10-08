@@ -11,20 +11,12 @@ using crrc::InstitutionAgreements;
 
 void InstitutionAgreements::index( Cutelyst::Context* c ) const
 {
-  dao::InstitutionAgreementDAO dao;
   c->setStash( "template", "institutions/agreements/index.html" );
 }
 
 void InstitutionAgreements::base( Cutelyst::Context* c ) const
 {
   c->response()->setHeader( "Cache-Control", "no-cache, no-store, must-revalidate" );
-}
-
-
-void InstitutionAgreements::object( Cutelyst::Context* c, const QString& id ) const
-{
-  auto list = dao::InstitutionAgreementDAO().retrieve( id );
-  c->setStash( "object", list.first() );
 }
 
 void InstitutionAgreements::edit( Cutelyst::Context* c ) const
@@ -54,9 +46,9 @@ void InstitutionAgreements::remove( Cutelyst::Context* c )
 
 bool InstitutionAgreements::validate( Cutelyst::Context* context ) const
 {
-  const auto id = context->request()->param( "agreement_id", "" );
-  const auto tp1 = context->request()->param( "transfer_program_id", "" );
-  const auto tp2 = context->request()->param( "transferee_program_id", "" );
+  const auto id = context->request()->param( "agreementId", "" );
+  const auto tp1 = context->request()->param( "transferProgramId", "" );
+  const auto tp2 = context->request()->param( "transfereeProgramId", "" );
 
   if ( id.isEmpty() || tp1.isEmpty() || tp2.isEmpty() )
   {

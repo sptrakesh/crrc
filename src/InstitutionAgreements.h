@@ -17,9 +17,6 @@ namespace crrc
     C_ATTR( base, :Chained( "/" ) : PathPart( "institution/program/relations" ) : CaptureArgs( 0 ) )
     void base( Cutelyst::Context* ) const;
 
-    C_ATTR( object, :Chained( "base" ) : PathPart( "id" ) : CaptureArgs( 1 ) )
-    void object( Cutelyst::Context* c, const QString& id ) const;
-
     C_ATTR( edit, :Chained( "base" ) : PathPart( "edit" ) : Args( 0 ) )
     void edit( Cutelyst::Context* c ) const;
 

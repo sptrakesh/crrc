@@ -1,70 +1,36 @@
 #include "InstitutionAgreementDAO.h"
 #include "ProgramDAO.h"
-#include "DegreeDAO.h"
 #include "constants.h"
-#include "model/Program.h"
+#include "model/InstitutionAgreement.h"
 
 #include <mutex>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
+using crrc::model::InstitutionAgreement;
 
 namespace crrc
 {
   namespace dao
   {
-    struct InstitutionAgreement
-    {
-      QVariant agreementId;
-      QVariant transferProgram;
-      QVariant transfereeProgram;
-    };
-
-    QVariant createProgramFromId( const QVariant& p )
-    {
-      return ProgramDAO().retrieve( p.toUInt() );
-    }
-
-    QVariantHash transform( const InstitutionAgreement& institutionAgreement )
-    {
-      QVariantHash record;
-      record.insert( "agreement_id", institutionAgreement.agreementId );
-
-      record.insert( "transfer_program", 
-        createProgramFromId( institutionAgreement.transferProgram ) );
-      record.insert( "transferee_program", 
-        createProgramFromId( institutionAgreement.transfereeProgram ) );
-
-      return record;
-    }
-
-    InstitutionAgreement createInstitutionAgreement( QSqlQuery& query )
-    {
-      InstitutionAgreement institutionAgreement;
-      institutionAgreement.agreementId = query.value( 0 ).toUInt();
-      institutionAgreement.transferProgram = query.value( 1 ).toUInt();
-      institutionAgreement.transfereeProgram = query.value( 2 ).toUInt();
-
-      return institutionAgreement;
-    }
-
     void bindInstitutionAgreement( Cutelyst::Context* c, QSqlQuery& query )
     {
-      query.bindValue( ":id", c->request()->param( "agreement_id" ) );
-      query.bindValue( ":tp1", c->request()->param( "transfer_program_id" ) );
-      query.bindValue( ":tp2", c->request()->param( "transferee_program_id" ) );
+      query.bindValue( ":id", c->request()->param( "agreementId" ) );
+      query.bindValue( ":tp1", c->request()->param( "transferProgramId" ) );
+      query.bindValue( ":tp2", c->request()->param( "transfereeProgramId" ) );
     }
   }
 }
 
 using crrc::dao::InstitutionAgreementDAO;
 
-QVariantList InstitutionAgreementDAO::retrieve( const QString& agreementId ) const
+QVariantList InstitutionAgreementDAO::retrieve( Cutelyst::Context* context, 
+  const QString& agreementId ) const
 {
   return agreementId.contains( "_" ) ? 
-    retrieveByKey( agreementId.split( "_" ) ) : 
-    retrieveByAgreement( agreementId );
+    retrieveByKey( context, agreementId.split( "_" ) ) : 
+    retrieveByAgreement( context, agreementId.toUInt() );
 }
 
 uint32_t InstitutionAgreementDAO::insert( Cutelyst::Context* context ) const
@@ -77,12 +43,11 @@ uint32_t InstitutionAgreementDAO::insert( Cutelyst::Context* context ) const
   if ( !query.exec() )
   {
     context->stash()["error_msg"] = query.lastError().text();
+    qWarning() << query.lastError().text();
     return 0;
   }
-  else
-  {
-    return query.lastInsertId().toUInt();
-  }
+
+  return query.lastInsertId().toUInt();
 }
 
 void InstitutionAgreementDAO::remove( Cutelyst::Context* context ) const
@@ -95,16 +60,18 @@ void InstitutionAgreementDAO::remove( Cutelyst::Context* context ) const
   if ( ! query.exec() ) context->stash()["error_msg"] = query.lastError().text();
 }
 
-QVariantList InstitutionAgreementDAO::retrieveByAgreement( const QString& agreementId ) const
+QVariantList InstitutionAgreementDAO::retrieveByAgreement( 
+  Cutelyst::Context* context, const uint32_t agreementId ) const
 {
   auto query = CPreparedSqlQueryThreadForDB(
     "select * from institution_agreements where agreement_id = :id",
     crrc::DATABASE_NAME );
   query.bindValue( ":id", agreementId );
-  return toList( query );
+  return toList( context, query );
 }
 
-QVariantList InstitutionAgreementDAO::retrieveByKey( const QStringList& ids ) const
+QVariantList InstitutionAgreementDAO::retrieveByKey(
+  Cutelyst::Context* context, const QStringList& ids ) const
 {
   QVariantList list;
   auto query = CPreparedSqlQueryThreadForDB(
@@ -113,10 +80,10 @@ QVariantList InstitutionAgreementDAO::retrieveByKey( const QStringList& ids ) co
   query.bindValue( ":id", ids.at( 0 ) );
   query.bindValue( ":tp1", ids.at( 1 ) );
   query.bindValue( ":tp2", ids.at( 2 ) );
-  return toList( query );
+  return toList( context, query );
 }
 
-QVariantList InstitutionAgreementDAO::toList( QSqlQuery& query ) const
+QVariantList InstitutionAgreementDAO::toList( Cutelyst::Context* context, QSqlQuery& query ) const
 {
   QVariantList list;
 
@@ -124,8 +91,7 @@ QVariantList InstitutionAgreementDAO::toList( QSqlQuery& query ) const
   {
     while ( query.next() )
     {
-      const auto& ia = createInstitutionAgreement( query );
-      list.append( transform( ia ) );
+      list << asVariant( model::InstitutionAgreement::create( context, query ) );
     }
   }
 

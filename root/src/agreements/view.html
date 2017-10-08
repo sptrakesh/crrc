@@ -1,16 +1,16 @@
 <script type="text/javascript">
   var availableTransferPrograms = {{ transferPrograms }};
-  console.log( JSON.stringify( availableTransferPrograms ) );
+  console.log( `available transfer programs: ${JSON.stringify( availableTransferPrograms )}` );
   var availableTransfereePrograms = {{ transfereePrograms }};
-  console.log( JSON.stringify( availableTransfereePrograms ) );
+  console.log( `available transferee programs: ${JSON.stringify( availableTransfereePrograms )}` );
 
   var transferPrograms = [];
   {% for relation in relations %}
-  transferPrograms.push( { id: {{ relation.transfer_program.id }},
-    title: '{{ relation.transfer_program.title }}' } );
+  transferPrograms.push( { id: {{ relation.transferProgram.id }},
+    title: '{{ relation.transferProgram.title }}' } );
   for ( var i = 0; i < availableTransferPrograms.length; ++i )
   {
-    if ( availableTransferPrograms[i].id === {{ relation.transfer_program.id }} )
+    if ( availableTransferPrograms[i].id === {{ relation.transferProgram.id }} )
     {
       availableTransferPrograms.splice( i, 1 );
       break;
@@ -21,11 +21,11 @@
 
   var transfereePrograms = [];
   {% for relation in relations %}
-  transfereePrograms.push( { id: {{ relation.transferee_program.id }},
-    title: '{{ relation.transferee_program.title }}' } );
+  transfereePrograms.push( { id: {{ relation.transfereeProgram.id }},
+    title: '{{ relation.transfereeProgram.title }}' } );
   for ( var i = 0; i < availableTransfereePrograms.length; ++i )
   {
-    if ( availableTransfereePrograms[i].id === {{ relation.transferee_program.id }} )
+    if ( availableTransfereePrograms[i].id === {{ relation.transfereeProgram.id }} )
     {
       availableTransfereePrograms.splice( i, 1 );
       break;
@@ -41,7 +41,7 @@
     form.onsubmit = 'return false;';
     let objId = document.createElement( 'input' );
     objId.type = 'hidden';
-    objId.name = 'agreement_id';
+    objId.name = 'agreementId';
     objId.value = '{{ object.id }}';
     form.appendChild( objId );
 
@@ -51,7 +51,7 @@
     form.appendChild( trl );
 
     let trs = document.createElement( 'select' );
-    trs.name = 'transfer_program_id';
+    trs.name = 'transferProgramId';
     trs.required = true;
     for ( var i = 0; i < availableTransferPrograms.length; ++i )
     {
@@ -69,7 +69,7 @@
     form.appendChild( treel );
 
     let trees = document.createElement( 'select' );
-    trees.name = 'transferee_program_id';
+    trees.name = 'transfereeProgramId';
     trees.required = true;
     for ( var i = 0; i < availableTransfereePrograms.length; ++i )
     {
@@ -141,7 +141,7 @@
       let rmb = document.createElement( 'button' );
       rmb.onclick = function ()
       {
-        removeRelation( transferProgramId, transfer_programTitle, transfereeProgramId, transfereeProgramTitle );
+        removeRelation( transferProgramId, transferProgramTitle, transfereeProgramId, transfereeProgramTitle );
       }
       rmb.textContent = 'Remove';
       rmd.appendChild( rmb );
@@ -162,9 +162,9 @@
     }
 
     let form = document.getElementById( 'addRelation' );
-    let transferProgram = form.transfer_program_id;
+    let transferProgram = form.transferProgramId;
     console.log( `Transfer program index: ${transferProgram.selectedIndex}` );
-    let transfereeProgram = form.transferee_program_id;
+    let transfereeProgram = form.transfereeProgramId;
     console.log( `Transferee program index: ${transfereeProgram.selectedIndex}` );
 
     if ( transferProgram.selectedIndex >= 0 && transfereeProgram.selectedIndex >= 0 )
@@ -201,7 +201,7 @@
         }
       };
 
-      xhr.send( `agreement_id={{ object.id }}&transfer_program_id=${transferProgramId}&transferee_program_id=${transfereeProgramId}` );
+      xhr.send( `agreementId={{ object.id }}&transferProgramId=${transferProgramId}&transfereeProgramId=${transfereeProgramId}` );
     }
     else
     {
@@ -260,7 +260,7 @@
         else console.log( `Could not remove relationship for agreement: {{ object.id }}, transfer program: ${transferProgramId}, transferee program: ${transfereeProgramId}.` );
       }
     };
-    xhr.send( `agreement_id={{ object.id }}&transfer_program_id=${transferProgramId}&transferee_program_id=${transfereeProgramId}` );
+    xhr.send( `agreementId={{ object.id }}&transferProgramId=${transferProgramId}&transfereeProgramId=${transfereeProgramId}` );
   }
 </script>
 
@@ -295,15 +295,15 @@
   </div>
   <div id="relations">
     {% for relation in relations %}
-    <div id="pr_{{ relation.transfer_program.id }}_{{ relation.transferee_program.id }}">
+    <div id="pr_{{ relation.transferProgram.id }}_{{ relation.transfereeProgram.id }}">
       <div style="float:left; width: 45%; display: inline;">
-        <a href="/programs/id/{{ relation.transfer_program.id }}">{{ relation.transfer_program.title }}</a>
+        <a href="/programs/id/{{ relation.transferProgram.id }}">{{ relation.transferProgram.title }}</a>
       </div>
       <div style="float: right; display: inline; width: 5%;">
-        <button onclick="removeRelation({{ relation.transfer_program.id }}, '{{ relation.transfer_program.title }}', {{ relation.transferee_program.id }}, '{{ relation.transferee_program.title }}')">Remove</button>
+        <button onclick="removeRelation({{ relation.transferProgram.id }}, '{{ relation.transferProgram.title }}', {{ relation.transfereeProgram.id }}, '{{ relation.transfereeProgram.title }}')">Remove</button>
       </div>
       <div id="transfereeProgram" style="float:left; width: 45%; display: inline;">
-        <a href="/programs/id/{{ relation.transferee_program.id }}">{{ relation.transferee_program.title }}</a>
+        <a href="/programs/id/{{ relation.transfereeProgram.id }}">{{ relation.transfereeProgram.title }}</a>
       </div>
       <div style="clear: both;"></div>
     </div>

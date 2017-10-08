@@ -110,7 +110,7 @@ QVariantList ProgramDAO::retrieveByInstitution( uint32_t institutionId ) const
 
   for ( const auto& iter : programs )
   {
-    if ( ! iter.second->getInstitutionId() && institutionId == iter.second->getInstitutionId() )
+    if ( institutionId == iter.second->getInstitutionId() )
     {
       list << asVariant( iter.second.get() );
     }

@@ -74,7 +74,7 @@ void Agreements::view( Cutelyst::Context* c ) const
   const auto& object = c->stash( "object" );
   const auto ptr = model::Agreement::from( object );
 
-  const auto& relations = dao::InstitutionAgreementDAO().retrieve( QString::number( ptr->getId() ) );
+  const auto& relations = dao::InstitutionAgreementDAO().retrieve( c, QString::number( ptr->getId() ) );
 
   dao::ProgramDAO dao;
 
@@ -82,20 +82,18 @@ void Agreements::view( Cutelyst::Context* c ) const
   {
     const auto ptr = model::Program::from( var );
     QJsonObject json;
-    json.insert( "program_id", static_cast<int>( ptr->getId() ) );
+    json.insert( "id", static_cast<int>( ptr->getId() ) );
     json.insert( "title", ptr->getTitle() );
     array << json;
   };
 
-  const auto& trp = ptr->getTransferInstitutionId() ?
-    dao.retrieveByInstitution( ptr->getTransferInstitutionId() ) :
-    QVariantList();
+  auto iid = ptr->getTransferInstitutionId();
+  const auto& trp = iid ?  dao.retrieveByInstitution( iid ) : QVariantList();
   QJsonArray transferPrograms;
   for ( const auto& value : trp ) func( value, transferPrograms );
 
-  const auto& treep = ptr->getTransfereeInstitutionId() ?
-    dao.retrieveByInstitution( ptr->getTransfereeInstitutionId() ) :
-    QVariantList();
+  iid = ptr->getTransfereeInstitutionId();
+  const auto& treep = iid ?  dao.retrieveByInstitution( iid ) : QVariantList();
   QJsonArray transfereePrograms;
   for ( const auto& value : treep ) func( value, transfereePrograms );
 
