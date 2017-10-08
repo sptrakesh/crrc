@@ -78,7 +78,7 @@ namespace crrc
       if ( deid == "0" ) query.bindValue( ":designationId", QVariant() );
       else query.bindValue( ":designationId", deid );
 
-      query.bindValue( ":cc", c->request()->param( "curriculum_code" ) );
+      query.bindValue( ":cc", c->request()->param( "curriculumCode" ) );
       query.bindValue( ":url", c->request()->param( "url" ) );
     }
   }
