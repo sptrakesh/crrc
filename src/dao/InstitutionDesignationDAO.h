@@ -8,14 +8,14 @@ namespace crrc
   {
     struct InstitutionDesignationDAO
     {
-      QVariantList retrieve( uint32_t institutionId ) const;
-      QString save( Cutelyst::Context* context ) const;
-      QString remove( Cutelyst::Context* context ) const;
+      QVariantList retrieve( Cutelyst::Context* context, uint32_t institutionId ) const;
+      uint32_t save( Cutelyst::Context* context ) const;
+      uint32_t remove( Cutelyst::Context* context ) const;
       uint32_t remove( uint32_t institutionId ) const;
 
     private:
-      QString update( Cutelyst::Context* context ) const;
-      QString insert( Cutelyst::Context* context ) const;
+      uint32_t update( Cutelyst::Context* context ) const;
+      uint32_t insert( Cutelyst::Context* context ) const;
     };
   }
 }

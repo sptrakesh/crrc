@@ -33,6 +33,6 @@ namespace crrc
     void remove( Cutelyst::Context* c ) const;
 
   private:
-    void sendJson( Cutelyst::Context* c, const QString& result ) const;
+    void sendJson( Cutelyst::Context* c, const uint32_t result ) const;
   };
 }

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <Cutelyst/Controller>
-#include <QtCore/QJsonObject>
 
 
 namespace crrc

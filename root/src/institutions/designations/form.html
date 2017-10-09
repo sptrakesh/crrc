@@ -5,7 +5,7 @@
   {
     form.disabled = true;
     let xhr = new XMLHttpRequest();
-    let url = form.designation_id.checked ?
+    let url = form.designationId.checked ?
       '/institution/designations/save' : '/institution/designations/remove';
     xhr.open( 'POST', url );
     xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
@@ -19,7 +19,7 @@
         else form.disabled = false;
       }
     };
-    xhr.send( encodeURI( `institution_id=${form.institution_id.value}&designation_id=${form.designation_id.value}&expiration=${form.expiration.value}` ) );
+    xhr.send( encodeURI( `institutionId=${form.institutionId.value}&designationId=${form.designationId.value}&expiration=${form.expiration.value}` ) );
 
     return false;
   }
@@ -42,14 +42,14 @@
           form.disabled = false;
           if ( isValid( json.error ) )
           {
-            let warning = document.getElementById( `dw_${form.institution_id.value}` );
+            let warning = document.getElementById( `dw_${form.institutionId.value}` );
             warning.style.display = 'inline';
             warning.innerText = json.error;
           }
         }
       }
     };
-    xhr.send( encodeURI( `institution_id=${form.institution_id.value}&designation_id=${form.designation_id.value}&expiration=${form.expiration.value}` ) );
+    xhr.send( encodeURI( `institutionId=${form.institutionId.value}&designationId=${form.designationId.value}&expiration=${form.expiration.value}` ) );
 
     return false;
   }
@@ -60,9 +60,9 @@
   <tr><td><div id="members">
     {% for member in members %}
     <form method="post" action="/institution/designations/save" onsubmit="return update(this);">
-      <input type="hidden" name="institution_id" value="{{ member.institution_id }}" />
+      <input type="hidden" name="institutionId" value="{{ member.institution.id }}" />
       <div style="width:100%;">
-        <div style="float: left; width: 55%;"><input type="checkbox" name="designation_id" value="{{ member.designation.id }}" checked/>{{ member.designation.title }}</div>
+        <div style="float: left; width: 55%;"><input type="checkbox" name="designationId" value="{{ member.designation.id }}" checked/>{{ member.designation.title }}</div>
         <div style="float: right; width: 20%;"><input type="submit" value="Update" /></div>
         <div style="float: none; width: 20%; display: inline;">
           <select name="expiration" style="width: 5em;">
@@ -80,9 +80,9 @@
   <tr><td><div id="nonmembers">
     {% for designation in designations %}
     <form method="post" action="/institution/designations/save" onsubmit="return add(this);">
-      <input type="hidden" name="institution_id" value="{{ object.institution_id }}" />
+      <input type="hidden" name="institutionId" value="{{ object.id }}" />
       <div style="width:100%;">
-        <div style="float: left; width: 55%;"><input type="hidden" name="designation_id" value="{{ designation.id }}" />{{ designation.title }}</div>
+        <div style="float: left; width: 55%;"><input type="hidden" name="designationId" value="{{ designation.id }}" />{{ designation.title }}</div>
         <div style="float: right; width: 20%;"><input type="submit" value="Add" /></div>
         <div style="float: none; width: 20%; display: inline;">
           <select name="expiration" style="width: 5em; display: inline;">

@@ -10,6 +10,7 @@
 #include <QtCore/QSet>
 #include <QtCore/QJsonDocument>
 #include <QtCore/QJsonObject>
+#include "model/InstitutionDesignation.h"
 
 using crrc::InstitutionDesignations;
 
@@ -34,7 +35,7 @@ void InstitutionDesignations::view( Cutelyst::Context* c ) const
   const auto id = ptr ? ptr->getId() : 0;
   c->stash( {
     { "template", "institutions/designations/view.html" },
-    { "members", dao::InstitutionDesignationDAO().retrieve( id ) }
+    { "members", dao::InstitutionDesignationDAO().retrieve( c, id ) }
   } );
 }
 
@@ -49,12 +50,12 @@ void InstitutionDesignations::edit( Cutelyst::Context* c ) const
 
   const auto ptr = model::Institution::from( c->stash( "object" ) );
   const auto id = ptr ? ptr->getId() : 0;
-  const auto& members = dao::InstitutionDesignationDAO().retrieve( id );
+  const auto& members = dao::InstitutionDesignationDAO().retrieve( c, id );
   QSet<uint32_t> set;
   for ( const auto& member : members )
   {
-    const auto* designation = model::Designation::from( member.toHash().value( "designation" ) );
-    set << designation->getId();
+    const auto ptr = model::InstitutionDesignation::from( member );
+    set << ptr->getDesignationId();
   }
 
   const auto& designations = dao::DesignationDAO().retrieveAll();
@@ -83,10 +84,11 @@ void InstitutionDesignations::remove( Cutelyst::Context* c ) const
   sendJson( c, dao::InstitutionDesignationDAO().remove( c ) );
 }
 
-void InstitutionDesignations::sendJson( Cutelyst::Context* c, const QString& result ) const
+void InstitutionDesignations::sendJson( Cutelyst::Context* c, const uint32_t result ) const
 {
   QJsonObject json;
-  json.insert( "status", ( result.isEmpty() ? true : false ) );
-  if ( !result.isEmpty() ) json.insert( "error", result );
+  json.insert( "status", result ? true : false );
+  const auto& error = c->stash( "error_msg" );
+  if ( !error.isNull() ) json.insert( "error", error.toString() );
   dao::sendJson( c, json );
 }
