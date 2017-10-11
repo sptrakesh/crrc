@@ -7,17 +7,26 @@
 #include "model/Contact.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QJsonArray>
+#include <QtCore/QJsonDocument>
 
 using crrc::Contacts;
 
 void Contacts::index( Cutelyst::Context* c ) const
 {
   dao::ContactDAO dao;
-  const auto& list = dao::isGlobalAdmin( c ) ? dao.retrieveAll() :
+  auto list = dao::isGlobalAdmin( c ) ? dao.retrieveAll() :
     dao.retrieveByInstitution( dao::institutionId( c ) );
 
+  auto arr = QJsonArray();
+  for ( const auto cvar : list )
+  {
+    const auto ptr = model::Contact::from( cvar );
+    arr << toJson( *ptr );
+  }
+
   c->stash( {
-    { "contacts", list },
+    { "contacts", QJsonDocument( arr ).toJson() },
     { "template", "contacts/index.html" }
   } );
 }

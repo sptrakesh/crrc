@@ -1,5 +1,6 @@
 ﻿#include "User.h"
 #include "dao/RoleDAO.h"
+#include "Role.h"
 
 using crrc::model::User;
 
@@ -48,4 +49,23 @@ User::operator QString() const
   return QString( "User - id: (%1), username: (%2), email: (%3), firstName: (%4), lastName: (%5), middleName: (%6), role: (%7)" ).
     arg( id ).arg( username ).arg( email ).arg( firstName ).arg( lastName ).
     arg( middleName ).arg( roleId );
+}
+
+QJsonObject crrc::model::toJson( const User& user )
+{
+  QJsonObject obj;
+  obj.insert( "id", static_cast<int>( user.getId() ) );
+  obj.insert( "username", user.getUsername() );
+  if ( !user.getEmail().isEmpty() ) obj.insert( "email", user.getEmail() );
+  if ( !user.getFirstName().isEmpty() ) obj.insert( "firstName", user.getFirstName() );
+  if ( !user.getLastName().isEmpty() ) obj.insert( "lastName", user.getLastName() );
+  if ( !user.getMiddleName().isEmpty() ) obj.insert( "middleName", user.getMiddleName() );
+
+  if ( user.getRoleId() )
+  {
+    const auto ptr = Role::from( user.getRole() );
+    obj.insert( "role", toJson( *ptr ) );
+  }
+
+  return obj;
 }

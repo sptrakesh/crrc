@@ -128,34 +128,34 @@
     <br />
     <label class="label">Email (Work):</label>
     <input name="workEmail" id="workEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.work_email }}" {% endif %} />
+           {% if object %}value="{{ object.workEmail }}" {% endif %} />
     <br />
     <label class="label">Email (Home):</label>
     <input name="homeEmail" id="otherEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.home_email }}" {% endif %} />
+           {% if object %}value="{{ object.homeEmail }}" {% endif %} />
     <br />
     <label class="label">Email (Other):</label>
     <input name="otherEmail" id="otherEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.other_email }}" {% endif %} />
+           {% if object %}value="{{ object.otherEmail }}" {% endif %} />
     <br />
     <label class="label">Telephone (Work):</label>
     <input name="workPhone" id="workPhone" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.work_phone }}" {% endif %} />
+           {% if object %}value="{{ object.workPhone }}" {% endif %} />
     <br />
     <label class="label">Telephone (Mobile):</label>
     <input name="mobilePhone" id="mobilePhone" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.mobile_phone }}" {% endif %} />
+           {% if object %}value="{{ object.mobilePhone }}" {% endif %} />
     <br />
     <label class="label">Telephone (Other):</label>
     <input name="otherPhone" id="otherPhone" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.other_phone }}" {% endif %} />
+           {% if object %}value="{{ object.otherPhone }}" {% endif %} />
     <br />
     <label class="label">Institution:</label>
     <select name="institution" id="institution">
       <option value="-1">Select Institution</option>
       {% for institution in institutions %}
-      <option value="{{ institution.institution_id }}"
-              {% if institution.institution_id == object.institution.institution_id %}selected{% endif %}>
+      <option value="{{ institution.id }}"
+              {% if institution.id == object.institution.id %}selected{% endif %}>
         {{ institution.name }}
       </option>
       {% endfor %}

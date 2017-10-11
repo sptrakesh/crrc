@@ -1,23 +1,30 @@
+<script type="text/javascript">
+  function deleteContact( form )
+  {
+    return confirm( `Do you wish to permanently delete contact ${form.name.value}?` );
+  }
+</script>
+
 <div>
   <h3>Name: {{ object.name }}</h3>
-  {% if object.work_email %}
-  <label class="label">Work Email:</label> <a href="mailto:{{ object.work_email }}">{{ object.work_email }}</a><br />
+  {% if object.workEmail %}
+  <label class="label">Work Email:</label> <a href="mailto:{{ object.workEmail }}">{{ object.workEmail }}</a><br />
   {% endif %}
-  {% if object.home_email %}
-  <label class="label">Home Email:</label> <a href="mailto:{{ object.home_email }}">{{ object.home_email }}</a><br />
+  {% if object.homeEmail %}
+  <label class="label">Home Email:</label> <a href="mailto:{{ object.homeEmail }}">{{ object.homeEmail }}</a><br />
   {% endif %}
-  {% if object.other_email %}
-  <label class="label">Other Email:</label> <a href="mailto:{{ object.other_email }}">{{ object.other_email }}</a><br />
+  {% if object.otherEmail %}
+  <label class="label">Other Email:</label> <a href="mailto:{{ object.otherEmail }}">{{ object.otherEmail }}</a><br />
   {% endif %}
 
-  {% if object.work_phone %}
-  <label class="label">Work Number:</label> {{ object.work_phone }}<br />
+  {% if object.workPhone %}
+  <label class="label">Work Number:</label> {{ object.workPhone }}<br />
   {% endif %}
   {% if object.home_phone %}
   <label class="label">Home Number:</label> {{ object.home_phone }}<br />
   {% endif %}
-  {% if object.mobile_phone %}
-  <label class="label">Mobile Number:</label> {{ object.mobile_phone }}<br />
+  {% if object.mobilePhone %}
+  <label class="label">Mobile Number:</label> {{ object.mobilePhone }}<br />
   {% endif %}
   {% if object.institution.name %}
   <label class="label">Institution:</label><a href="/institutions/id/{{ object.institution.institution_id }}/view">{{ object.institution.name }}</a><br />
@@ -33,8 +40,9 @@
     <form id="details" method="post" action="/contacts/id/{{ object.id }}/update" style="display: inline-block;">
       <input type="submit" value="Edit" />
     </form>
-    <form action="/contacts/remove" method="post" style="display: inline-block;">
+    <form action="/contacts/remove" method="post" style="display: inline-block;" onsubmit="return deleteContact( this );">
       <input type="hidden" name="id" value="{{ object.id }}" />
+      <input type="hidden" name="name" value="{{ contact.name }}"/>
       <input type="submit" value="Delete" />
     </form>
   </div>

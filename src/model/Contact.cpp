@@ -1,9 +1,10 @@
 ﻿#include "Contact.h"
-#include "dao/UserDAO.h"
+#include "Institution.h"
 #include "User.h"
+#include "dao/InstitutionDAO.h"
+#include "dao/UserDAO.h"
 
 #include <QtCore/QDebug>
-#include "dao/InstitutionDAO.h"
 
 using crrc::model::Contact;
 
@@ -66,4 +67,34 @@ QVariant Contact::getUser() const
 QVariant Contact::getInstitution() const
 {
   return ( institutionId > 0 ) ? dao::InstitutionDAO().retrieve( institutionId ) : QVariant();
+}
+
+QJsonObject crrc::model::toJson( const Contact& contact )
+{
+  QJsonObject obj;
+  obj.insert( "id", static_cast<int>( contact.getId() ) );
+  obj.insert( "name", contact.getName() );
+  if ( !contact.getWorkEmail().isEmpty() ) obj.insert( "workEmail", contact.getWorkEmail() );
+  if ( !contact.getHomeEmail().isEmpty() ) obj.insert( "homeEmail", contact.getHomeEmail() );
+  if ( !contact.getOtherEmail().isEmpty() ) obj.insert( "otherEmail", contact.getOtherEmail() );
+  if ( !contact.getWorkPhone().isEmpty() ) obj.insert( "workPhone", contact.getWorkPhone() );
+  if ( !contact.getHomePhone().isEmpty() ) obj.insert( "homePhone", contact.getHomePhone() );
+  if ( !contact.getOtherPhone().isEmpty() ) obj.insert( "otherPhone", contact.getOtherPhone() );
+
+  if ( contact.getUserId() )
+  {
+    const auto ptr = User::from( contact.getUser() );
+    obj.insert( "user", toJson( *ptr ) );
+  }
+
+  if ( contact.getInstitutionId() )
+  {
+    const auto ptr = Institution::from( contact.getInstitution() );
+    QJsonObject inst;
+    inst.insert( "id", static_cast<int>( ptr->getId() ) );
+    inst.insert( "name", ptr->getName() );
+    obj.insert( "institution", inst );
+  }
+
+  return obj;
 }

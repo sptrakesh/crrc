@@ -1,3 +1,63 @@
+<script type="text/javascript">
+  let contacts = {{ contacts }};
+
+  function sortContacts()
+  {
+    function compareInstitution( i1, i2 )
+    {
+      if ( i1.name < i2.name ) return -1;
+      if ( i1.name > i2.name ) return 1;
+      return 0;
+    }
+
+    function compareContact( c1, c2 )
+    {
+      if ( c1.name < c2.name ) return -1;
+      if ( c1.name > c2.name ) return 1;
+
+      if ( !isEmpty( c1.institution ) && !isEmpty( c2.institution ) )
+      {
+        return compareInstitution( c1.institution, c2.institution );
+      }
+      return 0;
+    }
+
+    contacts.sort( compareContact );
+  }
+
+  function display( contact )
+  {
+    let html = `<div style="float:left; width:80%;">
+      <a href="/contacts/id/${contact.id}/view">${contact.name}</a>
+    </div>
+    <div style="float:right; width:20%">
+      <form action="/contacts/remove" method="post" onsubmit="return deletePerson( this );">
+        <input type="hidden" name="id" value="${contact.id}"/>
+        <input type="hidden" name="name" value="${contact.name}"/>
+        <input type="submit" value="Delete" />
+      </form>
+    </div>
+    <div style="clear: both;"></div>`;
+
+    let div = document.createElement( 'div' );
+    div.innerHTML = html;
+
+    let parent = document.getElementById( 'contacts' );
+    parent.appendChild( div );
+  }
+
+  function displayAll()
+  {
+    sortContacts();
+    contacts.forEach( display );
+  }
+
+  function deletePerson( form )
+  {
+    return confirm( `Do you wish to permanently delete contact ${form.name.value}?` );
+  }
+</script>
+
 <div>
   <h2>Manage Contacts</h2>
   <div>
@@ -14,12 +74,6 @@
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
   <div id="contacts">
-    {% for contact in contacts %}
-    <a href="/contacts/id/{{ contact.id }}/view">{{ contact.name }}</a> - <form action="/contacts/remove" method="post" style="display: inline-block;">
-      <input type="hidden" name="id" value="{{ contact.id }}"/>
-      <input type="submit" value="Delete" />
-    </form>
-    <br/>
-    {% endfor %}
+    <script type="text/javascript">displayAll();</script>
   </div>
 </div>

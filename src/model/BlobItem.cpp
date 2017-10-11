@@ -26,3 +26,15 @@ void BlobItem::populate( Cutelyst::Context* context, const QByteArray& bytes )
   checksum = dao::checksum( bytes );
   updated = dao::httpDate( file.lastModified() );
 }
+
+QJsonObject crrc::model::toJson( const BlobItem& blob )
+{
+  QJsonObject obj;
+  obj.insert( "id", static_cast<int>( blob.getId() ) );
+  obj.insert( "filename", blob.getFilename() );
+  obj.insert( "mimetype", blob.getMimetype() );
+  obj.insert( "filesize", static_cast<int>( blob.getFilesize() ) );
+  obj.insert( "checksum", blob.getChecksum() );
+  obj.insert( "updated", blob.getUpdated() );
+  return obj;
+}

@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include <QtCore/QJsonObject>
 #include <QtSql/QSqlQuery>
 #include <Cutelyst/Context>
 
@@ -52,5 +53,7 @@ namespace crrc
       QString checksum;
       QString updated;
     };
+
+    QJsonObject toJson( const BlobItem& blob );
   }
 }

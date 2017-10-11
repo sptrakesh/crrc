@@ -25,3 +25,13 @@ Role::operator QString() const
 {
   return QString( "Role - id: (%1), role: (%2)" ).arg( id ).arg( role );
 }
+
+QJsonObject crrc::model::toJson( const Role& role )
+{
+  QJsonObject obj;
+  obj.insert( "id", static_cast<int>( role.getId() ) );
+  obj.insert( "role", role.getRole() );
+  obj.insert( "globalAdmin", 1 == role.getId() );
+  obj.insert( "institutionAdmin", 2 == role.getId() );
+  return obj;
+}

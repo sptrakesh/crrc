@@ -1,4 +1,5 @@
 ﻿#include "Institution.h"
+#include "Logo.h"
 #include "dao/LogoDAO.h"
 
 using crrc::model::Institution;
@@ -40,4 +41,25 @@ Institution::Ptr Institution::create( Cutelyst::Context* context )
 QVariant Institution::getLogo() const
 {
   return dao::LogoDAO().retrieve( logoId );
+}
+
+QJsonObject crrc::model::toJson( const Institution& institution )
+{
+  QJsonObject obj;
+  obj.insert( "id", static_cast<int>( institution.getId() ) );
+  obj.insert( "name", institution.getName() );
+  if ( !institution.getAddress().isEmpty() ) obj.insert( "address", institution.getAddress() );
+  if ( !institution.getCity().isEmpty() ) obj.insert( "city", institution.getCity() );
+  if ( !institution.getState().isEmpty() ) obj.insert( "state", institution.getState() );
+  if ( !institution.getPostalCode().isEmpty() ) obj.insert( "postalCode", institution.getPostalCode() );
+  if ( !institution.getCountry().isEmpty() ) obj.insert( "country", institution.getCountry() );
+  if ( !institution.getWebsite().isEmpty() ) obj.insert( "website", institution.getWebsite() );
+
+  if ( institution.getLogoId() )
+  {
+    const auto ptr = Logo::from( institution.getLogo() );
+    obj.insert( "logo", toJson( *ptr ) );
+  }
+
+  return obj;
 }

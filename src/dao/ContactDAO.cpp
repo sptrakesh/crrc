@@ -1,17 +1,17 @@
 #include "ContactDAO.h"
 #include "UserDAO.h"
-#include "InstitutionDAO.h"
 #include "constants.h"
+#include "functions.h"
 #include "model/Contact.h"
+#include "model/User.h"
 
 #include <mutex>
+#include <unordered_map>
+
 #include <QtCore/QDebug>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
-#include "functions.h"
-#include "model/User.h"
-#include <unordered_map>
 
 using crrc::model::Contact;
 
@@ -203,8 +203,7 @@ QVariantList ContactDAO::search( Cutelyst::Context* context, const Mode& mode ) 
       const auto qid = query.value( 1 ).toUInt();
       if ( ignoreCheck || qid == iid )
       {
-        auto contact = retrieve( query.value( 0 ).toUInt(), mode );
-        list.append( contact );
+        list << retrieve( query.value( 0 ).toUInt(), mode );
       }
     }
   }
