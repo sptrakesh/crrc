@@ -9,7 +9,7 @@ RUN git clone https://github.com/sptrakesh/crrc.git \
 && mkdir build \
 && cd build \
 && cmake .. \
-&& cmake --build . \
+&& cmake --build . -- -j4 \
 && cd ..
 
 EXPOSE 80
