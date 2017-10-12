@@ -2,7 +2,6 @@
 
 #include <Cutelyst/Application>
 
-
 namespace crrc
 {
   class AdminApplication : public Cutelyst::Application

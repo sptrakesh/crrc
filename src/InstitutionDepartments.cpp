@@ -3,9 +3,7 @@
 #include "dao/InstitutionDAO.h"
 #include "dao/functions.h"
 
-#include <QtCore/QStringBuilder>
 #include <QtCore/QtDebug>
-#include <QtCore/QJsonObject>
 
 using crrc::InstitutionDepartments;
 

@@ -1,3 +1,6 @@
 build
+cmake-build-debug
+.idea
 *.swp
+__init__.py
 var

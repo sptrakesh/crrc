@@ -1,15 +1,13 @@
-<form method="post" action="/login">
-  <table>
-    <tr>
-      <td>Username:</td>
-      <td><input type="text" name="username" size="40" /></td>
-    </tr>
-    <tr>
-      <td>Password:</td>
-      <td><input type="password" name="password" size="40" /></td>
-    </tr>
-    <tr>
-      <td colspan="2"><input type="submit" name="submit" value="Submit" /></td>
-    </tr>
-  </table>
+<form id="login" method="post" action="/login">
+  <div>
+    <div style="float: left; width: 30%;"><label class="label">Username:</label></div>
+    <div style="float: right; width: 70%;"><input type="text" name="username" id="username" size="40" required/></div>
+    <div style="clear: both;"></div>
+  </div>
+  <div>
+    <div style="float: left; width: 30%"><label class="label">Password:</label></div>
+    <div style="float: right; width: 70%;"><input type="password" name="password" id="password" size="40" required/></div>
+    <div style="clear: both;"></div>
+  </div>
+  <div style="width: 100%"><input id="submit" type="submit" name="submit" value="Login"/></div>
 </form>
