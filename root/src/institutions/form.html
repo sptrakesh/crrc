@@ -126,7 +126,7 @@
                  {% if object %}value="{{ object.postal_code }}" {% endif %} />
           <br />
           <label class="label">Country:</label>
-          <input name="country" id="country" type="text" size="35" width="100" value={% if object %}"{{ object.country }}"{% else %}USA{% endif %} />
+          <input name="country" id="country" type="text" size="35" width="100" value="{% if object %}{{ object.country }}{% else %}USA{% endif %}" />
           <br />
           <label class="label">Website:</label>
           <input name="website" id="website" type="text" size="35" width="250"
