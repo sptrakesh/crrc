@@ -66,7 +66,7 @@ void InstitutionDepartments::save( Cutelyst::Context* c ) const
 
   if ( !dao::isGlobalAdmin( c ) )
   {
-    if ( !iid.toUInt() == dao::institutionId( c ) )
+    if ( !( iid.toUInt() == dao::institutionId( c ) ) )
     {
       json.insert( "message", "Unauthorized.  User may not manage departments in other institutions." );
       json.insert( "status", false );

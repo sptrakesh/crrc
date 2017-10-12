@@ -8,8 +8,7 @@
 #include <Cutelyst/Plugins/Authentication/authentication.h>
 #include <Cutelyst/Plugins/Authentication/credentialpassword.h>
 
-#include <QtSql>
-#include <QDebug>
+#include <QtSql/QtSql>
 
 #include "Root.h"
 #include "Login.h"

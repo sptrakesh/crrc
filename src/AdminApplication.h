@@ -14,7 +14,7 @@ namespace crrc
         Cutelyst::Application( parent ) {}
     ~AdminApplication() = default;
 
-    bool init();
+    bool init() override;
     bool postFork() override;
   };
 }
