@@ -23,6 +23,9 @@ namespace crrc
     C_ATTR( create, :Chained( "base" ) : PathPart( "create" ) : Args( 0 ) )
     void create( Cutelyst::Context* c ) const;
 
+    C_ATTR( data, :Chained( "object" ) : PathPart( "data" ) : Args( 0 ) )
+    void data( Cutelyst::Context* c ) const;
+
     C_ATTR( update, :Chained( "object" ) : PathPart( "update" ) : Args( 0 ) )
     void update( Cutelyst::Context* c ) const { create( c ); }
 

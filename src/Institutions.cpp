@@ -1,7 +1,14 @@
 #include "Institutions.h"
 #include "dao/InstitutionDAO.h"
 #include "dao/DesignationDAO.h"
-  
+#include "dao/InstitutionDesignationDAO.h"
+#include "dao/functions.h"
+#include "model/Institution.h"
+#include "model/InstitutionDesignation.h"
+
+#include <QtCore/QJsonArray>
+#include "model/Designation.h"
+
 using crrc::Institutions;
 
 void Institutions::index( Cutelyst::Context* c ) const
@@ -62,6 +69,28 @@ void Institutions::edit( Cutelyst::Context* c ) const
 void Institutions::view( Cutelyst::Context* c ) const
 {
   c->setStash( "template", "institutions/view.html" );
+}
+
+void Institutions::data( Cutelyst::Context* c ) const
+{
+  const auto& var = c->stash( "object" );
+  const auto ptr = model::Institution::from( var );
+  auto json = toJson( *ptr );
+
+  const auto& list = dao::InstitutionDesignationDAO().retrieve( c, ptr->getId() );
+  QJsonArray arr;
+  for ( const auto& id : list )
+  {
+    QJsonObject obj;
+    const auto idptr = model::InstitutionDesignation::from( id );
+    const auto dptr = model::Designation::from( idptr->getDesignation() );
+    obj.insert( "designation", toJson( *dptr ) );
+    obj.insert( "expiration", static_cast<int>( idptr->getExpiration() ) );
+    arr << obj;
+  }
+
+  json.insert( "designations", arr );
+  dao::sendJson( c, json );
 }
 
 void Institutions::search( Cutelyst::Context* c ) const

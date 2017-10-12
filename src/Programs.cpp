@@ -61,6 +61,13 @@ void Programs::create( Cutelyst::Context* c ) const
   } );
 }
 
+void Programs::data( Cutelyst::Context* c ) const
+{
+  const auto& var = c->stash( "object" );
+  const auto ptr = model::Program::from( var );
+  dao::sendJson( c, toJson( *ptr ) );
+}
+
 void Programs::edit( Cutelyst::Context* c ) const
 {
   auto id = c->request()->param( "id", "" );

@@ -62,7 +62,11 @@ QJsonObject crrc::model::toJson( const Program& program, bool compact )
   obj.insert( "id", static_cast<int>( program.getId() ) );
   obj.insert( "title", program.getTitle() );
   obj.insert( "credits", program.getCredits() );
-  obj.insert( "degree", toJson( *( Degree::from( program.getDegree() ) ) ) );
+
+  if ( program.getDegreeId() )
+  {
+    obj.insert( "degree", toJson( *( Degree::from( program.getDegree() ) ) ) );
+  }
 
   if ( program.getInstitutionId() )
   {

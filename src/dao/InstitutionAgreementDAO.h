@@ -1,8 +1,7 @@
 #pragma once
+
+#include <QtSql/QSqlQuery>
 #include <Cutelyst/context.h>
-
-class QSqlQuery;
-
 
 namespace crrc
 {

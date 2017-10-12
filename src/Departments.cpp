@@ -1,12 +1,8 @@
-#include "Departments.h"
+﻿#include "Departments.h"
+#include "dao/functions.h"
 #include "dao/DepartmentDAO.h"
 #include "dao/InstitutionDAO.h"
-#include "dao/functions.h"
 #include "model/Department.h"
-
-#include <QtCore/QStringBuilder>
-#include <QtCore/QtDebug>
-#include <QtCore/QJsonObject>
 
 using crrc::Departments;
 
@@ -18,10 +14,7 @@ void Departments::index( Cutelyst::Context* c )
 
   QVariantList ilist;
   if ( dao::isGlobalAdmin( c ) ) ilist = dao::InstitutionDAO().retrieveAll();
-  else
-  {
-    ilist << dao::InstitutionDAO().retrieve( dao::institutionId( c ) );
-  }
+  else ilist << dao::InstitutionDAO().retrieve( dao::institutionId( c ) );
 
   c->stash( {
     { "departments", list },
@@ -37,79 +30,33 @@ void Departments::base( Cutelyst::Context* c ) const
 
 void Departments::object( Cutelyst::Context* c, const QString& id ) const
 {
-  const auto& obj = dao::InstitutionDAO().retrieve( id.toUInt() );
+  const auto& obj = dao::DepartmentDAO().retrieve( id.toUInt() );
   c->setStash( "object", dao::isGlobalAdmin( c ) ? obj :
     ( id.toUInt() == dao::institutionId( c ) ) ? obj : QVariant() );
 }
 
-void Departments::list( Cutelyst::Context* c ) const
+void Departments::data( Cutelyst::Context* c ) const
 {
-  const auto obj = c->stash( "object" );
-  const auto ptr = model::Institution::from( c->stash( "object" ) );
-  const auto id = ptr ? ptr->getId() : 0;
-  const auto& list = ptr ?  dao::DepartmentDAO().retrieveByInstitution( id ) : QVariantList();
-  QVariantList ilist{ obj };
-
-  c->stash( {
-    { "departments", list },
-    { "institutions", ilist },
-    { "template", "institutions/departments/index.html" }
-  } );
-}
-
-void Departments::save( Cutelyst::Context* c ) const
-{
-  const auto& did = c->request()->param( "id" );
-  const auto& iid = c->request()->param( "institutionId" );
-
-  dao::DepartmentDAO dao;
-  QJsonObject json;
-
-  if ( !dao::isGlobalAdmin( c ) )
-  {
-    if ( !iid.toUInt() == dao::institutionId( c ) )
-    {
-      json.insert( "message", "Unauthorized.  User may not manage departments in other institutions." );
-      json.insert( "status", false );
-      dao::sendJson( c, json );
-      return;
-    }
-  }
-
-  if ( did.isEmpty() || ! did.toUInt() )
-  {
-    const uint32_t id = dao.insert( c );
-    json.insert( "id", static_cast<int>( id ) );
-    json.insert( "status", id ? true : false );
-  }
-  else
-  {
-    const uint32_t count = dao.update( c );
-    json.insert( "id", did.toInt() );
-    json.insert( "count", static_cast<int>( count ) );
-    json.insert( "status", count ? true : false );
-  }
-
-  const auto& error = c->stash( "error_msg" );
-  if ( !error.isNull() ) json.insert( "message", error.toString() );
-
-  dao::sendJson( c, json );
+  const auto& var = c->stash( "object" );
+  const auto ptr = model::Department::from( var );
+  dao::sendJson( c, toJson( *ptr ) );
 }
 
 void Departments::remove( Cutelyst::Context* c ) const
 {
-  auto id = c->request()->param( "id", "" );
+  const auto& var = c->stash( "object" );
   QJsonObject obj;
 
-  if ( id.isEmpty() )
+  if ( var.isNull() )
   {
     obj.insert( "status", false );
     dao::sendJson( c, obj );
     return;
   }
 
-  auto const result = dao::DepartmentDAO().remove( id.toUInt() );
-  obj.insert( "id", id.toInt() );
+  const auto ptr = model::Department::from( var );
+  auto const result = dao::DepartmentDAO().remove( ptr->getId() );
+  obj.insert( "id", static_cast<int>( ptr->getId() ) );
 
   if ( result )
   {

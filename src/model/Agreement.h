@@ -1,7 +1,7 @@
 #pragma once
+
 #include "BlobItem.h"
 #include <memory>
-
 
 namespace crrc
 {
@@ -43,5 +43,7 @@ namespace crrc
     {
       return QVariant::fromValue<QObject*>( const_cast<Agreement*>( agreement ) );
     }
+
+    QJsonObject toJson( const Agreement& agreement );
   }
 }

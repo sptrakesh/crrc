@@ -1,5 +1,6 @@
 #include "Agreement.h"
 #include "dao/InstitutionDAO.h"
+#include "Institution.h"
 
 using crrc::model::Agreement;
 
@@ -36,4 +37,13 @@ Agreement& Agreement::updatePrograms( Cutelyst::Context* context )
   transferInstitutionId = context->request()->param( "transfer_institution_id" ).toUInt();
   transfereeInstitutionId = context->request()->param( "transferee_institution_id" ).toUInt();
   return *this;
+}
+
+QJsonObject crrc::model::toJson( const Agreement& agreement )
+{
+  const auto ptr = dynamic_cast<const BlobItem*>( &agreement );
+  QJsonObject json = toJson( *ptr );
+  json.insert( "transferInstitution", toJson( *( Institution::from( agreement.getTransferInstitution() ) ), true ) );
+  json.insert( "transfereeInstitution", toJson( *( Institution::from( agreement.getTransfereeInstitution() ) ), true ) );
+  return json;
 }

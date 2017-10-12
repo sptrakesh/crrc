@@ -91,7 +91,7 @@ QVariantList InstitutionAgreementDAO::toList( Cutelyst::Context* context, QSqlQu
   {
     while ( query.next() )
     {
-      list << asVariant( model::InstitutionAgreement::create( context, query ) );
+      list << asVariant( InstitutionAgreement::create( context, query ) );
     }
   }
 

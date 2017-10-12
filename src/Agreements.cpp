@@ -11,6 +11,7 @@
 #include <QtCore/QtDebug>
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonObject>
+#include "model/InstitutionAgreement.h"
 
 using crrc::Agreements;
 
@@ -78,7 +79,7 @@ void Agreements::view( Cutelyst::Context* c ) const
 
   dao::ProgramDAO dao;
 
-  const auto func = [](const QVariant& var, QJsonArray& array)
+  const auto func = []( const QVariant& var, QJsonArray& array )
   {
     const auto ptr = model::Program::from( var );
     QJsonObject json;
@@ -109,7 +110,31 @@ void Agreements::data( Cutelyst::Context* c ) const
 {
   const auto& var = c->stash( "object" );
   const auto ptr = model::Agreement::from( var );
-  dao::sendJson( c, toJson( *ptr ) );
+  auto json = toJson( *ptr );
+  const auto& relations = dao::InstitutionAgreementDAO().retrieve( c, QString::number( ptr->getId() ) );
+
+  const auto func = []( const QVariant& var ) -> QJsonObject
+  {
+    const auto trp = model::Program::from( var );
+    QJsonObject trpo;
+    trpo.insert( "id", static_cast<int>( trp->getId() ) );
+    trpo.insert( "title", trp->getTitle() );
+    trpo.insert( "credits", trp->getCredits() );
+    return trpo;
+  };
+
+  QJsonArray arr;
+  for ( const auto& rel : relations )
+  {
+    const auto p = model::InstitutionAgreement::from( rel );
+    QJsonObject obj;
+    obj.insert( "transferProgram", func( p->getTransferProgram() ) );
+    obj.insert( "transfereeProgram", func( p->getTransfereeProgram() ) );
+    arr << obj;
+  }
+
+  json.insert( "relations", arr );
+  dao::sendJson( c, json );
 }
 
 void Agreements::display( Cutelyst::Context* c ) const
