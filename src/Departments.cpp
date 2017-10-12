@@ -2,6 +2,7 @@
 #include "dao/DepartmentDAO.h"
 #include "dao/InstitutionDAO.h"
 #include "dao/functions.h"
+#include "model/Department.h"
 
 #include <QtCore/QStringBuilder>
 #include <QtCore/QtDebug>

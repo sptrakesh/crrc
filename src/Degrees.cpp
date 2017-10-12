@@ -1,16 +1,34 @@
 #include "Degrees.h"
 #include "dao/DegreeDAO.h"
 #include "dao/functions.h"
+#include "model/Degree.h"
 
 #include <QtCore/QDebug>
-#include <QtCore/QJsonDocument>
+
+namespace crrc
+{
+  namespace util
+  {
+    static auto degreeComparator = []( const QVariant& deg1, const QVariant& deg2 ) -> bool
+    {
+      const auto ptr1 = model::Degree::from( deg1 );
+      const auto ptr2 = model::Degree::from( deg2 );
+      return *ptr1 < *ptr2;
+    };
+  }
+}
 
 using crrc::Degrees;
 
 void Degrees::index( Cutelyst::Context* c ) const
 {
-  c->setStash( "degrees", dao::DegreeDAO().retrieveAll() );
-  c->setStash( "template", "degrees/index.html" );
+  auto list = dao::DegreeDAO().retrieveAll();
+  qSort( list.begin(), list.end(), util::degreeComparator );
+
+  c->stash( {
+    { "degrees", list },
+    { "template", "degrees/index.html" }
+  } );
 }
 
 void Degrees::base( Cutelyst::Context* c ) const
@@ -71,6 +89,13 @@ void Degrees::view( Cutelyst::Context* c ) const
   c->setStash( "template", "degrees/view.html" );
 }
 
+void Degrees::data( Cutelyst::Context* c ) const
+{
+  const auto& var = c->stash( "object" );
+  const auto ptr = model::Degree::from( var );
+  dao::sendJson( c, toJson( *ptr ) );
+}
+
 void Degrees::search( Cutelyst::Context* c ) const
 {
   const auto text = c->request()->param( "text", "" );
@@ -82,8 +107,11 @@ void Degrees::search( Cutelyst::Context* c ) const
   }
 
   dao::DegreeDAO dao;
+  auto list = dao.search( c );
+  qSort( list.begin(), list.end(), util::degreeComparator );
+
   c->stash( {
-    { "degrees", dao.search( c ) },
+    { "degrees", list },
     { "searchText", text },
     { "template", "degrees/index.html" }
   } );

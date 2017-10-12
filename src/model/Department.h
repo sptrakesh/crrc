@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <memory>
+#include <QtCore/QJsonObject>
 #include <QtSql/QSqlQuery>
 #include <Cutelyst/Context>
 
@@ -20,6 +21,11 @@ namespace crrc
       using Ptr = std::unique_ptr<Department>;
       static Ptr create( QSqlQuery& query );
       static Ptr create( Cutelyst::Context* context );
+
+      static Department* from( const QVariant& var )
+      {
+        return qvariant_cast<Department*>( var );
+      }
 
       explicit Department( QObject* parent = nullptr ) : QObject( parent ), id{ 0 } {}
       ~Department() = default;
@@ -49,5 +55,7 @@ namespace crrc
     {
       return QVariant::fromValue<QObject*>( const_cast<Department*>( department ) );
     }
+
+    QJsonObject toJson( const Department& department );
   }
 }

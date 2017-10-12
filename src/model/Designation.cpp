@@ -29,3 +29,12 @@ Designation::operator QString() const
   return QString( "Designation - id: (%1), type: (%2), title: (%3)" ).
     arg( id ).arg( type ).arg( title );
 }
+
+QJsonObject crrc::model::toJson( const Designation& designation )
+{
+  QJsonObject obj;
+  obj.insert( "id", static_cast<int>( designation.getId() ) );
+  obj.insert( "type", designation.getType() );
+  obj.insert( "title", designation.getTitle() );
+  return obj;
+}

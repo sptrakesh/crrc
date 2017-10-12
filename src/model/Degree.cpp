@@ -29,3 +29,12 @@ Degree::operator QString() const
   return QString( "Degree - id: (%1), title: (%2), duration: (%3)" ).
     arg( id ).arg( title ).arg( duration );
 }
+
+QJsonObject crrc::model::toJson( const Degree& degree )
+{
+  QJsonObject obj;
+  obj.insert( "id", static_cast<int>( degree.getId() ) );
+  obj.insert( "title", degree.getTitle() );
+  if ( !degree.getDuration().isEmpty() ) obj.insert( "duration", degree.getDuration() );
+  return obj;
+}

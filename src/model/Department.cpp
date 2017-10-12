@@ -1,4 +1,5 @@
 ﻿#include "Department.h"
+#include "Institution.h"
 #include "dao/InstitutionDAO.h"
 
 using crrc::model::Department;
@@ -29,4 +30,19 @@ Department::Ptr Department::create( Cutelyst::Context* context )
 QVariant Department::getInstitution() const
 {
   return ( institutionId > 0 ) ? dao::InstitutionDAO().retrieve( institutionId ) : QVariant();
+}
+
+QJsonObject crrc::model::toJson( const Department& department )
+{
+  QJsonObject obj;
+  obj.insert( "id", static_cast<int>( department.getId() ) );
+  obj.insert( "name", department.getName() );
+  obj.insert( "prefix", department.getPrefix() );
+
+  if ( department.getInstitutionId() )
+  {
+    obj.insert( "institution", toJson( *( Institution::from( department.getInstitution() ) ), true ) );
+  }
+
+  return obj;
 }

@@ -1,7 +1,9 @@
 ﻿#include "Program.h"
-#include "dao/InstitutionDAO.h"
+#include "Designation.h"
+#include "Institution.h"
 #include "dao/DegreeDAO.h"
 #include "dao/DesignationDAO.h"
+#include "dao/InstitutionDAO.h"
 
 using crrc::model::Program;
 
@@ -52,4 +54,31 @@ QVariant Program::getDegree() const
 QVariant Program::getDesignation() const
 {
   return dao::DesignationDAO().retrieve( designationId );
+}
+
+QJsonObject crrc::model::toJson( const Program& program, bool compact )
+{
+  QJsonObject obj;
+  obj.insert( "id", static_cast<int>( program.getId() ) );
+  obj.insert( "title", program.getTitle() );
+  obj.insert( "credits", program.getCredits() );
+  obj.insert( "degree", toJson( *( Degree::from( program.getDegree() ) ) ) );
+
+  if ( program.getInstitutionId() )
+  {
+    obj.insert( "institution", toJson( *( Institution::from( program.getInstitution() ) ), true ) );
+  }
+
+  if ( compact ) return obj;
+
+  if ( !program.getType().isEmpty() ) obj.insert( "type", program.getType() );
+  if ( !program.getCurriculumCode().isEmpty() ) obj.insert( "curriculumCode", program.getCurriculumCode() );
+  if ( !program.getUrl().isEmpty() ) obj.insert( "url", program.getUrl() );
+
+  if ( program.getDesignationId() )
+  {
+    obj.insert( "designation", toJson( *( Designation::from( program.getDesignation() ) ) ) );
+  }
+
+  return obj;
 }

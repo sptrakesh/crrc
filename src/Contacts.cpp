@@ -116,6 +116,13 @@ void Contacts::view( Cutelyst::Context* c ) const
   c->setStash( "template", "contacts/view.html" );
 }
 
+void Contacts::data( Cutelyst::Context* c ) const
+{
+  const auto& var = c->stash( "object" );
+  const auto ptr = model::Contact::from( var );
+  dao::sendJson( c, toJson( *ptr ) );
+}
+
 void Contacts::search( Cutelyst::Context* c ) const
 {
   const auto text = c->request()->param( "text", "" );

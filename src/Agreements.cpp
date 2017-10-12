@@ -105,6 +105,13 @@ void Agreements::view( Cutelyst::Context* c ) const
   } );
 }
 
+void Agreements::data( Cutelyst::Context* c ) const
+{
+  const auto& var = c->stash( "object" );
+  const auto ptr = model::Agreement::from( var );
+  dao::sendJson( c, toJson( *ptr ) );
+}
+
 void Agreements::display( Cutelyst::Context* c ) const
 {
   AttachmentController<dao::AgreementDAO>().display( c );

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <QtCore/QDebug>
+#include <QtCore/QJsonObject>
 #include <QtSql/QSqlQuery>
 #include <Cutelyst/Context>
 
@@ -54,9 +55,11 @@ namespace crrc
       uint32_t transfereeProgramId = 0;
     };
 
-    inline QVariant asVariant( const InstitutionAgreement* degree )
+    inline QVariant asVariant( const InstitutionAgreement* ia )
     {
-      return QVariant::fromValue<QObject*>( const_cast<InstitutionAgreement*>( degree ) );
+      return QVariant::fromValue<QObject*>( const_cast<InstitutionAgreement*>( ia ) );
     }
+
+    QJsonObject toJson( const InstitutionAgreement& ia );
   }
 }

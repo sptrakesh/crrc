@@ -1,4 +1,6 @@
 ﻿#include "InstitutionDesignation.h"
+#include "Institution.h"
+#include "Designation.h"
 #include "dao/InstitutionDAO.h"
 #include "dao/DesignationDAO.h"
 
@@ -22,4 +24,13 @@ QVariant InstitutionDesignation::getInstitution() const
 QVariant InstitutionDesignation::getDesignation() const
 {
   return dao::DesignationDAO().retrieve( designationId );
+}
+
+QJsonObject crrc::model::toJson( const InstitutionDesignation& id )
+{
+  QJsonObject obj;
+  obj.insert( "institution", toJson( *( Institution::from( id.getInstitution() ) ), true ) );
+  obj.insert( "designation", toJson( *( Designation::from( id.getDesignation() ) ) ) );
+  if ( id.getExpiration() ) obj.insert( "expiration", static_cast<int>( id.getExpiration() ) );
+  return obj;
 }

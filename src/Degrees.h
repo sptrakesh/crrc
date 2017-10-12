@@ -33,6 +33,9 @@ namespace crrc
     C_ATTR( view, :Chained( "object" ) : PathPart( "view" ) : Args( 0 ) )
     void view( Cutelyst::Context* c ) const;
 
+    C_ATTR( data, :Chained( "object" ) : PathPart( "data" ) : Args( 0 ) )
+    void data( Cutelyst::Context* c ) const;
+
     C_ATTR( search, :Chained( "base" ) : PathPart( "search" ) : Args( 0 ) )
     void search( Cutelyst::Context* c ) const;
 

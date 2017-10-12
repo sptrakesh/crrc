@@ -43,13 +43,15 @@ QVariant Institution::getLogo() const
   return dao::LogoDAO().retrieve( logoId );
 }
 
-QJsonObject crrc::model::toJson( const Institution& institution )
+QJsonObject crrc::model::toJson( const Institution& institution, bool compact )
 {
   QJsonObject obj;
   obj.insert( "id", static_cast<int>( institution.getId() ) );
   obj.insert( "name", institution.getName() );
-  if ( !institution.getAddress().isEmpty() ) obj.insert( "address", institution.getAddress() );
   if ( !institution.getCity().isEmpty() ) obj.insert( "city", institution.getCity() );
+  if ( compact ) return obj;
+
+  if ( !institution.getAddress().isEmpty() ) obj.insert( "address", institution.getAddress() );
   if ( !institution.getState().isEmpty() ) obj.insert( "state", institution.getState() );
   if ( !institution.getPostalCode().isEmpty() ) obj.insert( "postalCode", institution.getPostalCode() );
   if ( !institution.getCountry().isEmpty() ) obj.insert( "country", institution.getCountry() );

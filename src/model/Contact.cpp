@@ -89,11 +89,7 @@ QJsonObject crrc::model::toJson( const Contact& contact )
 
   if ( contact.getInstitutionId() )
   {
-    const auto ptr = Institution::from( contact.getInstitution() );
-    QJsonObject inst;
-    inst.insert( "id", static_cast<int>( ptr->getId() ) );
-    inst.insert( "name", ptr->getName() );
-    obj.insert( "institution", inst );
+    obj.insert( "institution", toJson( *( Institution::from( contact.getInstitution() ) ), true ) );
   }
 
   return obj;

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <QtCore/QDebug>
+#include <QtCore/QJsonObject>
 #include <QtSql/QSqlQuery>
 #include <Cutelyst/Context>
 
@@ -59,5 +60,7 @@ namespace crrc
     {
       return QVariant::fromValue<QObject*>( const_cast<InstitutionDesignation*>( degree ) );
     }
+
+    QJsonObject toJson( const InstitutionDesignation& id );
   }
 }

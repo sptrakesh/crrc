@@ -72,6 +72,6 @@ namespace crrc
       return QVariant::fromValue<QObject*>( const_cast<Institution*>( degree ) );
     }
 
-    QJsonObject toJson( const Institution& institution );
+    QJsonObject toJson( const Institution& institution, bool compact = false );
   }
 }

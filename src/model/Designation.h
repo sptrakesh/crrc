@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <memory>
+#include <QtCore/QJsonObject>
 #include <QtSql/QSqlQuery>
 #include <Cutelyst/Context>
 
@@ -51,5 +52,7 @@ namespace crrc
     {
       return QVariant::fromValue<QObject*>( const_cast<Designation*>( designation ) );
     }
+
+    QJsonObject toJson( const Designation& designation );
   }
 }
