@@ -9,6 +9,7 @@ namespace crrc
   private slots:
     void redirect();
     void valid();
+    void logout();
     void invalid();
   };
 }
