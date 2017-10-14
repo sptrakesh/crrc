@@ -23,7 +23,7 @@ namespace crrc
     static std::atomic_bool contactsLoaded{ false };
     static std::mutex contactMutex;
 
-    QVariantList fromContacts( const ContactDAO::Mode& mode )
+    QVariantList fromContacts()
     {
       QVariantList list;
       for ( const auto& iter : contacts ) list << asVariant( iter.second.get() );
@@ -71,7 +71,7 @@ namespace crrc
       const auto username = c->request()->param( "username" );
       if ( ! username.isEmpty() )
       {
-        const UserDAO dao;
+        const UserDAO dao{};
         const auto user = dao.retrieveByUsername( username );
         const auto uptr = model::User::from( user );
         const QVariant userId = ( uptr ) ? uptr->getId() : dao.insert( c );
@@ -89,20 +89,20 @@ namespace crrc
 
 using crrc::dao::ContactDAO;
 
-QVariantList ContactDAO::retrieveAll( const Mode& mode ) const
+QVariantList ContactDAO::retrieveAll() const
 {
   loadContacts();
-  return fromContacts( mode );
+  return fromContacts();
 }
 
-QVariant ContactDAO::retrieve( const uint32_t id, const Mode& mode ) const
+QVariant ContactDAO::retrieve( const uint32_t id ) const
 {
   loadContacts();
   const auto iter = contacts.find( id );
   return ( iter != contacts.end() ) ? asVariant( iter->second.get() ) : QVariant();
 }
 
-QVariant ContactDAO::retrieveByUser( uint32_t id, const Mode& mode ) const
+QVariant ContactDAO::retrieveByUser( uint32_t id ) const
 {
   if ( !id ) return QVariant();
   loadContacts();
@@ -115,7 +115,7 @@ QVariant ContactDAO::retrieveByUser( uint32_t id, const Mode& mode ) const
   return QVariant();
 }
 
-QVariantList ContactDAO::retrieveByInstitution( uint32_t id, const Mode& mode ) const
+QVariantList ContactDAO::retrieveByInstitution( uint32_t id ) const
 {
   QVariantList list;
   if ( !id ) return list;
@@ -179,7 +179,7 @@ void ContactDAO::update( Cutelyst::Context* context ) const
   else context->stash()["error_msg"] = query.lastError().text();
 }
 
-QVariantList ContactDAO::search( Cutelyst::Context* context, const Mode& mode ) const
+QVariantList ContactDAO::search( Cutelyst::Context* context ) const
 {
   loadContacts();
 
@@ -203,7 +203,7 @@ QVariantList ContactDAO::search( Cutelyst::Context* context, const Mode& mode ) 
       const auto qid = query.value( 1 ).toUInt();
       if ( ignoreCheck || qid == iid )
       {
-        list << retrieve( query.value( 0 ).toUInt(), mode );
+        list << retrieve( query.value( 0 ).toUInt() );
       }
     }
   }

@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include "AutoTest.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QEventLoop>
 #include <QtCore/QUrl>
@@ -18,7 +20,13 @@ namespace crrc
     BaseTest( QObject* parent = nullptr ) : QObject( parent ){}
 
     void login( QNetworkAccessManager* mgr, QEventLoop* eventLoop,
-      QNetworkRequest* req );
+      QNetworkRequest* req )
+    {
+      login( "admin", "admin", mgr, eventLoop, req );
+    }
+
+    void login( const QString& user, const QString& password,
+        QNetworkAccessManager* mgr, QEventLoop* eventLoop, QNetworkRequest* req );
 
     void logout( QNetworkAccessManager* mgr, QEventLoop* eventLoop,
       QNetworkRequest* req );
@@ -27,6 +35,9 @@ namespace crrc
         QEventLoop* eventLoop, QNetworkRequest* req );
 
     ReplyPointer post( const QString& url, const QString& data,
+        QNetworkAccessManager* mgr, QEventLoop* eventLoop, QNetworkRequest* req );
+
+    ReplyPointer put( const QString& url, const QString& data,
         QNetworkAccessManager* mgr, QEventLoop* eventLoop, QNetworkRequest* req );
   };
 }

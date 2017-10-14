@@ -53,5 +53,13 @@ namespace crrc
       context->response()->setContentLength( bytes.size() );
       context->response()->setBody( bytes );
     }
+
+    inline void sendJson( Cutelyst::Context* context, const QJsonArray& arr )
+    {
+      const auto bytes = QJsonDocument( arr ).toJson();
+      context->response()->setContentType( "application/json" );
+      context->response()->setContentLength( bytes.size() );
+      context->response()->setBody( bytes );
+    }
   }
 }

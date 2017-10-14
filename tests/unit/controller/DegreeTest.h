@@ -1,5 +1,4 @@
 #pragma once
-#include "AutoTest.h"
 #include "BaseTest.h"
 
 namespace crrc
@@ -15,6 +14,7 @@ namespace crrc
     void create();
     void retrieve();
     void invalid();
+    void index();
     void update();
     void remove();
 

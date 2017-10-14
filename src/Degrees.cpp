@@ -4,6 +4,7 @@
 #include "model/Degree.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QJsonArray>
 
 namespace crrc
 {
@@ -24,6 +25,14 @@ void Degrees::index( Cutelyst::Context* c ) const
 {
   auto list = dao::DegreeDAO().retrieveAll();
   qSort( list.begin(), list.end(), util::degreeComparator );
+
+  if ( "POST" == c->request()->method() )
+  {
+    QJsonArray arr;
+    for ( const auto& degree : list ) arr << toJson( *model::Degree::from( degree ) );
+    dao::sendJson( c, arr );
+    return;
+  }
 
   c->stash( {
     { "degrees", list },

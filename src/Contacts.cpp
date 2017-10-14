@@ -10,6 +10,31 @@
 #include <QtCore/QJsonArray>
 #include <QtCore/QJsonDocument>
 
+namespace crrc
+{
+  namespace util
+  {
+    static auto contactComparator = []( const QVariant& deg1, const QVariant& deg2 ) -> bool
+    {
+      const auto ptr1 = model::Contact::from( deg1 );
+      const auto ptr2 = model::Contact::from( deg2 );
+      return *ptr1 < *ptr2;
+    };
+
+    QJsonArray contactsToArray( const QVariantList& list )
+    {
+      auto arr = QJsonArray();
+      for ( const auto cvar : list )
+      {
+        const auto ptr = model::Contact::from( cvar );
+        arr << toJson( *ptr );
+      }
+
+      return arr;
+    }
+  }
+}
+
 using crrc::Contacts;
 
 void Contacts::index( Cutelyst::Context* c ) const
@@ -17,12 +42,14 @@ void Contacts::index( Cutelyst::Context* c ) const
   dao::ContactDAO dao;
   auto list = dao::isGlobalAdmin( c ) ? dao.retrieveAll() :
     dao.retrieveByInstitution( dao::institutionId( c ) );
+  qSort( list.begin(), list.end(), util::contactComparator );
 
-  auto arr = QJsonArray();
-  for ( const auto cvar : list )
+
+  const auto& arr = util::contactsToArray( list );
+  if ( "POST" == c->request()->method() )
   {
-    const auto ptr = model::Contact::from( cvar );
-    arr << toJson( *ptr );
+    dao::sendJson( c, arr );
+    return;
   }
 
   c->stash( {
@@ -85,7 +112,7 @@ void Contacts::edit( Cutelyst::Context* c ) const
     return;
   }
 
-  const dao::ContactDAO dao;
+  const dao::ContactDAO dao{};
 
   if ( ! dao::isGlobalAdmin( c ) )
   {
@@ -105,6 +132,13 @@ void Contacts::edit( Cutelyst::Context* c ) const
   }
   else dao.update( c );
 
+  if ( "PUT" == c->request()->method() )
+  {
+    const auto contact = dao.retrieve( id.toUInt() );
+    dao::sendJson( c, toJson( *model::Contact::from( contact ) ) );
+    return;
+  }
+
   c->stash( {
     { "template", "contacts/view.html" },
     { "object", dao.retrieve( id.toUInt() ) }
@@ -120,7 +154,7 @@ void Contacts::data( Cutelyst::Context* c ) const
 {
   const auto& var = c->stash( "object" );
   const auto ptr = model::Contact::from( var );
-  dao::sendJson( c, toJson( *ptr ) );
+  dao::sendJson( c, ptr ? toJson( *ptr ) : QJsonObject() );
 }
 
 void Contacts::search( Cutelyst::Context* c ) const
@@ -133,9 +167,18 @@ void Contacts::search( Cutelyst::Context* c ) const
     return;
   }
 
-  dao::ContactDAO dao;
+  const dao::ContactDAO dao{};
+  const auto& list = dao.search( c );
+
+  if ( "PUT" == c->request()->method() )
+  {
+    const auto& arr = util::contactsToArray( list );
+    dao::sendJson( c, arr );
+    return;
+  }
+
   c->stash( {
-    { "contacts", dao.search( c ) },
+    { "contacts", list },
     { "searchText", text },
     { "template", "contacts/index.html" }
   } );
@@ -151,16 +194,24 @@ void Contacts::remove( Cutelyst::Context* c )
   }
 
   auto id = c->request()->param( "id", "" );
-  QString statusMsg;
+  uint32_t count = 0;
 
   if ( ! id.isEmpty() )
   {
-    dao::ContactDAO dao;
-    statusMsg = dao.remove( id.toUInt() );
+    const dao::ContactDAO dao{};
+    count = dao.remove( id.toUInt() );
   }
-  else statusMsg = "No contact identifier specified!";
 
-  c->stash()["status_msg"] = statusMsg;
+  if ( "PUT" == c->request()->method() )
+  {
+    QJsonObject obj;
+    obj.insert( "status", count ? true : false );
+    obj.insert( "count", static_cast<int>( count ) );
+    obj.insert( "id", id.toInt() );
+    dao::sendJson( c, obj );
+    return;
+  }
+
   c->response()->redirect( "/contacts" );
 }
 

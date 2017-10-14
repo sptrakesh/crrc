@@ -60,7 +60,7 @@ namespace crrc
       }
     }
 
-    void bindUser( Cutelyst::Context* c, QSqlQuery& query )
+    QByteArray bindUser( Cutelyst::Context* c, QSqlQuery& query )
     {
       query.bindValue( ":un", c->request()->param( "username" ) );
 
@@ -82,6 +82,8 @@ namespace crrc
         query.bindValue( ":role", rptr->getId() );
       }
       else query.bindValue( ":role", QVariant( QVariant::UInt ) );
+
+      return passwd;
     }
   }
 }
@@ -119,7 +121,7 @@ uint32_t UserDAO::insert( Cutelyst::Context* context ) const
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
     "insert into users (username, password, email, first_name, last_name, middle_name, role_id) values (:un, :passwd, :email, :fn, :ln, :mn, :roleId)",
     crrc::DATABASE_NAME );
-  bindUser( context, query );
+  const auto hashed = bindUser( context, query );
 
   if ( !query.exec() )
   {
@@ -130,6 +132,7 @@ uint32_t UserDAO::insert( Cutelyst::Context* context ) const
   const auto id = query.lastInsertId().toUInt();
   auto user = User::create( context );
   user->setId( id );
+  user->setPassword( QString( hashed ) );
   std::lock_guard<std::mutex> lock{ userMutex };
   users[id] = std::move( user );
   return id;
@@ -142,7 +145,7 @@ void UserDAO::update( Cutelyst::Context* context ) const
   auto query = CPreparedSqlQueryThreadForDB(
     "update users set username=:un, password=:passwd, email=:email, first_name=:fn, last_name=:ln, middle_name=:mn, role_id = :roleId where user_id=:id",
     crrc::DATABASE_NAME );
-  bindUser( context, query );
+  const auto hashed = bindUser( context, query );
   query.bindValue( ":id", id.toUInt() );
 
   if ( query.exec() )
@@ -150,6 +153,7 @@ void UserDAO::update( Cutelyst::Context* context ) const
     if ( query.numRowsAffected() )
     {
       auto user = User::create( context );
+      user->setPassword( QString( hashed ) );
       std::lock_guard<std::mutex> lock{ userMutex };
       users[id.toUInt()] = std::move( user );
     }

@@ -84,6 +84,11 @@ namespace crrc
       return QVariant::fromValue<QObject*>( const_cast<Contact*>( contact ) );
     }
 
+    inline bool operator< ( const Contact& contact1, const Contact& contact2 )
+    {
+      return contact1.getName() < contact2.getName();
+    }
+
     QJsonObject toJson( const Contact& contact );
   }
 }
