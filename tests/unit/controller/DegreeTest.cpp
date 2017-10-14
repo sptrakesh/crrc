@@ -70,7 +70,33 @@ void DegreeTest::retrieve()
   }
   else
   {
-    QFAIL( "Error creating new degree" );
+    QFAIL( "Error retrieving degree" );
+  }
+
+  logout( &mgr, &eventLoop, &req );
+}
+
+void DegreeTest::invalid()
+{
+  QEventLoop eventLoop;
+  QNetworkAccessManager mgr;
+  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
+      SLOT( quit() ) );
+  QNetworkRequest req;
+  login( &mgr, &eventLoop, &req );
+
+  const auto url = QString{ "http://localhost:3000/degrees/id/0/data" };
+  const auto reply = get( url, &mgr, &eventLoop, &req );
+
+  if ( reply->error() == QNetworkReply::NoError )
+  {
+    const auto doc = QJsonDocument::fromJson( reply->readAll() );
+    const auto obj = doc.object();
+    QVERIFY2( obj.isEmpty(), "Non-Empty JSON response for invalid degree JSON" );
+  }
+  else
+  {
+    QFAIL( "Error retrieving degree" );
   }
 
   logout( &mgr, &eventLoop, &req );
@@ -128,8 +154,9 @@ void DegreeTest::remove()
   }
   else
   {
-    QFAIL( "Error creating new degree" );
+    QFAIL( "Error deleting degree" );
   }
 
   logout( &mgr, &eventLoop, &req );
 }
+

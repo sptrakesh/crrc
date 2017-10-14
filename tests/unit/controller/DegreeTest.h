@@ -14,6 +14,7 @@ namespace crrc
   private slots:
     void create();
     void retrieve();
+    void invalid();
     void update();
     void remove();
 
