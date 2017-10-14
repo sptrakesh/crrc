@@ -52,3 +52,26 @@ void BaseTest::logout( QNetworkAccessManager* mgr, QEventLoop* eventLoop, QNetwo
     QFAIL( "Error logging out of server" );
   }
 }
+
+BaseTest::ReplyPointer
+BaseTest::get( const QString& url, QNetworkAccessManager* mgr,
+    QEventLoop* eventLoop, QNetworkRequest* req )
+{
+  req->setUrl( QUrl( url ) );
+  QNetworkReply* reply = mgr->get( *req );
+  ReplyPointer rptr{ reply };
+  eventLoop->exec();
+  return std::move( rptr );
+}
+
+BaseTest::ReplyPointer
+BaseTest::post( const QString& url, const QString& data,
+    QNetworkAccessManager* mgr, QEventLoop* eventLoop, QNetworkRequest* req )
+{
+  req->setUrl( QUrl( url ) );
+  req->setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
+  QNetworkReply* reply = mgr->post( *req, data.toLocal8Bit() );
+  ReplyPointer rptr{ reply };
+  eventLoop->exec();
+  return std::move( rptr );
+}

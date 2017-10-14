@@ -60,7 +60,7 @@ void Degrees::edit( Cutelyst::Context* c ) const
   if ( title.isEmpty() || title.contains( "'" ) || title.contains( '"' ) )
   {
     obj.insert( "status", false );
-    obj.insert( "id", id );
+    obj.insert( "id", id.toInt() );
     dao::sendJson( c, obj );
     return;
   }
@@ -78,7 +78,7 @@ void Degrees::edit( Cutelyst::Context* c ) const
     qDebug() << "Updating degree";
     dao.update( c );
     obj.insert( "status", true );
-    obj.insert( "id", id );
+    obj.insert( "id", id.toInt() );
   }
 
   dao::sendJson( c, obj );
@@ -93,7 +93,7 @@ void Degrees::data( Cutelyst::Context* c ) const
 {
   const auto& var = c->stash( "object" );
   const auto ptr = model::Degree::from( var );
-  dao::sendJson( c, toJson( *ptr ) );
+  dao::sendJson( c, ptr ? toJson( *ptr ) : QJsonObject() );
 }
 
 void Degrees::search( Cutelyst::Context* c ) const

@@ -26,11 +26,9 @@ void DegreeTest::create()
   QNetworkRequest req;
   login( &mgr, &eventLoop, &req );
 
-  req.setUrl( QUrl( QString( "http://localhost:3000/degrees/create" ) ) );
-  req.setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
+  const auto url = QString{ "http://localhost:3000/degrees/create" };
   const auto data = QString( "title=%1&duration=%2" ).arg( title ).arg( duration );
-  QNetworkReply* reply = mgr.post( req, data.toLocal8Bit() );
-  eventLoop.exec();
+  auto reply = post( url, data, &mgr, &eventLoop, &req );
 
   if ( reply->error() == QNetworkReply::NoError )
   {
@@ -43,7 +41,6 @@ void DegreeTest::create()
   }
   else
   {
-    delete reply;
     QFAIL( "Error creating new degree" );
   }
 
@@ -59,9 +56,8 @@ void DegreeTest::retrieve()
   QNetworkRequest req;
   login( &mgr, &eventLoop, &req );
 
-  req.setUrl( QUrl( QString( "http://localhost:3000/degrees/id/%1/data" ).arg( degreetest::id ) ) );
-  QNetworkReply* reply = mgr.get( req );
-  eventLoop.exec();
+  const auto url = QString( "http://localhost:3000/degrees/id/%1/data" ).arg( degreetest::id );
+  const auto reply = get( url, &mgr, &eventLoop, &req );
 
   if ( reply->error() == QNetworkReply::NoError )
   {
@@ -74,7 +70,6 @@ void DegreeTest::retrieve()
   }
   else
   {
-    delete reply;
     QFAIL( "Error creating new degree" );
   }
 
@@ -90,12 +85,10 @@ void DegreeTest::update()
   QNetworkRequest req;
   login( &mgr, &eventLoop, &req );
 
-  req.setUrl( QUrl( QString( "http://localhost:3000/degrees/id/%1/update" ).arg( degreetest::id ) ) );
-  req.setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
+  const auto url = QString( "http://localhost:3000/degrees/id/%1/update" ).arg( degreetest::id );
   const auto modified = "durationModified";
   const auto data = QString( "id=%1&title=%2&duration=%3" ).arg( degreetest::id ).arg( title ).arg( modified );
-  QNetworkReply* reply = mgr.post( req, data.toLocal8Bit() );
-  eventLoop.exec();
+  const auto reply = post( url, data, &mgr, &eventLoop, &req );
 
   if ( reply->error() == QNetworkReply::NoError )
   {
@@ -103,13 +96,10 @@ void DegreeTest::update()
     const auto obj = doc.object();
     QVERIFY2( !obj.isEmpty(), "Empty JSON response for create degree" );
     QVERIFY2( degreetest::id == obj["id"].toInt(), "Json response returned invalid id" );
-    QVERIFY2( title == obj["title"].toString(), "Json response returned invalid title" );
-    QVERIFY2( modified == obj["duration"].toString(), "Json response returned invalid title" );
   }
   else
   {
-    delete reply;
-    QFAIL( "Error creating new degree" );
+    QFAIL( "Error updating degree" );
   }
 
   logout( &mgr, &eventLoop, &req );
@@ -124,11 +114,9 @@ void DegreeTest::remove()
   QNetworkRequest req;
   login( &mgr, &eventLoop, &req );
 
-  req.setUrl( QUrl( QString( "http://localhost:3000/degrees/remove" ) ) );
-  req.setHeader( QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded" );
+  const auto url = QString{ "http://localhost:3000/degrees/remove" };
   const auto data = QString( "id=%1" ).arg( degreetest::id );
-  QNetworkReply* reply = mgr.post( req, data.toLocal8Bit() );
-  eventLoop.exec();
+  const auto reply = post( url, data, &mgr, &eventLoop, &req );
 
   if ( reply->error() == QNetworkReply::NoError )
   {
@@ -140,7 +128,6 @@ void DegreeTest::remove()
   }
   else
   {
-    delete reply;
     QFAIL( "Error creating new degree" );
   }
 

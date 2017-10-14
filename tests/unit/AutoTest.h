@@ -68,7 +68,9 @@ public:
     }
 };
 
-#define DECLARE_TEST(className) static Test<className> t(#className);
+#define CONCAT_(x,y) x##y
+#define CONCAT(x,y) CONCAT_(x,y)
+#define DECLARE_TEST(className) static Test<className> CONCAT(t, __COUNTER__)(#className);
 
 #define TEST_MAIN \
     int main(int argc, char *argv[]) \
