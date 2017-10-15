@@ -1,5 +1,6 @@
 #include "LoginTest.h"
 
+#include <memory>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>

@@ -2,6 +2,8 @@
 
 #include "AutoTest.h"
 
+#include <memory>
+
 #include <QtCore/QObject>
 #include <QtCore/QEventLoop>
 #include <QtCore/QUrl>
