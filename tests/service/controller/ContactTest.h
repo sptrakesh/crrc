@@ -18,8 +18,9 @@ namespace crrc
     void checkUsername();
     void checkInvalidUsername();
     void index();
+    void loginBeforeEdit();
     void update();
-    void loginAs();
+    void loginAfterEdit();
     void remove();
 
   private:

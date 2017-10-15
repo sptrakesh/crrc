@@ -69,10 +69,7 @@ uint32_t InstitutionDesignationDAO::remove( uint32_t institutionId ) const
     "delete from institution_designations where institution_id = :iid",
     crrc::DATABASE_NAME );
   query.bindValue( ":iid", institutionId );
-  if ( query.exec() )
-  {
-    return query.numRowsAffected();
-  }
+  if ( query.exec() ) return query.numRowsAffected();
 
   qWarning() << query.lastError().text();
   return 0;

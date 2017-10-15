@@ -222,12 +222,10 @@ QString CourseDAO::remove( uint32_t id ) const
   query.bindValue( ":id", id );
   if ( query.exec() )
   {
-    if ( query.numRowsAffected() )
-    {
-      std::lock_guard<std::mutex> lock{ courseMutex };
-      courses.remove( id );
-    }
-    return QString::number( query.numRowsAffected() );
+    const auto count = query.numRowsAffected();
+    std::lock_guard<std::mutex> lock{ courseMutex };
+    courses.remove( id );
+    return QString::number( count );
   }
 
   return query.lastError().text();

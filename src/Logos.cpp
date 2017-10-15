@@ -6,7 +6,6 @@
 #include <QtCore/QStringBuilder>
 #include <QtCore/QtDebug>
 #include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
 
 using crrc::Logos;
 

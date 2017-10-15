@@ -205,7 +205,7 @@ void Contacts::remove( Cutelyst::Context* c )
   if ( "PUT" == c->request()->method() )
   {
     QJsonObject obj;
-    obj.insert( "status", count ? true : false );
+    obj.insert( "status", count > 0 );
     obj.insert( "count", static_cast<int>( count ) );
     obj.insert( "id", id.toInt() );
     dao::sendJson( c, obj );

@@ -35,5 +35,5 @@ file(GLOB_RECURSE TEMPLATES_SRC root/*)
 add_subdirectory(src)
 
 find_package(Qt5Test REQUIRED)
-add_subdirectory(tests/unit)
+add_subdirectory(tests/service)
 add_test(crrcTest crrcTest)

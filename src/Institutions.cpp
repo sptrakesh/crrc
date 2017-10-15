@@ -9,13 +9,43 @@
 #include <QtCore/QJsonArray>
 #include "model/Designation.h"
 
+namespace crrc
+{
+  namespace util
+  {
+    static auto institutionComparator = []( const QVariant& inst1, const QVariant& inst2 ) -> bool
+    {
+      const auto ptr1 = model::Institution::from( inst1 );
+      const auto ptr2 = model::Institution::from( inst2 );
+      return *ptr1 < *ptr2;
+    };
+
+    QJsonArray institutionsToArray( const QVariantList& list )
+    {
+      QJsonArray arr;
+      for ( const auto& degree : list ) arr << toJson( *model::Institution::from( degree ) );
+      return arr;
+    }
+  }
+}
+
 using crrc::Institutions;
 
 void Institutions::index( Cutelyst::Context* c ) const
 {
-  dao::InstitutionDAO dao;
+  const dao::InstitutionDAO dao{};
+  auto list = dao.retrieveAll();
+  qSort( list.begin(), list.end(), util::institutionComparator );
+
+  if ( "POST" == c->request()->method() )
+  {
+    const auto& arr = util::institutionsToArray( list );
+    dao::sendJson( c, arr );
+    return;
+  }
+
   c->stash( {
-    { "institutions", dao.retrieveAll() },
+    { "institutions", list },
     { "template", "institutions/index.html" }
   } );
 }
@@ -52,7 +82,14 @@ void Institutions::edit( Cutelyst::Context* c ) const
     return;
   }
 
+  if ( ! canEdit( c ) )
+  {
+    c->stash()["error_msg"] = "Not authorized";
+    return;
+  }
+
   dao::InstitutionDAO dao;
+  qDebug() << "Saving institution with id: " << id;
   if ( id.isEmpty() )
   {
     const auto cid = dao.insert( c );
@@ -60,9 +97,17 @@ void Institutions::edit( Cutelyst::Context* c ) const
   }
   else dao.update( c );
 
+  const auto obj = dao.retrieve( id.toUInt() );
+
+  if ( "PUT" == c->request()->method() )
+  {
+    dao::sendJson( c, toJson( *model::Institution::from( obj ) ) );
+    return;
+  }
+
   c->stash( {
     { "template", "institutions/view.html" },
-    { "object", dao.retrieve( id.toUInt() ) }
+    { "object", obj }
   } );
 }
 
@@ -75,6 +120,13 @@ void Institutions::data( Cutelyst::Context* c ) const
 {
   const auto& var = c->stash( "object" );
   const auto ptr = model::Institution::from( var );
+
+  if ( !ptr )
+  {
+    dao::sendJson( c, QJsonObject() );
+    return;
+  }
+
   auto json = toJson( *ptr );
 
   const auto& list = dao::InstitutionDesignationDAO().retrieve( c, ptr->getId() );
@@ -102,9 +154,18 @@ void Institutions::search( Cutelyst::Context* c ) const
     return;
   }
 
-  dao::InstitutionDAO dao;
+  const dao::InstitutionDAO dao{};
+  const auto& list = dao.search( c );
+
+  if ( "PUT" == c->request()->method() )
+  {
+    const auto& arr = util::institutionsToArray( list );
+    dao::sendJson( c, arr );
+    return;
+  }
+
   c->stash( {
-    { "institutions", dao.search( c ) },
+    { "institutions", list },
     { "searchText", text },
     { "template", "institutions/index.html" }
   } );
@@ -113,16 +174,30 @@ void Institutions::search( Cutelyst::Context* c ) const
 void Institutions::remove( Cutelyst::Context* c )
 {
   auto id = c->request()->param( "id", "" );
-  QString statusMsg;
+  uint32_t count = 0;
 
   if ( ! id.isEmpty() )
   {
     dao::InstitutionDAO dao;
-    statusMsg = dao.remove( id.toUInt() );
+    count = dao.remove( id.toUInt() );
   }
-  else statusMsg = "No institution identifier specified!";
 
-  c->stash()["status_msg"] = statusMsg;
+  if ( ! canEdit( c ) )
+  {
+    c->stash()["error_msg"] = "Not authorized";
+    return;
+  }
+
+  if ( "PUT" == c->request()->method() )
+  {
+    QJsonObject obj;
+    obj.insert( "id", id );
+    obj.insert( "count", static_cast<int>( count ) );
+    obj.insert( "status", count > 0 );
+    dao::sendJson( c, obj );
+    return;
+  }
+
   c->response()->redirect( "/institutions" );
 }
 
@@ -136,4 +211,13 @@ void Institutions::checkUnique( Cutelyst::Context* c )
   c->response()->setContentType( "text/plain" );
   c->response()->setContentLength( string.size() );
   c->response()->setBody( string );
+}
+
+bool Institutions::canEdit( Cutelyst::Context* c ) const
+{
+  auto id = c->request()->param( "id", "" );
+
+  const auto flag = ( dao::isGlobalAdmin( c ) ||
+      ( ! id.isEmpty() && dao::institutionId( c ) == id.toUInt() ) );
+  return flag;
 }

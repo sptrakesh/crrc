@@ -65,7 +65,7 @@ void Programs::data( Cutelyst::Context* c ) const
 {
   const auto& var = c->stash( "object" );
   const auto ptr = model::Program::from( var );
-  dao::sendJson( c, toJson( *ptr ) );
+  dao::sendJson( c, ptr ? toJson( *ptr ) : QJsonObject() );
 }
 
 void Programs::edit( Cutelyst::Context* c ) const

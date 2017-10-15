@@ -212,11 +212,12 @@ uint32_t AgreementDAO::remove( uint32_t id ) const
   auto query = CPreparedSqlQueryThreadForDB(
     "delete from agreements where agreement_id = :id", DATABASE_NAME );
   query.bindValue( ":id", id );
-  if ( query.exec() && query.numRowsAffected() )
+  if ( query.exec() )
   {
+    const auto count = query.numRowsAffected();
     std::lock_guard<std::mutex> lock{ agreementMutex };
     agreements.erase( id );
-    return query.numRowsAffected();
+    return count;
   }
 
   qWarning() << query.lastError().text();

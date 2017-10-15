@@ -160,9 +160,10 @@ uint32_t DegreeDAO::remove( uint32_t id ) const
   query.bindValue( ":id", id );
   if ( query.exec() )
   {
+    const auto count = query.numRowsAffected();
     std::lock_guard<std::mutex> lock{ degreeMutex };
     degrees.erase( id );
-    return query.numRowsAffected();
+    return count;
   }
 
   qDebug() << query.lastError().text();

@@ -102,6 +102,7 @@ uint32_t InstitutionDAO::insert( Cutelyst::Context* context ) const
 
   const auto id = query.lastInsertId().toUInt();
   auto institution = Institution::create( context );
+  institution->setId( id );
   std::lock_guard<std::mutex> lock{ institutionMutex };
   institutions[id] = std::move( institution );
   return id;
@@ -164,8 +165,9 @@ uint32_t InstitutionDAO::remove( uint32_t id ) const
     "delete from institutions where institution_id = :id", DATABASE_NAME );
   query.bindValue( ":id", id );
 
-  if ( query.exec() && query.numRowsAffected() )
+  if ( query.exec() )
   {
+    const auto count = query.numRowsAffected();
     ContactDAO().removeInstitution( id );
     InstitutionDesignationDAO().remove( id );
 
@@ -177,7 +179,7 @@ uint32_t InstitutionDAO::remove( uint32_t id ) const
 
     std::lock_guard<std::mutex> lock{ institutionMutex };
     institutions.erase( id );
-    return query.numRowsAffected();
+    return count;
   }
 
   qWarning() << query.lastError().text();

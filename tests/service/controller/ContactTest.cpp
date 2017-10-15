@@ -154,6 +154,23 @@ void ContactTest::index()
   logout( &mgr, &eventLoop, &req );
 }
 
+void ContactTest::loginBeforeEdit()
+{
+  QEventLoop eventLoop;
+  QNetworkAccessManager mgr;
+  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
+      SLOT( quit() ) );
+  QNetworkRequest req;
+  login( username, password, &mgr, &eventLoop, &req );
+
+  auto reply = get( "http://localhost:3000/", &mgr, &eventLoop, &req );
+  QVERIFY2( reply->error() == QNetworkReply::NoError, "Error logging into server" );
+  const auto code = reply->attribute( QNetworkRequest::HttpStatusCodeAttribute ).toInt();
+  QVERIFY2( 200 == code, "Root page not served" );
+
+  logout( &mgr, &eventLoop, &req );
+}
+
 void ContactTest::update()
 {
   QEventLoop eventLoop;
@@ -179,7 +196,7 @@ void ContactTest::update()
   logout( &mgr, &eventLoop, &req );
 }
 
-void ContactTest::loginAs()
+void ContactTest::loginAfterEdit()
 {
   QEventLoop eventLoop;
   QNetworkAccessManager mgr;
@@ -219,3 +236,4 @@ void ContactTest::remove()
 
   logout( &mgr, &eventLoop, &req );
 }
+

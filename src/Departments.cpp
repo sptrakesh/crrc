@@ -39,7 +39,7 @@ void Departments::data( Cutelyst::Context* c ) const
 {
   const auto& var = c->stash( "object" );
   const auto ptr = model::Department::from( var );
-  dao::sendJson( c, toJson( *ptr ) );
+  dao::sendJson( c, ptr ? toJson( *ptr ) : QJsonObject() );
 }
 
 void Departments::remove( Cutelyst::Context* c ) const

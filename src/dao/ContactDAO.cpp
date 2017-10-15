@@ -224,11 +224,12 @@ uint32_t ContactDAO::remove( uint32_t id ) const
   query.bindValue( ":id", id );
   if ( query.exec() )
   {
+    const auto count = query.numRowsAffected();
     const auto iter = contacts.find( id );
     if ( iter != contacts.end() ) UserDAO().remove( iter->second->getUserId() );
     std::lock_guard<std::mutex> lock{ contactMutex };
     contacts.erase( id );
-    return query.numRowsAffected();
+    return count;
   }
 
   qDebug() << query.lastError().text();

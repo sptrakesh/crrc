@@ -147,12 +147,10 @@ uint32_t DepartmentDAO::remove( uint32_t id ) const
   query.bindValue( ":id", id );
   if ( query.exec() )
   {
-    if ( query.numRowsAffected() )
-    {
-      std::lock_guard<std::mutex> lock{ departmentMutex };
-      departments.erase( id );
-      return query.numRowsAffected();
-    }
+    const auto count = query.numRowsAffected();
+    std::lock_guard<std::mutex> lock{ departmentMutex };
+    departments.erase( id );
+    return count;
   }
 
   qDebug() << query.lastError().text();

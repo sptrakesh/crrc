@@ -110,6 +110,13 @@ void Agreements::data( Cutelyst::Context* c ) const
 {
   const auto& var = c->stash( "object" );
   const auto ptr = model::Agreement::from( var );
+
+  if ( !ptr )
+  {
+    dao::sendJson( c, QJsonObject() );
+    return;
+  }
+
   auto json = toJson( *ptr );
   const auto& relations = dao::InstitutionAgreementDAO().retrieve( c, QString::number( ptr->getId() ) );
 

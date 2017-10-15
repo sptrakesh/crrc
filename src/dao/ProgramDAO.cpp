@@ -222,13 +222,10 @@ uint32_t ProgramDAO::remove( uint32_t id ) const
   query.bindValue( ":id", id );
   if ( query.exec() )
   {
-    if ( query.numRowsAffected() )
-    {
-      std::lock_guard<std::mutex> lock{ programMutex };
-      programs.erase( id );
-    }
-
-    return query.numRowsAffected();
+    const auto count = query.numRowsAffected();
+    std::lock_guard<std::mutex> lock{ programMutex };
+    programs.erase( id );
+    return count;
   }
 
   qWarning() << query.lastError().text();

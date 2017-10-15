@@ -43,5 +43,8 @@ namespace crrc
 
     C_ATTR( checkUnique, :Chained( "base" ) : PathPart( "checkUnique" ) : Args( 0 ) )
     void checkUnique( Cutelyst::Context* c );
+
+  private:
+    bool canEdit( Cutelyst::Context* c ) const;
   };
 }
