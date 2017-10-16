@@ -22,7 +22,7 @@ namespace crrc
       static Ptr create( QSqlQuery& query );
       static Ptr create( Cutelyst::Context* context );
 
-      static Department* from( const QVariant& var )
+      static const Department* from( const QVariant& var )
       {
         return qvariant_cast<Department*>( var );
       }

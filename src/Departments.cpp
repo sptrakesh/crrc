@@ -23,13 +23,9 @@ using crrc::Departments;
 
 void Departments::index( Cutelyst::Context* c )
 {
-  const auto& list = dao::isGlobalAdmin( c ) ?
+  auto list = dao::isGlobalAdmin( c ) ?
     dao::DepartmentDAO().retrieveAll() :
     dao::DepartmentDAO().retrieveByInstitution( dao::institutionId( c ) );
-
-  QVariantList ilist;
-  if ( dao::isGlobalAdmin( c ) ) ilist = dao::InstitutionDAO().retrieveAll();
-  else ilist << dao::InstitutionDAO().retrieve( dao::institutionId( c ) );
   qSort( list.begin(), list.end(), util::departmentComparator );
 
   QJsonArray arr;
