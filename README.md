@@ -1,11 +1,21 @@
 # CRRC application
 Application for managing articulation agreements between educational institutions.
 
-## Technology Stack
-The application is built using [Cutelyst](https://cutelyst.org/) and [Qt](https://www.qt.io/).
-At present only storage to [SQLite](http://sqlite.org/) is supported, although
-there are plans to support [PostgreSQL](https://www.postgresql.org/) as well.
-A C++14 compatible compiler is required to build the application sources.
+## Sections
+* [Technology Stack](#techStack)
+* [Managing Entities](#entities)
+  * [Institutions](#institutions)
+  * [Contacts](#contacts)
+  * [Departments](#departments)
+  * [Designations](#designations)
+
+
+## <a name="techStack"></a>Technology Stack
+The application is built using [Cutelyst](https://cutelyst.org/) with
+[Grantlee](https://github.com/steveire/grantlee) templating engine and
+[Qt](https://www.qt.io/). At present only storage to [SQLite](http://sqlite.org/)
+is supported, although there are plans to support [PostgreSQL](https://www.postgresql.org/)
+as well. A C++14 compatible compiler is required to build the application sources.
 
 ### Development Environment
 The application was developed primarily on Windows 10 with Visual Studio 2015
@@ -22,7 +32,7 @@ the binding was successful, you can visit the application [locally](http://local
 For local testing, use `admin` as both username and password to log on to the
 application.
 
-## Managing Entities
+## <a name="entities"></a>Managing Entities
 Entities may be managed using the CRRC web UI, or using some rudimentary
 web services (note, these are not true REST services).  The primary purpose of
 the web services is to allow for more independent web UI development using
@@ -34,7 +44,7 @@ The templates for managing entities follow a common naming convention:
 *  `<path to>/view.html` - Used to display details of an entity.
 *  `<path to>/form.html` - Used to create/edit entities.
 
-### Institutions
+### <a name="institutions"></a>Institutions
 Institutions are the logical starting point for managing entities within the
 system.  Most information managed by the application deal with institutions.
 
@@ -66,7 +76,7 @@ The following screens and associated web services are available:
    * A `PUT` request to `/institutions/remove` will remove the entity and
      return a JSON message indicating success/failure of the operation.
 
-### Contacts
+### <a name="contacts"></a>Contacts
 Contacts are the relevant staff at the institutions who manage the data in the
 application.  Contacts may be assigned credentials and roles for managing the
 data in the application.  Contacts may also be stored without any credentials,
@@ -99,7 +109,7 @@ The following screens and associated web services are available:
    * A `PUT` request to `/contacts/remove` will remove the entity and
      return a JSON message indicating success/failure of the operation.
      
-## Departments
+## <a name="departments"></a>Departments
 Departments are managed primarily at the institution level.  Service based
 management is available through the following end points.
 
@@ -115,6 +125,22 @@ management is available through the following end points.
    endpoint.  A JSON structure indicating success/failure of the operation is
    returned.
    
+## <a name="designations"></a>Designations
+At present there is no web UI to manage designations.  Designations are metadata
+that are associated with institutions and programs.  Web service endpoints are
+available for managing designations.
+
+*  Index or listing. Listing of all the designations as a JSON array may be
+   retrieved via the `/designations` endpoint.
+*  JSON data representation of a designation may be retrieved using the
+   `/designations/id/<id value>/data` endpoint.
+*  New designations may be created, or existing ones updated using the
+   `/designations/save` endpoint.  A JSON structure indicating whether the
+   insert/update succeeded is returned by the service.
+*  Designations may be deleted using the `/designations/remove`
+   endpoint.  A JSON structure indicating success/failure of the operation is
+   returned.
+
 ### Screens
 Departments for an institution are managed using a single `index.html` template
 which is available under the `root/src/institutions/departments` directory.

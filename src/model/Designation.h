@@ -53,6 +53,11 @@ namespace crrc
       return QVariant::fromValue<QObject*>( const_cast<Designation*>( designation ) );
     }
 
+    inline bool operator< ( const Designation& des1, const Designation& des2 )
+    {
+      return des1.getTitle() < des2.getTitle();
+    }
+
     QJsonObject toJson( const Designation& designation );
   }
 }

@@ -18,6 +18,7 @@
 #include "InstitutionDesignations.h"
 #include "Degrees.h"
 #include "Departments.h"
+#include "Designations.h"
 #include "InstitutionDepartments.h"
 #include "Programs.h"
 #include "Agreements.h"
@@ -38,6 +39,7 @@ bool AdminApplication::init()
   new InstitutionDesignations( this );
   new Degrees( this );
   new Departments( this );
+  new Designations( this );
   new InstitutionDepartments( this );
   new Programs( this );
   new Agreements( this );

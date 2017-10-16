@@ -54,6 +54,12 @@ namespace crrc
         designationsLoaded = true;
       }
     }
+
+    void bindDesignation( Cutelyst::Context* c, QSqlQuery& query )
+    {
+      query.bindValue( ":title", c->request()->param( "title" ) );
+      query.bindValue( ":type", c->request()->param( "type" ) );
+    }
   }
 }
 
@@ -83,4 +89,72 @@ QVariantList DesignationDAO::retrieveByType( const QString& type ) const
   }
 
   return list;
+}
+
+uint32_t DesignationDAO::insert( Cutelyst::Context* context ) const
+{
+  loadDesignations();
+  QSqlQuery query = CPreparedSqlQueryThreadForDB(
+      "insert into designations (title, type) values (:title, :type)",
+      crrc::DATABASE_NAME );
+  bindDesignation( context, query );
+
+  if ( !query.exec() )
+  {
+    qWarning() << query.lastError().text();
+    context->stash()["error_msg"] = query.lastError().text();
+    return 0;
+  }
+
+  const auto id = query.lastInsertId().toUInt();
+  auto designation = Designation::create( context );
+  designation->setId( id );
+  std::lock_guard<std::mutex> lock{ designationMutex };
+  designations[id] = std::move( designation );
+  return id;
+}
+
+uint32_t DesignationDAO::update( Cutelyst::Context* context ) const
+{
+  loadDesignations();
+  auto id = context->request()->param( "id" );
+  auto query = CPreparedSqlQueryThreadForDB(
+      "update designations set title=:title, type=:type where designation_id=:id",
+      crrc::DATABASE_NAME );
+  bindDesignation( context, query );
+  query.bindValue( ":id", id.toInt() );
+
+  if ( query.exec() && query.numRowsAffected() )
+  {
+    const auto did = id.toUInt();
+    auto designation = Designation::create( context );
+    designation->setId( did );
+    std::lock_guard<std::mutex> lock{ designationMutex };
+    designations[did] = std::move( designation );
+  }
+  else
+  {
+    context->stash()["error_msg"] = query.lastError().text();
+    qDebug() << query.lastError().text();
+  }
+
+  return query.numRowsAffected();
+}
+
+uint32_t DesignationDAO::remove( uint32_t id ) const
+{
+  loadDesignations();
+  auto query = CPreparedSqlQueryThreadForDB(
+      "delete from designations where designation_id = :id", DATABASE_NAME );
+  query.bindValue( ":id", id );
+  if ( query.exec() && query.numRowsAffected() )
+  {
+    const auto count = query.numRowsAffected();
+    std::lock_guard<std::mutex> lock{ designationMutex };
+    designations.erase( id );
+    return count;
+  }
+
+  qDebug() << query.lastError().text();
+  return 0;
 }
