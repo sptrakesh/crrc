@@ -109,16 +109,16 @@ management is available through the following end points.
 *  JSON data representation of a department may be retrieved using the
    `/departments/id/<id value>/data` endpoint.
 *  New departments may be created, or existing ones updated using the
-   `/institutions/departments/id/<institution id>/save` endpoint.  A JSON structure indicating whether the
+   `/institution/departments/save` endpoint.  A JSON structure indicating whether the
    insert/update succeeded is returned by the service.
-*  Departments may be deleted using the `/institutions/departments/id/<institution id>/remove`
+*  Departments may be deleted using the `/institution/departments/remove`
    endpoint.  A JSON structure indicating success/failure of the operation is
    returned.
    
 ### Screens
 Departments for an institution are managed using a single `index.html` template
 which is available under the `root/src/institutions/departments` directory.
-The various CRUX operations are supported as JSON services which are implemented
+The various CRUD operations are supported as JSON services which are implemented
 in the template.
 
 ## Tests

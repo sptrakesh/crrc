@@ -22,6 +22,7 @@ namespace crrc
     void update();
     void loginAfterEdit();
     void remove();
+    void readDeleted();
 
   private:
     const QString name;
@@ -33,4 +34,3 @@ namespace crrc
 }
 
 DECLARE_TEST( crrc::ContactTest )
-

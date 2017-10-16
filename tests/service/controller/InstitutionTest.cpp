@@ -196,7 +196,6 @@ void InstitutionTest::remove()
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error deleting institution" );
   const auto doc = QJsonDocument::fromJson( reply->readAll() );
   const auto obj = doc.object();
-  qDebug() << obj;
   QVERIFY2( !obj.isEmpty(), "Empty JSON response for delete institution" );
   QVERIFY2( obj["status"].toBool(), "Remove institution returned false status" );
   QVERIFY2( obj["count"].toInt(), "Remove institution returned invalid count" );

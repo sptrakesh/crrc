@@ -31,5 +31,6 @@ namespace crrc
 
   private:
     bool canEdit( Cutelyst::Context* c ) const;
+    bool checkAndReturn( Cutelyst::Context* c ) const;
   };
 }

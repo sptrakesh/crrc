@@ -17,6 +17,7 @@ namespace crrc
     void index();
     void update();
     void remove();
+    void readDeleted();
 
   private:
     QString title;

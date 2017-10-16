@@ -160,3 +160,23 @@ void DegreeTest::remove()
   logout( &mgr, &eventLoop, &req );
 }
 
+void DegreeTest::readDeleted()
+{
+  QEventLoop eventLoop;
+  QNetworkAccessManager mgr;
+  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
+      SLOT( quit() ) );
+  QNetworkRequest req;
+  login( &mgr, &eventLoop, &req );
+
+  const auto url = QString{ "http://localhost:3000/degrees/id/%1/data" }.arg( degreetest::id );
+  const auto reply = get( url, &mgr, &eventLoop, &req );
+
+  QVERIFY2( reply->error() == QNetworkReply::NoError, "Error retrieving deleted degree" );
+  const auto doc = QJsonDocument::fromJson( reply->readAll() );
+  const auto obj = doc.object();
+  QVERIFY2( obj.isEmpty(), "Non-Empty JSON response for deleted degree id" );
+
+  logout( &mgr, &eventLoop, &req );
+}
+

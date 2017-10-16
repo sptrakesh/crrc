@@ -15,9 +15,19 @@ namespace crrc
     void initTestCase();
     void cleanupTestCase();
 
+    void create();
+    void retrieve();
+    void invalid();
+    void index();
+    void update();
+    void retrieveModified();
+    void remove();
+    void readDeleted();
+
   private:
     QString name;
     QString prefix;
   };
 }
 
+DECLARE_TEST( crrc::DepartmentTest )

@@ -73,7 +73,7 @@
       <h3>Name: ${form.name.value}</h3>
       <strong>Prefix:</strong> ${form.prefix.value}<br/>
       <button onclick="displayForm( ${json.id} )">Edit</button>
-      <button onclick="deleteDepartment( ${json.id}, '${form.name.value}' )">Delete</button>
+      <button onclick="deleteDepartment( ${json.id}, '${form.name.value}', ${json.institution.id} )">Delete</button>
       <button onclick="hideDepartment( ${json.id} )">Close</button>
       <br/>
       <q id="dw_${json.id}" class="warning" style="display: none;"></q>
@@ -152,7 +152,7 @@
     return false;
   }
 
-  function deleteDepartment( departmentId, name )
+  function deleteDepartment( departmentId, name, institutionId )
   {
     if ( !confirm( `Do you wish to permanently delete ${name}?` ) ) return false;
     let xhr = new XMLHttpRequest();
@@ -181,7 +181,7 @@
         document.getElementById( `dw_${departmentId}` ).innerText = 'Unable to delete department from the server.  Please try again later.';
       }
     };
-    xhr.send( `id=${departmentId}` );
+    xhr.send( `id=${departmentId}&institutionId=${institutionId}` );
   }
 
   function hideForm( departmentId )
@@ -291,7 +291,7 @@
         <strong>Prefix:</strong> {{ department.prefix }}<br/>
         {% endif %}
         <button onclick="displayForm( {{ department.id }} )">Edit</button>
-        <button onclick="deleteDepartment( {{ department.id }}, '{{ department.name }}' )">Delete</button>
+        <button onclick="deleteDepartment( {{ department.id }}, '{{ department.name }}', {{ department.institution.id }} )">Delete</button>
         <button onclick="hideDepartment( {{ department.id }} )">Close</button>
         <br/>
         <q id="dw_{{ department.id }}" class="warning" style="display: none;"></q>
