@@ -22,8 +22,5 @@ namespace crrc
 
     C_ATTR( data, :Chained( "object" ) : PathPart( "data" ) : Args( 0 ) )
     void data( Cutelyst::Context* c ) const;
-
-    C_ATTR( remove, :Chained( "object" ) : PathPart( "remove" ) : Args( 0 ) )
-    void remove( Cutelyst::Context* c ) const;
   };
 }

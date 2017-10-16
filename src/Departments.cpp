@@ -4,6 +4,21 @@
 #include "dao/InstitutionDAO.h"
 #include "model/Department.h"
 
+#include <QtCore/QJsonArray>
+
+namespace crrc
+{
+  namespace util
+  {
+    static auto departmentComparator = []( const QVariant& deg1, const QVariant& deg2 ) -> bool
+    {
+      const auto ptr1 = model::Department::from( deg1 );
+      const auto ptr2 = model::Department::from( deg2 );
+      return *ptr1 < *ptr2;
+    };
+  }
+}
+
 using crrc::Departments;
 
 void Departments::index( Cutelyst::Context* c )
@@ -15,12 +30,11 @@ void Departments::index( Cutelyst::Context* c )
   QVariantList ilist;
   if ( dao::isGlobalAdmin( c ) ) ilist = dao::InstitutionDAO().retrieveAll();
   else ilist << dao::InstitutionDAO().retrieve( dao::institutionId( c ) );
+  qSort( list.begin(), list.end(), util::departmentComparator );
 
-  c->stash( {
-    { "departments", list },
-    { "institutions", ilist },
-    { "template", "institutions/departments/index.html" }
-  } );
+  QJsonArray arr;
+  for ( const auto& department : list ) arr << toJson( *model::Department::from( department ) );
+  dao::sendJson( c, arr );
 }
 
 void Departments::base( Cutelyst::Context* c ) const
@@ -42,31 +56,3 @@ void Departments::data( Cutelyst::Context* c ) const
   dao::sendJson( c, ptr ? toJson( *ptr ) : QJsonObject() );
 }
 
-void Departments::remove( Cutelyst::Context* c ) const
-{
-  const auto& var = c->stash( "object" );
-  QJsonObject obj;
-
-  if ( var.isNull() )
-  {
-    obj.insert( "status", false );
-    dao::sendJson( c, obj );
-    return;
-  }
-
-  const auto ptr = model::Department::from( var );
-  auto const result = dao::DepartmentDAO().remove( ptr->getId() );
-  obj.insert( "id", static_cast<int>( ptr->getId() ) );
-
-  if ( result )
-  {
-    obj.insert( "count", static_cast<int>( result ) );
-    obj.insert( "status", true );
-  }
-  else obj.insert( "status", false );
-
-  const auto& err = c->stash( "error_msg" );
-  if ( !err.isNull() ) obj.insert( "message", err.toString() );
-
-  dao::sendJson( c, obj );
-}

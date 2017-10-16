@@ -28,5 +28,8 @@ namespace crrc
 
     C_ATTR( remove, :Chained( "base" ) : PathPart( "remove" ) : Args( 0 ) )
     void remove( Cutelyst::Context* c ) const;
+
+  private:
+    bool canEdit( Cutelyst::Context* c ) const;
   };
 }

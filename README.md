@@ -99,6 +99,28 @@ The following screens and associated web services are available:
    * A `PUT` request to `/contacts/remove` will remove the entity and
      return a JSON message indicating success/failure of the operation.
      
+## Departments
+Departments are managed primarily at the institution level.  Service based
+management is available through the following end points.
+
+*  Index or listing. Listing of all the departments (if global administrator)
+   or of the departments associated with institution of current user is returned
+   as a JSON array by the `/departments` endpoint.
+*  JSON data representation of a department may be retrieved using the
+   `/departments/id/<id value>/data` endpoint.
+*  New departments may be created, or existing ones updated using the
+   `/institutions/departments/id/<institution id>/save` endpoint.  A JSON structure indicating whether the
+   insert/update succeeded is returned by the service.
+*  Departments may be deleted using the `/institutions/departments/id/<institution id>/remove`
+   endpoint.  A JSON structure indicating success/failure of the operation is
+   returned.
+   
+### Screens
+Departments for an institution are managed using a single `index.html` template
+which is available under the `root/src/institutions/departments` directory.
+The various CRUX operations are supported as JSON services which are implemented
+in the template.
+
 ## Tests
 Integration tests are being developed for the backend interactions and are
 available under the `tests/service` directory.

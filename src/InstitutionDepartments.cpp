@@ -62,15 +62,12 @@ void InstitutionDepartments::save( Cutelyst::Context* c ) const
   dao::DepartmentDAO dao;
   QJsonObject json;
 
-  if ( !dao::isGlobalAdmin( c ) )
+  if ( ! canEdit( c ) )
   {
-    if ( !( iid.toUInt() == dao::institutionId( c ) ) )
-    {
-      json.insert( "message", "Unauthorized.  User may not manage departments in other institutions." );
-      json.insert( "status", false );
-      dao::sendJson( c, json );
-      return;
-    }
+    json.insert( "message", "Unauthorized.  User may not manage departments in other institutions." );
+    json.insert( "status", false );
+    dao::sendJson( c, json );
+    return;
   }
 
   if ( did.isEmpty() || ! did.toUInt() )
@@ -105,6 +102,14 @@ void InstitutionDepartments::remove( Cutelyst::Context* c ) const
     return;
   }
 
+  if ( ! canEdit( c ) )
+  {
+    obj.insert( "message", "Unauthorized.  User may not manage departments in other institutions." );
+    obj.insert( "status", false );
+    dao::sendJson( c, obj );
+    return;
+  }
+
   auto const result = dao::DepartmentDAO().remove( id.toUInt() );
   obj.insert( "id", id.toInt() );
 
@@ -119,4 +124,11 @@ void InstitutionDepartments::remove( Cutelyst::Context* c ) const
   if ( !err.isNull() ) obj.insert( "message", err.toString() );
 
   dao::sendJson( c, obj );
+}
+
+bool InstitutionDepartments::canEdit( Cutelyst::Context* c ) const
+{
+  if ( dao::isGlobalAdmin( c ) ) return true;
+  const auto iid = c->request()->param( "institution" ).toUInt();
+  return ( iid && iid == dao::institutionId( c ) );
 }
