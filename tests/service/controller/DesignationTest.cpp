@@ -31,7 +31,6 @@ void DesignationTest::create()
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error creating new designation" );
   const auto doc = QJsonDocument::fromJson( reply->readAll() );
   const auto obj = doc.object();
-  qDebug() << obj;
   QVERIFY2( !obj.isEmpty(), "Empty JSON response for create designation" );
   QVERIFY2( obj["id"].toInt(), "Create designation returned invalid id" );
   designationtest::id = obj["id"].toInt();
@@ -177,7 +176,6 @@ void DesignationTest::remove()
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error deleting designation" );
   const auto doc = QJsonDocument::fromJson( reply->readAll() );
   const auto obj = doc.object();
-  qDebug() << obj;
   QVERIFY2( !obj.isEmpty(), "Empty JSON response for delete designation" );
   QVERIFY2( obj["status"].toBool(), "Remove designation returned false status" );
   QVERIFY2( obj["count"].toInt(), "Remove designation returned invalid count" );

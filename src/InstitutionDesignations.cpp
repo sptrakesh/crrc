@@ -4,13 +4,12 @@
 #include "dao/DesignationDAO.h"
 #include "dao/functions.h"
 #include "model/Designation.h"
+#include "model/InstitutionDesignation.h"
 
 #include <QtCore/QDate>
 #include <QtCore/QDebug>
 #include <QtCore/QSet>
-#include <QtCore/QJsonDocument>
-#include <QtCore/QJsonObject>
-#include "model/InstitutionDesignation.h"
+#include <QtCore/QJsonArray>
 
 using crrc::InstitutionDesignations;
 
@@ -33,9 +32,23 @@ void InstitutionDesignations::view( Cutelyst::Context* c ) const
 {
   const auto ptr = model::Institution::from( c->stash( "object" ) );
   const auto id = ptr ? ptr->getId() : 0;
+  const auto& list = dao::InstitutionDesignationDAO().retrieve( c, id );
+
+  if ( "POST" == c->request()->method() )
+  {
+    QJsonArray arr;
+    for ( const auto var : list )
+    {
+      const auto ptr = model::InstitutionDesignation::from( var );
+      arr << toJson( *ptr );
+    }
+    dao::sendJson( c, arr );
+    return;
+  }
+
   c->stash( {
     { "template", "institutions/designations/view.html" },
-    { "members", dao::InstitutionDesignationDAO().retrieve( c, id ) }
+    { "members", list }
   } );
 }
 

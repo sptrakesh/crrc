@@ -30,7 +30,6 @@ void InstitutionTest::create()
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error creating new institution" );
   const auto doc = QJsonDocument::fromJson( reply->readAll() );
   const auto obj = doc.object();
-  qDebug() << obj;
   QVERIFY2( !obj.isEmpty(), "Empty JSON response for create institution" );
   QVERIFY2( obj["id"].toInt(), "Create institution returned invalid id" );
   institutiontest::id = obj["id"].toInt();

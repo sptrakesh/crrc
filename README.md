@@ -124,28 +124,49 @@ management is available through the following end points.
 *  Departments may be deleted using the `/institution/departments/remove`
    endpoint.  A JSON structure indicating success/failure of the operation is
    returned.
-   
-## <a name="designations"></a>Designations
-At present there is no web UI to manage designations.  Designations are metadata
-that are associated with institutions and programs.  Web service endpoints are
-available for managing designations.
-
-*  Index or listing. Listing of all the designations as a JSON array may be
-   retrieved via the `/designations` endpoint.
-*  JSON data representation of a designation may be retrieved using the
-   `/designations/id/<id value>/data` endpoint.
-*  New designations may be created, or existing ones updated using the
-   `/designations/save` endpoint.  A JSON structure indicating whether the
-   insert/update succeeded is returned by the service.
-*  Designations may be deleted using the `/designations/remove`
-   endpoint.  A JSON structure indicating success/failure of the operation is
-   returned.
 
 ### Screens
 Departments for an institution are managed using a single `index.html` template
 which is available under the `root/src/institutions/departments` directory.
 The various CRUD operations are supported as JSON services which are implemented
 in the template.
+
+## <a name="designations"></a>Designations
+At present there is no web UI to manage designations.  Designations are metadata
+that are associated with institutions and programs.  Web service endpoints are
+available for managing designations.
+
+*  Index or listing. Listing of all the designations as a JSON array may be
+   retrieved via the `/designations` endpoint.  May be retrieved using a
+   `GET` request.
+*  JSON data representation of a designation may be retrieved using the
+   `/designations/id/<id value>/data` endpoint.  May be retrieved using a
+   `GET` request.
+*  New designations may be created, or existing ones updated using the
+   `/designations/save` endpoint.  A JSON structure indicating whether the
+   insert/update succeeded is returned by the service.  May be accessed
+   using either `POST` or `PUT`.
+*  Designations may be deleted using the `/designations/remove`
+   endpoint.  A JSON structure indicating success/failure of the operation is
+   returned.  May be accessed using either `POST` or `PUT`.
+
+### Screens
+The following screens and services are available for managing institution to
+designation mappings:
+
+*  List view.  A listing of the designations associated with an institution is
+   rendered by a `view.html` template bound to `/institution/designations/id/<institution id>/view`
+   path.  The list may be retrieved in JSON format by making a `POST` request
+   to the URL instead of `GET`.
+*  Edit. Designations for an institution are managed using a `form.html` template
+   which is available under the `root/src/institutions/designations` directory.
+*  Create/Edit service.  New institution-designation mapping may be added via a `POST`
+   request to the `/institution/designations/id/<institution id>/save` endpoint.
+   The form template also makes use of this endpoint via AJAX request.  The
+   `expiration` property for a mapping may be modified via the same endpoint.
+*  Remove service.  Existing institution-designation mapping may be removed via
+   a `POST` request to `/institution/designations/id/<institution id>/remove`
+   endpoint.
 
 ## Tests
 Integration tests are being developed for the backend interactions and are
