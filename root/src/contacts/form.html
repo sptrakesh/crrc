@@ -114,20 +114,21 @@
     xhr.send();
   }
 </script>
-
-<div style="display: flex; margin: auto; width: 90%; padding: 10px;">
-  <form id="edit" method="post" action="/contacts/edit" onsubmit="return false;">
+<div class="addUserContainer">
+<!--div style="display: flex; margin: auto; width: 90%; padding: 10px;"-->
+<div class="addUserForm">  
+<form id="edit" method="post" action="/contacts/edit" onsubmit="return false;" align="right">
     {% if object %}
     <h2>Edit Contact</h2>
     {% else %}
     <h2>Create Contact</h2>
     {% endif %}
     <label class="label">Name:</label>
-    <input name="name" id="name" type="text" size="30" width="100" required="required"
+    <input name="name" id="name" type="text" placeholder="Name"  class="addUserInput" size="30" width="100" required="required"
            {% if object %}value="{{ object.name }}" {% endif %} />
     <br />
     <label class="label">Email (Work):</label>
-    <input name="workEmail" id="workEmail" type="email" size="30" width="100"
+    <input name="workEmail" id="workEmail" type="email" placeholder="email address" class="addUserInput" size="30" width="100"
            {% if object %}value="{{ object.workEmail }}" {% endif %} />
     <br />
     <label class="label">Email (Home):</label>
@@ -139,11 +140,11 @@
            {% if object %}value="{{ object.otherEmail }}" {% endif %} />
     <br />
     <label class="label">Telephone (Work):</label>
-    <input name="workPhone" id="workPhone" type="tel" size="30" width="100"
+    <input name="workPhone" id="workPhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
            {% if object %}value="{{ object.workPhone }}" {% endif %} />
     <br />
     <label class="label">Telephone (Mobile):</label>
-    <input name="mobilePhone" id="mobilePhone" type="tel" size="30" width="100"
+    <input name="mobilePhone" id="mobilePhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
            {% if object %}value="{{ object.mobilePhone }}" {% endif %} />
     <br />
     <label class="label">Telephone (Other):</label>
@@ -191,4 +192,5 @@
     {% endif %}
     <button onclick="validate()">Save</button>
   </form>
+</div>
 </div>
