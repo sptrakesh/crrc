@@ -116,28 +116,33 @@
 </script>
 <div class="addUserContainer">
 <!--div style="display: flex; margin: auto; width: 90%; padding: 10px;"-->
-<div class="addUserForm">  
+
 <form id="edit" method="post" action="/contacts/edit" onsubmit="return false;" align="right">
     {% if object %}
     <h2>Edit Contact</h2>
     {% else %}
     <h2>Create Contact</h2>
     {% endif %}
+    <div class="addUserForm">  
     <label class="label">Name:</label>
     <input name="name" id="name" type="text" placeholder="Name"  class="addUserInput" size="30" width="100" required="required"
            {% if object %}value="{{ object.name }}" {% endif %} />
+    <br />
+    <label class="label">Last Name:</label>
+    <input type="text" placeholder="Last Name to be added to Database"  class="addUserInput" size="30" width="100" required="required"
+           >
     <br />
     <label class="label">Email (Work):</label>
     <input name="workEmail" id="workEmail" type="email" placeholder="email address" class="addUserInput" size="30" width="100"
            {% if object %}value="{{ object.workEmail }}" {% endif %} />
     <br />
-    <label class="label">Email (Home):</label>
+    <label class="label" style="display: none;">Email (Home):</label>
     <input name="homeEmail" id="otherEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.homeEmail }}" {% endif %} />
+           {% if object %}value="{{ object.homeEmail }}" {% endif %} / style="display: none;">
     <br />
-    <label class="label">Email (Other):</label>
+    <label class="label" style="display: none;">Email (Other):</label>
     <input name="otherEmail" id="otherEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.otherEmail }}" {% endif %} />
+           {% if object %}value="{{ object.otherEmail }}" {% endif %} / style="display: none;">
     <br />
     <label class="label">Telephone (Work):</label>
     <input name="workPhone" id="workPhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
@@ -147,12 +152,16 @@
     <input name="mobilePhone" id="mobilePhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
            {% if object %}value="{{ object.mobilePhone }}" {% endif %} />
     <br />
-    <label class="label">Telephone (Other):</label>
+    <label class="label" style="display: none;">Telephone (Other):</label>
     <input name="otherPhone" id="otherPhone" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.otherPhone }}" {% endif %} />
-    <br />
+           {% if object %}value="{{ object.otherPhone }}" {% endif %} / style="display: none;">
+    <lable class="label">Link:</lable>
+    <input type="text" class="addUserInput" placeholder="URL">
+    </div>
+    
+    <div class="institute_addUser">
     <label class="label">Institution:</label>
-    <select name="institution" id="institution">
+    <select name="institution" id="institution" class="commonCmbBox3CSS">
       <option value="-1">Select Institution</option>
       {% for institution in institutions %}
       <option value="{{ institution.id }}"
@@ -163,21 +172,21 @@
     </select>
     <q id="institutionWarning" class="warning" style="display: none;">Contact must be associated with an institution.</q>
     <br />
-    <p><strong>Login Information</strong></p>
+    <p align="center"><strong>Login Information</strong></p>
     <label class="label">Username:</label>
-    <input name="username" id="username" type="text" size="30" width="100"
+    <input name="username" id="username" class="addUserInput" placeholder="Enter Username" type="text" size="30" width="100"
            {% if object.user.username %}value="{{ object.user.username }}" readonly="readonly" {% endif %}
            onchange="enableRole()" />
     <q id="userNameWarning" class="warning" style="display: none;">Username not available.  Please try another username.</q>
     <br />
     {% if object.user %}{% else %}
     <label class="label">Password:</label>
-    <input name="password" id="password" type="password" size="30" width="100" />
+    <input name="password" id="password" type="password" class="addUserInput" placeholder="Enter User Password" size="30" width="100" />
     <q id="passwordWarning" class="warning" style="display: none;">Password should contain minimum 8 characters, combination of upper and lower case letters, numbers and special characters.</q>
     {% endif %}
     <br />
     <label class="label">Role:</label>
-    <select name="role" id="role" {% if object.user %}{% else %}disabled{% endif %}>
+    <select name="role" id="role" class="commonCmbBox4CSS" {% if object.user %}{% else %}disabled{% endif %}>
       <option value="-1">Select Role</option>
       {% for role in roles %}
       <option value="{{ role.id }}"
@@ -190,7 +199,10 @@
     <input type="hidden" name="_role" value="{{ object.user.role.id }}" />
     <input type="hidden" name="id" value="{{ object.id }}" />
     {% endif %}
-    <button onclick="validate()">Save</button>
+        <br>
+    <button onclick="validate()" style="font-size: 20px;
+	border: 1px solid black;
+	border-radius: 5px;">Save</button>
   </form>
 </div>
 </div>

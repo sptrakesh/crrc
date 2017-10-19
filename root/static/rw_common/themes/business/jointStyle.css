@@ -44,6 +44,9 @@ footer
     background-color: white;
 }
 
+body{
+    background-color: white;
+}
 .TitleHeader{
 	/*background-color: #bfefff;*/
 	color: #2b1459;
@@ -968,24 +971,28 @@ div[class="GeneralEducationSubDiv"]{
 	height: 43px;
 }
 .addUserContainer select[class="commonCmbBox3CSS"]{
-    margin: 0px 0px 0px 35px;
-	padding: 0px;
     text-align: center;
-    width: 300px;
+    width: 200px;
     border-radius: 5px;
     font-size: 18pt;
     border-width: 1px; 
 }
 
-.addUserContainer input[class="addUserButton"]{
+.addUserContainer select[class="commonCmbBox4CSS"]{
+    margin: 0px 0px 0px 35px;
+	padding: 0px;
+    text-align: center;
+    width: 200px;
+    border-radius: 5px;
+    font-size: 18pt;
+    border-width: 1px; 
+}
+/*.addUserContainer button[class="addUserButton"]{
 	font-size: 20px;
-   /* margin: 0px 10px 0px 20px;*/
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
+	border-style: 1px solid black;
 	border-radius: 5px;
 }
-
+*/
 .addUserContainer input[class="btnCancel"]{
 	font-size: 20px;
    /* margin: 0px 10px 0px 20px;*/
