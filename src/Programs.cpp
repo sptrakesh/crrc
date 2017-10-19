@@ -92,53 +92,31 @@ void Programs::data( Cutelyst::Context* c ) const
 
 void Programs::edit( Cutelyst::Context* c ) const
 {
+  if ( "PUT" == c->request()->method() )
+  {
+    editAndRespond( c );
+    return;
+  }
+
   auto id = c->request()->param( "id", "" );
   const auto title = c->request()->param( "title", "" );
 
-  QJsonObject json;
-
   if ( title.isEmpty() )
   {
-    if ( "PUT" == c->request()->method() )
-    {
-      json.insert( "status", false );
-      json.insert( "message", "Program title required!" );
-      dao::sendJson( c, json );
-      return;
-    }
-
     c->stash()["error_msg"] = "Program title required!";
     return;
   }
 
   if ( !checkInstitution( c ) )
   {
-    if ( "PUT" == c->request()->method() )
-    {
-      json.insert( "status", false );
-      json.insert( "message", "Not authorized to edit this institution" );
-      dao::sendJson( c, json );
-      return;
-    }
-
+    c->stash()["error_msg"] = "Not authorized to edit this institution!";
     return;
   }
 
   dao::ProgramDAO dao;
-  auto pid = id.toUInt();
-  auto count = 0;
 
-  if ( id.isEmpty() ) pid = dao.insert( c );
-  else count = dao.update( c );
-
-  if ( "PUT" == c->request()->method() )
-  {
-    json.insert( "id", static_cast<int>( pid ) );
-    json.insert( "count", count );
-    json.insert( "status", id > 0 && count > 0 );
-    return;
-  }
-
+  if ( id.isEmpty() ) dao.insert( c );
+  else dao.update( c );
   c->response()->redirect( "/programs" );
 }
 
@@ -210,4 +188,44 @@ QJsonArray Programs::toArray( const QVariantList& list ) const
   auto arr = QJsonArray{};
   for ( const auto& item : list ) arr << toJson( *model::Program::from( item ) );
   return arr;
+}
+
+void Programs::editAndRespond( Cutelyst::Context* c ) const
+{
+  auto id = c->request()->param( "id", "" );
+  const auto title = c->request()->param( "title", "" );
+
+  QJsonObject json;
+
+  if ( title.isEmpty() )
+  {
+    json.insert( "status", false );
+    json.insert( "message", "Program title required!" );
+    dao::sendJson( c, json );
+    return;
+  }
+
+  if ( !checkInstitution( c ) )
+  {
+    json.insert( "status", false );
+    json.insert( "message", "Not authorized to edit this institution" );
+    dao::sendJson( c, json );
+    return;
+  }
+
+  dao::ProgramDAO dao;
+  auto pid = id.toUInt();
+  uint32_t count;
+
+  if ( id.isEmpty() )
+  {
+    pid = dao.insert( c );
+    count = 1;
+  }
+  else count = dao.update( c );
+
+  json.insert( "id", static_cast<int>( pid ) );
+  json.insert( "count", static_cast<int>( count ) );
+  json.insert( "status", pid && count );
+  dao::sendJson( c, json );
 }
