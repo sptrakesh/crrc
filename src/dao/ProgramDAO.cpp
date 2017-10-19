@@ -42,8 +42,7 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select p.program_id, p.title, p.credits, p.institution_id, p.degree_id, p.type, p.designation_id, p.curriculum_code, p.url, i.name from programs p left join institutions i on (i.institution_id = p.institution_id) order by i.name, p.title",
-        DATABASE_NAME );
+        "select * from programs order by title", DATABASE_NAME );
 
       if ( query.exec() )
       {

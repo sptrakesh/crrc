@@ -8,6 +8,7 @@ Application for managing articulation agreements between educational institution
   * [Contacts](#contacts)
   * [Departments](#departments)
   * [Designations](#designations)
+  * [Programs](#programs)
 
 
 ## <a name="techStack"></a>Technology Stack
@@ -167,6 +168,29 @@ designation mappings:
 *  Remove service.  Existing institution-designation mapping may be removed via
    a `POST` request to `/institution/designations/id/<institution id>/remove`
    endpoint.
+
+## <a name="programs"></a>Programs
+Programs associated with an institution are managed via the web UI or using 
+simple web services similar to the other entities.
+
+### Screens
+
+*  Index or listing.  Listing of all the programs in the database, or associated
+   with an institution is displayed using the `/index.html` template bound
+   to `/programs` endpoint.  The same data may be retrieved as a JSON array
+   by making a `POST` request instead of a `GET` request.
+*  JSON data representation of a program may be retrieved using the
+   `/programs/id/<id value>/data` endpoint.  The JSON representation may be
+    retrieved using a `GET` request.
+*  New programs may be created, or existing ones updated by submitting a form
+   to the `/programs/edit` endpoint.  `POST` requests will redirect the user
+   to the program listing page.  `PUT` request will result in a JSON  data
+   structure that indicates the success or failure of the operation.
+*  Programs may be deleted using the `/programs/remove`
+   endpoint.  The Web UI makes a `POST` request to this end point which results
+   in the user being redirected to the listing page.  A `PUT` request may be
+   made, in which case a JSON structure indicating the success/failure of the
+   operation will be returned.
 
 ## Tests
 Integration tests are being developed for the backend interactions and are

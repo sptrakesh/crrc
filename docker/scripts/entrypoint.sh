@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PID_FILE=/opt/crrc/build/crrc.pid
+PID_FILE=/opt/crrc/var/crrc.pid
 cd /opt/crrc
 
 checkRunning()
@@ -51,7 +51,12 @@ crrc()
 
 loop()
 {
-  tail -f crrc.log
+  while [ ! -f var/crrc.log ]
+  do
+    sleep 5
+  done
+
+  tail -f var/crrc.log
 }
 
 stop()

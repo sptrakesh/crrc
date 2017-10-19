@@ -34,9 +34,15 @@ Program::Ptr Program::create( Cutelyst::Context* context )
   ptr->type = context->request()->param( "type" );
   ptr->curriculumCode = context->request()->param( "curriculumCode" );
   ptr->url = context->request()->param( "url" );
-  ptr->institutionId = context->request()->param( "institution" ).toUInt();
-  ptr->degreeId = context->request()->param( "degree" ).toUInt();
-  ptr->designationId = context->request()->param( "designation" ).toUInt();
+
+  const auto& institution = context->request()->param( "institution" );
+  ptr->institutionId = institution.isEmpty() ? 0 : institution.toUInt();
+
+  const auto& degree = context->request()->param( "degree" );
+  ptr->degreeId = degree.isEmpty() ? 0 : degree.toUInt();
+
+  const auto& designation = context->request()->param( "designation" );
+  ptr->designationId = designation.isEmpty() ? 0 : designation.toUInt();
 
   return ptr;
 }
