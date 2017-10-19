@@ -14,71 +14,197 @@
   }
 </script>
 
-<div style="display: flex; margin: auto; width: 90%; padding: 10px;">
+<!--div style="display: flex; margin: auto; width: 90%; padding: 10px;"-->
+ <div class="addProgramContainer">
   <form id="edit" method="post" action="/programs/edit" onsubmit="return saveProgram( this );">
     {% if object %}
     <h2>Edit Program</h2>
     {% else %}
     <h2>Create Program</h2>
     {% endif %}
-
-    <label class="label">Title:</label>
-    <input name="title" id="title" type="text" size="35" width="50" required="required"
-           {% if object %}value="{{ object.title }}"{% endif %} />
-    <br/>
-    <label class="label">Credits:</label>
-    <input name="credits" id="credits" type="text" size="35" width="250"
-           {% if object %}value="{{ object.credits }}"{% endif %} />
-    <br/>
-    <label class="label">Institution:</label>
-    <select name="institution" id="institution">
-      <option value="0">Select Institution</option>
-      {% for institution in institutions %}
-      <option value="{{ institution.id }}"
-              {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
-        {{ institution.name}} {% if institution.city %}({{ institution.city}}){% endif %}
-      </option>
-      {% endfor %}
-    </select>
-    <br/>
-    <label class="label">Degree:</label>
-    <select name="degree" id="degree">
-      <option value="0">Select Degree</option>
-      {% for degree in degrees %}
-      <option value="{{ degree.id }}"
-              {% if degree.id == object.degree.id %}selected="selected"{% endif %}>
-        {{ degree.title}}
-      </option>
-      {% endfor %}
-    </select>
-    <br/>
-    <label class="label">Type:</label>
-    <input name="type" id="type" type="text" size="35" width="250"
-           {% if object %}value="{{ object.type }}"{% endif %} />
-    <br/>
-    <label class="label">Designation:</label>
-    <select name="designation" id="designation">
-      <option value="0">Select Designation</option>
-      {% for designation in designations %}
-      <option value="{{ designation.id }}"
-              {% if designation.id == object.designation.id %}selected="selected"{% endif %}>
-        {{ designation.title}}
-      </option>
-      {% endfor %}
-    </select>
-    <br/>
-    <label class="label">Curriculum Code:</label>
-    <input name="curriculumCode" id="curriculumCode" type="text" size="35" width="250"
+<div class="programInfoInAddProgram">
+     <table align="center">
+                  <tr>
+                     <h4 class="programInformationHeader">Program Information</h4>
+                     <br>
+                  </tr>
+                  <tr>
+                     <td>Program ID:</td>
+                     <td>
+                        <input type="text" name="name" placeholder="Program ID" class="commonTxtBoxCSS">
+                     </td>
+                      <td>Institution:</td>
+                        <td><select name="institution" id="institution" class="commonCmbBox3CSS">
+                              <option value="0">Select Institution</option>
+                              {% for institution in institutions %}
+                              <option value="{{ institution.id }}"
+                                      {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
+                                {{ institution.name}} {% if institution.city %}({{ institution.city}}){% endif %}
+                              </option>
+                              {% endfor %}
+                            </select>
+                        </td>
+                  </tr>
+                  <tr>
+                     <td>Program Title:</td>
+                     <td>
+                        <input name="title" id="title" placeholder="Program Title"   class="commonTxtBoxCSS" type="text" size="35" width="50" required="required"
+           {% if object %}value="{{ object.title }}"{% endif %} /> 
+                     </td>
+                      <td> CAE Designation:</td>
+                     <td>
+                          <select name="designation" id="designation" class="commonCmbBox3CSS">
+                              <option value="0" style=" font-size: 16px;">Select Designation</option>
+                              {% for designation in designations %}
+                              <option value="{{ designation.id }}" style="font-size: 16px;"
+                                      {% if designation.id == object.designation.id %}selected="selected"{% endif %}>
+                                {{ designation.title}}
+                              </option>
+                              {% endfor %}
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>Curriculam Code:</td>
+                     <td>
+                        <input name="curriculumCode" id="curriculumCode" type="text" size="35" width="250" class="commonTxtBoxCSS" placeholder="Enter Program Code"
            {% if object %}value="{{ object.curriculumCode }}"{% endif %} />
-    <br/>
-    <label class="label">URL:</label>
-    <input name="url" id="url" type="text" size="35" width="250"
-           {% if object %}value="{{ object.url }}"{% endif %} />
-    <br/>
+                     </td>
+                        <td>Degree:</td>
+                        <td> <select name="degree" id="degree" class="commonCmbBox3CSS">
+                              <option value="0">Select Degree</option>
+                              {% for degree in degrees %}
+                              <option value="{{ degree.id }}"
+                                      {% if degree.id == object.degree.id %}selected="selected"{% endif %}>
+                                {{ degree.title}}
+                              </option>
+                              {% endfor %}
+                            </select>
+                        </td>
+                  </tr>
+                    <tr>
+                        <td>Total Credit Hours:</td>
+                     <td>
+                        <input name="credits" id="credits" class="commonTxtBoxCSS" type="text" size="35" width="250" placeholder="Total Credit Hours"
+           {% if object %}value="{{ object.credits }}"{% endif %} />
+                     </td>
+                         <td>Program Type:</td>
+                     <td>
+                        <input name="type" id="type" type="text" size="35" width="250"
+           class="commonTxtBoxCSS"  placeholder="Type of Degree"  {% if object %}value="{{ object.type }}"{% endif %} / >
+                     </td>
+                    </tr>
+                  <tr align="center">
+                     <td colspan="6">
+                        Program URL:
+                     </td>
+                  </tr>
+                  <tr>
+                     <td colspan="5">
+                           <input name="url" id="url" type="text"  class="commonTxtBox3CSS" size="35" width="250" placeholder="URL link to the Program"
+                        {% if object %}value="{{ object.url }}"{% endif %} />
+                     </td>
+                  </tr>
+               </table>
+      </div>
+      
+      <div id="CareerCoursesDiv">
+               <h4 class="careerCourseHeader">Career Courses:</h4>
+               <select class="selectProgramDropDown1" multiple>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+               </select>
+               <textarea class="textarea1InAddProgram" placeholder="Course details"></textarea>
+               <form id="frmAddCourseAddProgram">
+                  <input type="button" value="Add Course"  id="btnAddCourseInAddProgram"class="commonBtnInCareerCourses">
+               </form>
+               <form  id="frmRemoveCourseAddProgram" >
+                  <input type="button" value="Remove Course" id="btnRemoveCourseInAddProgram"  class="commonBtnInCareerCourses">
+               </form>
+               <br>
+               <script>
+                  $(document).ready(function(){
+                         $("#btnAddCourseInAddProgram").click(function(){
+                             //Enable the Option A fields
+                             $("#CareerCourseSubDiv").show();
+                         });
+                  });
+                  
+               </script>
+               <div id="CareerCourseSubDiv" style="display: none">
+                  <select class="commonCmbBox3CSS">
+                     <option>Department:</option>
+                     <option></option>
+                     <option></option>
+                  </select>
+                  <select class="commonCmbBox3CSS">
+                     <option>Courses:</option>
+                     <option></option>
+                     <option></option>
+                  </select>
+                  <br>
+                  <form  id="frmAddCourseSelectProgram" >
+                     <input type="submit" value="Add Course"   class="commonBtnInCareerCourses">
+                  </form>
+                  <form id="frmRemoveCourseSelectProgram" >
+                     <input type="submit" value="Cancel"  class="commonBtnInCareerCourses">
+                  </form>
+               </div>
+            </div>
+            <div id="generalEduInSelectProgram">
+               <h4 class="genEdReqHeader">General Education Requirements:</h4>
+               <select class="selectProgramDropDown1" multiple>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+                  <option></option>
+               </select>
+               <textarea class="textarea1InAddProgram" placeholder="Course Details"></textarea>
+               <form action="" id="frmAddCourseInSelectProgram" >
+                  <input type="button" value="Add Course" id="addCourseInGenEdReq" class="commonBtnInCareerCourses">
+               </form>
+               <form action="" id="frmRemoveCourseInSelectProgram" >
+                  <input type="submit" value="Remove Course"  class="commonBtnInCareerCourses">
+               </form>
+               <script>
+                  $(document).ready(function(){
+                         $("#addCourseInGenEdReq").click(function(){
+                             //Enable the Option A fields
+                             $("#GeneralEducationSubDiv").show();
+                         });
+                  });
+                  
+               </script>
+               <div id="GeneralEducationSubDiv" style="display: none;">
+                  <select class="commonCmbBox3CSS" >
+                     <option>Department:</option>
+                     <option></option>
+                     <option></option>
+                  </select>
+                  <select class="commonCmbBox3CSS">
+                     <option>Courses:</option>
+                     <option></option>
+                     <option></option>
+                  </select>
+                  <br>
+                  <form id="frmAddCourseSelectProgram" >
+                     <input type="submit" value="Add Course" class="commonBtnInCareerCourses">
+                  </form>
+                  <form id="frmRemoveCourseSelectProgram" >
+                     <input type="submit" value="Cancel"  class="commonBtnInCareerCourses">
+                  </form>
+               </div>
+               <!--End of div general Education Sub Div -->
+               <!--End of div general Education Requirements-->
+            </div>
+            
+      <div style="clear:both;"></div>
     {% if object %}
     <input type="hidden" name="id" value="{{ object.id }}" />
     {% endif %}
-    <input type="submit" value="Save" />
+    <h4 align="center"><input type="submit" value="Save"  class="commonBtn2InViewPrograms"/ ></h4>
     <br/>
     <q id="warning" class="warning" style="display: none;"></q>
   </form>
