@@ -161,7 +161,7 @@
     
     <div class="institute_addUser">
     <label class="label">Institution:</label>
-    <select name="institution" id="institution" class="commonCmbBox3CSS">
+    <select name="institution" id="institution" class="commonCmbBox3CSS" style="margin: 10px 0px 10px 0px;">
       <option value="-1">Select Institution</option>
       {% for institution in institutions %}
       <option value="{{ institution.id }}"
@@ -169,7 +169,9 @@
         {{ institution.name }}
       </option>
       {% endfor %}
-    </select>
+    </select><br>
+        <label class="label">Position:</label>
+        <input type="text" placeholder="Postion of user in Institution" class="addUserInput">
     <q id="institutionWarning" class="warning" style="display: none;">Contact must be associated with an institution.</q>
     <br />
     <p align="center"><strong>Login Information</strong></p>
@@ -203,6 +205,6 @@
     <button onclick="validate()" style="font-size: 20px;
 	border: 1px solid black;
 	border-radius: 5px;">Save</button>
+    </div>
   </form>
-</div>
 </div>
