@@ -64,6 +64,7 @@ stop()
   if [ -f $PID_FILE ]
   then
     pkill -P `cat $PID_FILE`
+    kill `cat $PID_FILE`
     rm -f $PID_FILE
     rm -f var/crrc.log
   fi

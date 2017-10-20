@@ -87,7 +87,7 @@ stop()
   if [ -f $PID_FILE ]
   then
     pkill -P `cat $PID_FILE`
-    kill -9 `cat $PID_FILE`
+    kill `cat $PID_FILE`
     echo "Stopped CRRC application with PID: `cat $PID_FILE`"
     rm -f $PID_FILE
   fi
