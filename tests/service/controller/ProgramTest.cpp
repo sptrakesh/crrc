@@ -80,7 +80,6 @@ void ProgramTest::retrieve()
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error retrieving program" );
   const auto doc = QJsonDocument::fromJson( reply->readAll() );
   const auto obj = doc.object();
-  qDebug() << obj;
   QVERIFY2( !obj.isEmpty(), "Empty JSON response for program id" );
   QCOMPARE( static_cast<int>( programtest::id ), obj["id"].toInt() );
   QCOMPARE( static_cast<int>( programtest::institutionId ), obj["institution"].toObject()["id"].toInt() );
@@ -207,7 +206,6 @@ void ProgramTest::remove()
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error deleting program" );
   const auto doc = QJsonDocument::fromJson( reply->readAll() );
   const auto obj = doc.object();
-  qDebug() << obj;
   QVERIFY2( !obj.isEmpty(), "Empty JSON response for delete program" );
   QVERIFY2( obj["status"].toBool(), "Remove program returned false status" );
   QVERIFY2( obj["count"].toInt(), "Remove program returned invalid count" );
