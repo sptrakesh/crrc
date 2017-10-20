@@ -30,7 +30,10 @@ Program::Ptr Program::create( Cutelyst::Context* context )
   if ( !id.isEmpty() ) ptr->id = id.toUInt();
 
   ptr->title = context->request()->param( "title" );
-  ptr->credits = context->request()->param( "credits" );
+  
+  const auto& credits = context->request()->param( "credits" );
+  ptr->credits = credits.isEmpty() ? "Unspecified" : credits;
+
   ptr->type = context->request()->param( "type" );
   ptr->curriculumCode = context->request()->param( "curriculumCode" );
   ptr->url = context->request()->param( "url" );

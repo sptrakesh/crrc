@@ -82,10 +82,10 @@ void ProgramTest::retrieve()
   const auto obj = doc.object();
   qDebug() << obj;
   QVERIFY2( !obj.isEmpty(), "Empty JSON response for program id" );
-  QVERIFY2( programtest::id == obj["id"].toInt(), "Json response returned invalid id" );
-  QVERIFY2( programtest::institutionId == obj["institution"].toObject()["id"].toInt(), "Json response returned invalid institution" );
-  QVERIFY2( title == obj["title"].toString(), "Json response returned invalid title" );
-  QVERIFY2( "Unspecified" == obj["credits"].toString(), "Json response returned invalid credits" );
+  QCOMPARE( static_cast<int>( programtest::id ), obj["id"].toInt() );
+  QCOMPARE( static_cast<int>( programtest::institutionId ), obj["institution"].toObject()["id"].toInt() );
+  QCOMPARE( title, obj["title"].toString() );
+  QCOMPARE( QString{ "Unspecified" }, obj["credits"].toString() );
 
   logout( &mgr, &eventLoop, &req );
 }
