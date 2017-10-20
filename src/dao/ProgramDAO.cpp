@@ -9,12 +9,14 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Program;
 
+Q_LOGGING_CATEGORY( PROGRAM_DAO, "crrc.dao.ProgramDAO" )
 
 namespace crrc
 {
@@ -88,18 +90,7 @@ using crrc::dao::ProgramDAO;
 QVariantList ProgramDAO::retrieveAll() const
 {
   loadPrograms();
-  QVariantList list;
-
-  auto query = CPreparedSqlQueryThreadForDB(
-    "select p.program_id, i.name, p.title from programs p left join institutions i on (i.institution_id = p.institution_id) order by i.name, p.title",
-    DATABASE_NAME );
-
-  if ( query.exec() )
-  {
-    while ( query.next() ) list << retrieve( query.value( 0 ).toUInt() );
-  }
-
-  return list;
+  return fromPrograms();
 }
 
 QVariantList ProgramDAO::retrieveByInstitution( uint32_t institutionId ) const
@@ -137,7 +128,7 @@ uint32_t ProgramDAO::insert( Cutelyst::Context* context ) const
 
   if ( !query.exec() )
   {
-    qWarning() << query.lastError().text();
+    qWarning( PROGRAM_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
@@ -174,7 +165,7 @@ uint32_t ProgramDAO::update( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( PROGRAM_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -206,7 +197,7 @@ QVariantList ProgramDAO::search( Cutelyst::Context* context) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( PROGRAM_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -227,6 +218,6 @@ uint32_t ProgramDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( PROGRAM_DAO ) << query.lastError().text();
   return 0;
 }

@@ -4,9 +4,12 @@
 #include "model/InstitutionAgreement.h"
 
 #include <mutex>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
+
+Q_LOGGING_CATEGORY( INSITUTIONAGREEMENTDAO, "crrc.dao.InstitutionAgreementDAO" )
 
 using crrc::model::InstitutionAgreement;
 
@@ -43,7 +46,7 @@ uint32_t InstitutionAgreementDAO::insert( Cutelyst::Context* context ) const
   if ( !query.exec() )
   {
     context->stash()["error_msg"] = query.lastError().text();
-    qWarning() << query.lastError().text();
+    qWarning( INSITUTIONAGREEMENTDAO ) << query.lastError().text();
     return 0;
   }
 

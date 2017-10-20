@@ -2,10 +2,12 @@
 #include "constants.h"
 #include "model/InstitutionDesignation.h"
 
+#include <QtCore/QLoggingCategory>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::InstitutionDesignation;
+Q_LOGGING_CATEGORY( INSTITUTION_DESIGNATION_DAO, "crrc.dao.InstitutionDesignationDAO" )
 
 namespace crrc
 {
@@ -58,7 +60,7 @@ uint32_t InstitutionDesignationDAO::remove( Cutelyst::Context* context ) const
 
   if ( query.exec() ) return query.numRowsAffected();
 
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
   context->setStash( "error_msg", query.lastError().text() );
   return 0;
 }
@@ -71,7 +73,7 @@ uint32_t InstitutionDesignationDAO::remove( uint32_t institutionId ) const
   query.bindValue( ":iid", institutionId );
   if ( query.exec() ) return query.numRowsAffected();
 
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
   return 0;
 }
 
@@ -84,7 +86,7 @@ uint32_t InstitutionDesignationDAO::update( Cutelyst::Context* context ) const
   if ( query.exec() ) return query.numRowsAffected();
 
   context->setStash( "error_msg", query.lastError().text() );
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
   return 0;
 }
 
@@ -97,6 +99,6 @@ uint32_t InstitutionDesignationDAO::insert( Cutelyst::Context* context ) const
   if ( query.exec() ) return query.numRowsAffected();
 
   context->setStash( "error_msg", query.lastError().text() );
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
   return 0;
 }

@@ -3,10 +3,12 @@
 #include "constants.h"
 
 #include <mutex>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
+Q_LOGGING_CATEGORY( COURSE_DAO, "crrc.dao.CourseDAO" )
 
 namespace crrc
 {
@@ -207,7 +209,7 @@ QVariantList CourseDAO::search( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( COURSE_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 

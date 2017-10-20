@@ -7,11 +7,14 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtSql/QtSql>
 #include <Cutelyst/Upload>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Agreement;
+
+Q_LOGGING_CATEGORY( AGREEMENT_DAO, "crrc.model.AgreementDAO" )
 
 namespace crrc
 {
@@ -61,7 +64,7 @@ namespace crrc
 
       auto bytes = upload->readAll();
       const QFileInfo file{ upload->filename() };
-      qDebug() << "File: " << upload;
+      qDebug( AGREEMENT_DAO ) << "File: " << upload;
       query.bindValue( ":filename", file.fileName() );
       query.bindValue( ":mimetype", upload->contentType() );
       query.bindValue( ":filesize", upload->size() );
@@ -123,14 +126,14 @@ QByteArray AgreementDAO::contents( Cutelyst::Context* context, const uint32_t id
   }
 
   context->stash()["error_msg"] = query.lastError().text();
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   return QByteArray();
 }
 
 
 uint32_t AgreementDAO::insert( Cutelyst::Context* context ) const
 {
-  qDebug() << "Inserting new agreement document";
+  qDebug( AGREEMENT_DAO ) << "Inserting new agreement document";
   auto query = CPreparedSqlQueryThreadForDB(
     "insert into agreements (filename, mimetype, filesize, document, checksum, updated) values (:filename, :mimetype, :filesize, :document, :checksum, :updated)",
     crrc::DATABASE_NAME );
@@ -147,7 +150,7 @@ uint32_t AgreementDAO::insert( Cutelyst::Context* context ) const
   }
 
   context->stash()["error_msg"] = query.lastError().text();
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   return 0;
 }
 
@@ -177,7 +180,7 @@ uint32_t AgreementDAO::update( Cutelyst::Context* context ) const
     return query.numRowsAffected();
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   context->stash()["error_msg"] = query.lastError().text();
   return 0;
 }
@@ -200,7 +203,7 @@ QVariantList AgreementDAO::search( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( AGREEMENT_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -220,7 +223,7 @@ uint32_t AgreementDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   return 0;
 }
 
@@ -245,7 +248,7 @@ uint32_t AgreementDAO::saveProgram( Cutelyst::Context* context ) const
     }
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   context->stash()["error_msg"] = query.lastError().text();
   return 0;
 }

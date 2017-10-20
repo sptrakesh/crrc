@@ -74,7 +74,7 @@ void Institutions::create( Cutelyst::Context* c ) const
 
 void Institutions::edit( Cutelyst::Context* c ) const
 {
-  auto id = c->request()->param( "id", "" );
+  const auto id = c->request()->param( "id", "" );
   const auto name = c->request()->param( "name", "" );
   if ( name.isEmpty() )
   {
@@ -89,19 +89,17 @@ void Institutions::edit( Cutelyst::Context* c ) const
   }
 
   dao::InstitutionDAO dao;
-  qDebug() << "Saving institution with id: " << id;
-  if ( id.isEmpty() )
-  {
-    const auto cid = dao.insert( c );
-    id = QString::number( cid );
-  }
+  uint32_t iid = id.toUInt();
+
+  if ( id.isEmpty() ) iid = dao.insert( c );
   else dao.update( c );
 
-  const auto obj = dao.retrieve( id.toUInt() );
+  const auto obj = dao.retrieve( iid );
 
   if ( "PUT" == c->request()->method() )
   {
-    dao::sendJson( c, toJson( *model::Institution::from( obj ) ) );
+    const auto ptr = model::Institution::from( obj );
+    dao::sendJson( c, ptr ? toJson( *ptr ) : QJsonObject() );
     return;
   }
 
@@ -176,16 +174,15 @@ void Institutions::remove( Cutelyst::Context* c )
   auto id = c->request()->param( "id", "" );
   uint32_t count = 0;
 
-  if ( ! id.isEmpty() )
-  {
-    dao::InstitutionDAO dao;
-    count = dao.remove( id.toUInt() );
-  }
-
   if ( ! canEdit( c ) )
   {
     c->stash()["error_msg"] = "Not authorized";
     return;
+  }
+
+  if ( ! id.isEmpty() )
+  {
+    count = dao::InstitutionDAO().remove( id.toUInt() );
   }
 
   if ( "PUT" == c->request()->method() )

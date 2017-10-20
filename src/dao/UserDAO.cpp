@@ -8,11 +8,13 @@
 #include <unordered_map>
 
 #include <QtCore/QCryptographicHash>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::User;
+Q_LOGGING_CATEGORY( USER_DAO, "crrc.dao.UserDAO" )
 
 namespace crrc
 {
@@ -186,7 +188,7 @@ QVariantList UserDAO::search( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( USER_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -207,7 +209,7 @@ uint32_t UserDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qDebug() << query.lastError().text();
+  qWarning( USER_DAO ) << query.lastError().text();
   return 0;
 }
 
@@ -239,7 +241,7 @@ bool UserDAO::updateRole( uint32_t userId, uint32_t roleId ) const
     std::lock_guard<std::mutex> lock{ userMutex };
     iter->second->setRoleId( roleId );
   }
-  else qWarning() << query.lastError().text();
+  else qWarning( USER_DAO ) << query.lastError().text();
 
   return result;
 }
@@ -265,9 +267,9 @@ bool UserDAO::updatePassword( const QString& username, const QString& password )
   {
     auto iter = users.find( uptr->getId() );
     iter->second->setPassword( passwd );
-    qDebug() << "Updated plain text password for user: " << uptr->getId();
+    qDebug( USER_DAO ) << "Updated plain text password for user: " << uptr->getId();
   }
-  else qWarning() << query.lastError().text();
+  else qWarning( USER_DAO ) << query.lastError().text();
 
   return result;
 }

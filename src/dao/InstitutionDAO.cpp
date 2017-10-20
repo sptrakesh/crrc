@@ -8,11 +8,13 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Institution;
+Q_LOGGING_CATEGORY( INSTITUTION_DAO, "crrc.dao.InstitutionDAO" )
 
 namespace crrc
 {
@@ -151,7 +153,7 @@ QVariantList InstitutionDAO::search( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( INSTITUTION_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -182,7 +184,7 @@ uint32_t InstitutionDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DAO ) << query.lastError().text();
   return 0;
 }
 

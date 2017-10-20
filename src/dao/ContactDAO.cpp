@@ -9,11 +9,14 @@
 #include <unordered_map>
 
 #include <QtCore/QDebug>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Contact;
+
+Q_LOGGING_CATEGORY( CONTACT_DAO, "crrc.model.ContactDAO" )
 
 namespace crrc
 {
@@ -209,7 +212,7 @@ QVariantList ContactDAO::search( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( CONTACT_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -232,7 +235,7 @@ uint32_t ContactDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qDebug() << query.lastError().text();
+  qWarning( CONTACT_DAO ) << query.lastError().text();
   return 0;
 }
 
@@ -253,5 +256,5 @@ void ContactDAO::removeInstitution( uint32_t id ) const
       }
     }
   }
-  else qDebug() << query.lastError().text();
+  else qWarning( CONTACT_DAO ) << query.lastError().text();
 }

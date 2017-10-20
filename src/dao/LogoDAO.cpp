@@ -5,12 +5,14 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtSql/QtSql>
 #include <Cutelyst/Upload>
 #include <Cutelyst/Plugins/Utils/sql.h>
 #include "functions.h"
 
 using crrc::model::Logo;
+Q_LOGGING_CATEGORY( LOGO_DAO, "crrc.dao.LogoDAO" )
 
 namespace crrc
 {
@@ -102,7 +104,7 @@ QByteArray LogoDAO::contents( Cutelyst::Context* context, const uint32_t id ) co
     return query.value( 0 ).toByteArray();
   }
 
-  qDebug() << query.lastError().text();
+  qWarning( LOGO_DAO ) << query.lastError().text();
   context->stash()["error_msg"] = query.lastError().text();
 
   return QByteArray();
@@ -155,7 +157,7 @@ uint32_t LogoDAO::update( Cutelyst::Context* context ) const
   else
   {
     context->stash()["error_msg"] = query.lastError().text();
-    qDebug() << query.lastError().text();
+    qWarning( LOGO_DAO ) << query.lastError().text();
   }
 
   return 0;
@@ -174,6 +176,6 @@ uint32_t LogoDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qDebug() << query.lastError().text();
+  qWarning( LOGO_DAO ) << query.lastError().text();
   return 0;
 }

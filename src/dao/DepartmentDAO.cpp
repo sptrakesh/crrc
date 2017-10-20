@@ -6,11 +6,14 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Department;
+
+Q_LOGGING_CATEGORY( DEPARTMENT_DAO, "crrc.dao.DepartmentDAO" )
 
 namespace crrc
 {
@@ -133,7 +136,7 @@ uint32_t DepartmentDAO::update( Cutelyst::Context* context ) const
   else
   {
     context->stash()["error_msg"] = query.lastError().text();
-    qDebug() << query.lastError().text();
+    qWarning( DEPARTMENT_DAO ) << query.lastError().text();
   }
 
   return query.numRowsAffected();
@@ -153,6 +156,6 @@ uint32_t DepartmentDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qDebug() << query.lastError().text();
+  qWarning( DEPARTMENT_DAO ) << query.lastError().text();
   return 0;
 }

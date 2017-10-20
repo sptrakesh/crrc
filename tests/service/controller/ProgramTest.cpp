@@ -80,6 +80,7 @@ void ProgramTest::retrieve()
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error retrieving program" );
   const auto doc = QJsonDocument::fromJson( reply->readAll() );
   const auto obj = doc.object();
+  qDebug() << obj;
   QVERIFY2( !obj.isEmpty(), "Empty JSON response for program id" );
   QVERIFY2( programtest::id == obj["id"].toInt(), "Json response returned invalid id" );
   QVERIFY2( programtest::institutionId == obj["institution"].toObject()["id"].toInt(), "Json response returned invalid institution" );
