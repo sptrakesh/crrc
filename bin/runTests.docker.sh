@@ -7,11 +7,8 @@ cd $DIR
 
 init()
 {
-  if [ ! -d build ]
-  then
-    mkdir -p build/crrc
-    mkdir -p build/test
-  fi
+  mkdir -p build/crrc
+  mkdir -p build/test
 }
 
 compile()
@@ -90,6 +87,7 @@ stop()
   if [ -f $PID_FILE ]
   then
     pkill -P `cat $PID_FILE`
+    kill -9 `cat $PID_FILE`
     echo "Stopped CRRC application with PID: `cat $PID_FILE`"
     rm -f $PID_FILE
   fi
