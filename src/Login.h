@@ -17,5 +17,7 @@ namespace crrc
   private:
     bool plainText( Cutelyst::Context* c );
     bool hashed( Cutelyst::Context* c );
+    bool login( Cutelyst::Context* c );
+    void service( Cutelyst::Context* c );
   };
 }
