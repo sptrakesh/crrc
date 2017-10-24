@@ -16,11 +16,11 @@
  <div class="addProgramContainer">
   <form id="edit" method="post" action="/programs/edit" onsubmit="return saveProgram( this );">
     {% if object %}
-    <h2>Edit Program</h2>
+    <h2 align="center">Edit Program</h2>
     {% else %}
-    <h2>Create Program</h2>
+    <h2 align="center">Create Program</h2>
     {% endif %}
-<div class="programInfoInAddProgram">
+<div class="programInfoInAddProgram" >
  <table align="center">
                   <tr>
                      <h4 class="programInformationHeader">Program Information</h4>
@@ -194,7 +194,8 @@
     {% if object %}
     <input type="hidden" name="id" value="{{ object.id }}" />
     {% endif %}
-    <input type="submit" value="Save"  class="commonBtn2InViewPrograms"/>
+      <p align="center"><input type="submit" value="Save"  class="commonBtn2InViewPrograms"/>
+    </p>
     <br/>
     <q id="warning" class="warning" style="display: none;"></q>
   </form>

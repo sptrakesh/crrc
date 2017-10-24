@@ -389,7 +389,7 @@ font-size: 20pt;
 	border-color: black;
 	border-radius: 4px;
 	box-sizing: border-box;
-	margin: 2px;
+	margin: 10px;
 	width: 200px;
 	height: 43px;
 }
@@ -914,6 +914,9 @@ div[class="GeneralEducationSubDiv"]{
 /*---------------------------------    End of View Program ----------------------------------------------------*/
 
 /*---------------------------------    Start of Add User ----------------------------------------------------*/
+div[class="addUserContainer"]{
+    
+}
 
 .addUserContainer .addUserForm{
 	align-content:  right;
@@ -938,7 +941,7 @@ div[class="GeneralEducationSubDiv"]{
 	border-color: black;
 	border-radius: 4px;
 	box-sizing: border-box;
-	margin: 0px;
+	margin: 5px;
 	width: 200px;
 	height: 43px;
 }
@@ -1024,13 +1027,20 @@ div[class="userNameAndPwd"]{
 /*---------------------------------    Start of Add Program ----------------------------------------------------*/
 
  /* Start of Program Information */
+div[class="addProgramContainer"]{
+  margin-left: auto;
+    margin-right: auto;
+}
+
 .addProgramContainer div[class="programInfoInAddProgram"]{
     align-content:  right;
 	width: 1130px;
     height: 300px;
 	background-color: #858fa0;
+    
 	padding: 10px;
-	float: left;
+	/*float: left;*/
+    margin-left: auto; margin-right: auto;
 	margin: 20px 5px 20px 20px;
 	border-style: solid;
 	border-color: black;
@@ -1121,7 +1131,7 @@ div[class="userNameAndPwd"]{
 	border-style: solid;
 	border-width: 1px;
 	border-color: black;
-	border-radius: 10px;
+	border-radius: 5px;
     width: 120px;
     height: 30px;
     margin: 5px;
@@ -1206,10 +1216,12 @@ div[class="userNameAndPwd"]{
 	border-style: solid;
 	border-width: 1px;
 	border-color: black;
-	border-radius: 10px;
+	border-radius: 5px;
     width: 150px;
     height: 30px;
     margin: 5px;
+    margin-left: auto;
+    margin-right: auto;
 }
 /*---------------------------------    End of Add Program ----------------------------------------------------*/
 
