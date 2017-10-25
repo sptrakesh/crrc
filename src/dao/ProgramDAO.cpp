@@ -55,7 +55,7 @@ namespace crrc
         }
 
         programsLoaded = true;
-      }
+      } else qWarning( PROGRAM_DAO ) << query.lastError().text();
     }
 
     void bindProgram( Cutelyst::Context* c, QSqlQuery& query )

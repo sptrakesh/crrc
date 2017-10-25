@@ -3,6 +3,7 @@
 DIR=`dirname $0`/..
 PID_FILE=$DIR/var/crrc.pid
 CUTELYST_DIR=/usr/local/cutelyst
+export DYLD_FRAMEWORK_PATH=$QTDIR/lib
 cd $DIR
 
 init()
@@ -17,10 +18,10 @@ init()
 compile()
 {
   (cd build/crrc; \
-    cmake -DCMAKE_PREFIX_PATH=/opt/local:$CUTELYST_DIR ../..; \
+    cmake -DCMAKE_PREFIX_PATH=$QTDIR:/opt/local:$CUTELYST_DIR ../..; \
     cmake --build . --target crrc -- -j8)
   (cd build/test; \
-    cmake -DCMAKE_PREFIX_PATH=/opt/local:$CUTELYST_DIR ../..; \
+    cmake -DCMAKE_PREFIX_PATH=$QTDIR:/opt/local:$CUTELYST_DIR ../..; \
     cmake --build . --target crrcTest -- -j8)
 }
 

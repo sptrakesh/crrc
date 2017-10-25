@@ -63,9 +63,7 @@ namespace crrc
       query.bindValue( ":city", c->request()->param( "city" ) );
       query.bindValue( ":state", c->request()->param( "state" ) );
       query.bindValue( ":postalCode", c->request()->param( "postalCode" ) );
-      auto country = c->request()->param( "country", "" );
-      if ( country.isEmpty() ) country = "USA";
-      query.bindValue( ":country", country );
+      query.bindValue( ":country", c->request()->param( "country", "USA" ) );
       query.bindValue( ":website", c->request()->param( "website" ) );
       query.bindValue( ":logo", c->request()->param( "logoId" ) );
     }
@@ -98,6 +96,7 @@ uint32_t InstitutionDAO::insert( Cutelyst::Context* context ) const
 
   if ( !query.exec() )
   {
+    qWarning( INSTITUTION_DAO ) << "Database error: " << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
@@ -127,7 +126,11 @@ void InstitutionDAO::update( Cutelyst::Context* context ) const
     std::lock_guard<std::mutex> lock{ institutionMutex };
     institutions[iid] = std::move( institution );
   }
-  else context->stash()["error_msg"] = query.lastError().text();
+  else
+  {
+    qWarning( INSTITUTION_DAO ) << "Database error: " << query.lastError().text();
+    context->stash()["error_msg"] = query.lastError().text();
+  }
 }
 
 QVariantList InstitutionDAO::search( Cutelyst::Context* context ) const
