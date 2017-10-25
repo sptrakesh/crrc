@@ -74,12 +74,14 @@ QJsonObject crrc::model::toJson( const Program& program, bool compact )
 
   if ( program.getDegreeId() )
   {
-    obj.insert( "degree", toJson( *( Degree::from( program.getDegree() ) ) ) );
+    const auto ptr = Degree::from( program.getDegree() );
+    obj.insert( "degree", ptr ? toJson( *ptr ) : QJsonObject{} );
   }
 
   if ( program.getInstitutionId() )
   {
-    obj.insert( "institution", toJson( *( Institution::from( program.getInstitution() ) ), true ) );
+    const auto ptr = Institution::from( program.getInstitution() );
+    obj.insert( "institution", ptr ? toJson( *ptr, true ) : QJsonObject{} );
   }
 
   if ( compact ) return obj;
@@ -90,7 +92,8 @@ QJsonObject crrc::model::toJson( const Program& program, bool compact )
 
   if ( program.getDesignationId() )
   {
-    obj.insert( "designation", toJson( *( Designation::from( program.getDesignation() ) ) ) );
+    const auto ptr = Designation::from( program.getDesignation() );
+    obj.insert( "designation", ptr ? toJson( *ptr ) : QJsonObject{} );
   }
 
   return obj;

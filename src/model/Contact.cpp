@@ -84,12 +84,13 @@ QJsonObject crrc::model::toJson( const Contact& contact )
   if ( contact.getUserId() )
   {
     const auto ptr = User::from( contact.getUser() );
-    obj.insert( "user", toJson( *ptr ) );
+    obj.insert( "user", ptr ? toJson( *ptr ) : QJsonObject{} );
   }
 
   if ( contact.getInstitutionId() )
   {
-    obj.insert( "institution", toJson( *( Institution::from( contact.getInstitution() ) ), true ) );
+    const auto ptr = Institution::from( contact.getInstitution() );
+    obj.insert( "institution", ptr ? toJson( *ptr, true ) : QJsonObject{} );
   }
 
   return obj;

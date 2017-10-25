@@ -41,7 +41,8 @@ QJsonObject crrc::model::toJson( const Department& department )
 
   if ( department.getInstitutionId() )
   {
-    obj.insert( "institution", toJson( *( Institution::from( department.getInstitution() ) ), true ) );
+    const auto ptr = Institution::from( department.getInstitution() );
+    obj.insert( "institution", ptr ? toJson( *ptr, true ) : QJsonObject{} );
   }
 
   return obj;

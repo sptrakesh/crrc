@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include <Cutelyst/Application>
 
 namespace crrc
@@ -15,5 +16,8 @@ namespace crrc
 
     bool init() override;
     bool postFork() override;
+
+  private:
+    std::mutex mutex;
   };
 }

@@ -134,7 +134,7 @@ void Institutions::data( Cutelyst::Context* c ) const
     QJsonObject obj;
     const auto idptr = model::InstitutionDesignation::from( id );
     const auto dptr = model::Designation::from( idptr->getDesignation() );
-    obj.insert( "designation", toJson( *dptr ) );
+    obj.insert( "designation", dptr ? toJson( *dptr ) : QJsonObject{} );
     obj.insert( "expiration", static_cast<int>( idptr->getExpiration() ) );
     arr << obj;
   }
