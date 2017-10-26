@@ -75,7 +75,12 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select course_id, identifier, name, credits, description, knowledge_unit, department_id from courses order by department_id, name",
+        R"(
+select course_id, identifier, name, credits, description, knowledge_unit,
+ department_id 
+from courses
+order by department_id, name
+)",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -147,7 +152,12 @@ uint32_t CourseDAO::insert( Cutelyst::Context* context ) const
 {
   loadCourses();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into courses (identifier, name, credits, description, knowledge_unit, department_id) values (:ident, :name, :credits, :desc, :ku, :dept)",
+    R"(
+insert into courses
+(identifier, name, credits, description, knowledge_unit, department_id)
+values
+(:ident, :name, :credits, :desc, :ku, :dept)
+)",
     crrc::DATABASE_NAME );
   bindCourse( context, query );
 
@@ -170,7 +180,11 @@ void CourseDAO::update( Cutelyst::Context* context ) const
   loadCourses();
   auto id = context->request()->param( "course_id" );
   auto query = CPreparedSqlQueryThreadForDB(
-    "update courses set identifier=:ident, name=:name, credits=:credits, description=:desc, knowledge_unit=:ku, department_id=:dept where course_id=:id",
+    R"(
+update courses set identifier=:ident, name=:name, credits=:credits,
+  description=:desc, knowledge_unit=:ku, department_id=:dept
+where course_id=:id
+)",
     crrc::DATABASE_NAME );
   bindCourse( context, query );
   query.bindValue( ":id", id.toInt() );

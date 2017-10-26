@@ -41,7 +41,11 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select department_id, name, prefix, institution_id from departments order by institution_id, name",
+        R"(
+select department_id, name, prefix, institution_id
+from departments
+order by institution_id, name
+)",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -97,7 +101,12 @@ uint32_t DepartmentDAO::insert( Cutelyst::Context* context ) const
 {
   loadDepartments();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into departments (name, prefix, institution_id) values (:name, :prefix, :inst)",
+    R"(
+insert into departments
+(name, prefix, institution_id)
+values
+(:name, :prefix, :inst)
+)",
     crrc::DATABASE_NAME );
   bindDepartment( context, query );
 
@@ -120,7 +129,10 @@ uint32_t DepartmentDAO::update( Cutelyst::Context* context ) const
   loadDepartments();
   auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
-    "update departments set name=:name, prefix=:prefix, institution_id=:inst where department_id=:id",
+    R"(
+update departments set name=:name, prefix=:prefix, institution_id=:inst
+where department_id=:id
+)",
     crrc::DATABASE_NAME );
   bindDepartment( context, query );
   query.bindValue( ":id", id.toInt() );

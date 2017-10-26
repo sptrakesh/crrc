@@ -65,6 +65,21 @@ QVariant Program::getDesignation() const
   return dao::DesignationDAO().retrieve( designationId );
 }
 
+bool crrc::model::operator<( const Program& lhs, const Program& rhs )
+{
+  const auto func = []( const Program& program ) -> QString
+  {
+    const auto ptr = model::Institution::from( program.getInstitution() );
+    return ptr ?
+      QString{ "%1:%2" }.arg( ptr->getName() ).arg( program.getTitle() ) : 
+      program.getTitle();
+  };
+
+  const auto& title1 = func( lhs );
+  const auto& title2 = func( rhs );
+  return title1 < title2;
+}
+
 QJsonObject crrc::model::toJson( const Program& program, bool compact )
 {
   QJsonObject obj;

@@ -114,7 +114,12 @@ QByteArray LogoDAO::contents( Cutelyst::Context* context, const uint32_t id ) co
 uint32_t LogoDAO::insert( Cutelyst::Context* context ) const
 {
   auto query = CPreparedSqlQueryThreadForDB(
-    "insert into logos (filename, mimetype, filesize, image, checksum, updated) values (:filename, :mimetype, :filesize, :image, :checksum, :updated)",
+    R"(
+insert into logos
+(filename, mimetype, filesize, image, checksum, updated)
+values
+(:filename, :mimetype, :filesize, :image, :checksum, :updated)
+)",
     crrc::DATABASE_NAME );
   auto bytes = bindLogo( context, query );
 
@@ -139,7 +144,11 @@ uint32_t LogoDAO::update( Cutelyst::Context* context ) const
   const auto doc =  context->request()->upload( "image" );
 
   auto query = CPreparedSqlQueryThreadForDB( 
-    "update logos set mimetype=:mimetype, filesize=:filesize, image=:image, checksum=:checksum, updated=:updated where logo_id=:id",
+    R"(
+update logos set mimetype=:mimetype, filesize=:filesize, image=:image,
+  checksum=:checksum, updated=:updated
+where logo_id=:id
+)",
     crrc::DATABASE_NAME );
   auto bytes = bindLogo( context, query );
   query.bindValue( ":id", id );

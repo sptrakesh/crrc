@@ -76,10 +76,7 @@ namespace crrc
       return QVariant::fromValue<QObject*>( const_cast<Program*>( program ) );
     }
 
-    inline bool operator< ( const Program& lhs, const Program& rhs )
-    {
-      return lhs.getTitle() < rhs.getTitle();
-    }
+    bool operator< ( const Program& lhs, const Program& rhs );
 
     QJsonObject toJson( const Program& program, bool compact = false );
   }

@@ -44,7 +44,7 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select contact_id, name, work_email, home_email, other_email, work_phone, mobile_phone, home_phone, other_phone, user_id, institution_id from contacts order by name",
+        "select contact_id, name, work_email, home_email, other_email, work_phone, mobile_phone, home_phone, other_phone, user_id, institution_id, title, url from contacts order by name",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -70,6 +70,8 @@ namespace crrc
       query.bindValue( ":hp", c->request()->param( "homePhone" ) );
       query.bindValue( ":oph", c->request()->param( "otherPhone" ) );
       query.bindValue( ":inst", c->request()->param( "institution" ) );
+      query.bindValue( ":title", c->request()->param( "title" ) );
+      query.bindValue( ":url", c->request()->param( "url" ) );
 
       const auto username = c->request()->param( "username" );
       if ( ! username.isEmpty() )
@@ -137,7 +139,12 @@ uint32_t ContactDAO::insert( Cutelyst::Context* context ) const
 {
   loadContacts();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into contacts (name, work_email, home_email, other_email, work_phone, mobile_phone, home_phone, other_phone, user_id, institution_id) values (:name, :oe, :he, :oem, :op, :mp, :hp, :oph, :uid, :inst)",
+    R"(
+insert into contacts
+(name, work_email, home_email, other_email, work_phone, mobile_phone, home_phone, other_phone, user_id, institution_id, title, url)
+values
+(:name, :oe, :he, :oem, :op, :mp, :hp, :oph, :uid, :inst, :title, :url)
+)",
     crrc::DATABASE_NAME );
   bindContact( context, query );
 
@@ -160,7 +167,14 @@ void ContactDAO::update( Cutelyst::Context* context ) const
   loadContacts();
   const auto id = context->request()->param( "id" ).toUInt();
   auto query = CPreparedSqlQueryThreadForDB(
-    "update contacts set name=:name, work_email=:oe, home_email=:he, other_email=:oem, work_phone=:op, mobile_phone=:mp, home_phone=:hp, other_phone=:oph, user_id = :uid, institution_id = :inst where contact_id=:id",
+    R"(
+update contacts 
+  set name=:name, work_email=:oe, home_email=:he,
+  other_email=:oem, work_phone=:op, mobile_phone=:mp, home_phone=:hp,
+  other_phone=:oph, user_id = :uid, institution_id = :inst, title = :title,
+  url = :url
+where contact_id=:id
+)",
     crrc::DATABASE_NAME );
   bindContact( context, query );
   query.bindValue( ":id", id );

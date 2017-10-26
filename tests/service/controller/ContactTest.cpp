@@ -24,8 +24,9 @@ void ContactTest::create()
   login( &mgr, &eventLoop, &req );
 
   const auto url = QString{ "http://localhost:3000/contacts/edit" };
-  const auto data = QString( "name=%1&workEmail=%2&username=%3&password=%4&role=%5" )
-      .arg( name ).arg( workEmail ).arg( username ).arg( password ).arg( roleId );
+  const auto data = QString( "name=%1&workEmail=%2&username=%3&password=%4&role=%5&title=%6" )
+      .arg( name ).arg( workEmail ).arg( username ).arg( password )
+      .arg( roleId ).arg( title );
   auto reply = put( url, data, &mgr, &eventLoop, &req );
 
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error creating new contact" );
@@ -57,6 +58,7 @@ void ContactTest::retrieve()
   QVERIFY2( contacttest::id == obj["id"].toInt(), "Json response returned invalid id" );
   QVERIFY2( name == obj["name"].toString(), "Json response returned invalid name" );
   QVERIFY2( workEmail == obj["workEmail"].toString(), "Json response returned invalid workEmail" );
+  QVERIFY2( title == obj["title"].toString(), "Json response returned invalid workEmail" );
 
   logout( &mgr, &eventLoop, &req );
 }

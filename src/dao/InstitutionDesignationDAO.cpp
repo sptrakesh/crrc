@@ -30,7 +30,11 @@ QVariantList InstitutionDesignationDAO::retrieve(
   QVariantList list;
 
   auto query = CPreparedSqlQueryThreadForDB( 
-    "select institution_id, designation_id, expiration from institution_designations where institution_id = :iid",
+    R"(
+select institution_id, designation_id, expiration
+from institution_designations
+where institution_id = :iid
+)",
     crrc::DATABASE_NAME );
   query.bindValue( ":iid", institutionId );
   if ( query.exec() )
@@ -80,7 +84,11 @@ uint32_t InstitutionDesignationDAO::remove( uint32_t institutionId ) const
 uint32_t InstitutionDesignationDAO::update( Cutelyst::Context* context ) const
 {
   auto query = CPreparedSqlQueryThreadForDB( 
-    "update institution_designations set expiration = :expiration where institution_id = :iid and designation_id = :did",
+    R"(
+update institution_designations set expiration = :expiration
+where institution_id = :iid
+and designation_id = :did
+)",
     crrc::DATABASE_NAME );
   bindInstitutionDesignation( context, query );
   if ( query.exec() ) return query.numRowsAffected();
@@ -93,7 +101,12 @@ uint32_t InstitutionDesignationDAO::update( Cutelyst::Context* context ) const
 uint32_t InstitutionDesignationDAO::insert( Cutelyst::Context* context ) const
 {
   auto query = CPreparedSqlQueryThreadForDB( 
-    "insert into institution_designations (institution_id, designation_id, expiration) values (:iid, :did, :expiration)",
+    R"(
+insert into institution_designations
+(institution_id, designation_id, expiration)
+values
+(:iid, :did, :expiration)
+)",
     crrc::DATABASE_NAME );
   bindInstitutionDesignation( context, query );
   if ( query.exec() ) return query.numRowsAffected();

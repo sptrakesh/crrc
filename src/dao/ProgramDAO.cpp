@@ -122,7 +122,15 @@ uint32_t ProgramDAO::insert( Cutelyst::Context* context ) const
 {
   loadPrograms();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into programs (title, credits, institution_id, degree_id, type, designation_id, curriculum_code, url) values (:title, :credits, :institutionId, :degreeId, :type, :designationId, :cc, :url)",
+    R"(
+insert into programs
+(
+  title, credits, institution_id, degree_id, type, designation_id,
+  curriculum_code, url
+)
+values
+(:title, :credits, :institutionId, :degreeId, :type, :designationId, :cc, :url)
+)",
     crrc::DATABASE_NAME );
   bindProgram( context, query );
 
@@ -146,7 +154,12 @@ uint32_t ProgramDAO::update( Cutelyst::Context* context ) const
   loadPrograms();
   auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
-    "update programs set title=:title, credits=:credits, institution_id=:institutionId, degree_id=:degreeId, type=:type, designation_id=:designationId, curriculum_code=:cc, url=:url where program_id=:id",
+    R"(
+update programs set title=:title, credits=:credits,
+  institution_id=:institutionId, degree_id=:degreeId, type=:type,
+  designation_id=:designationId, curriculum_code=:cc, url=:url
+where program_id=:id
+)",
     crrc::DATABASE_NAME );
   bindProgram( context, query );
   query.bindValue( ":id", id.toInt() );
