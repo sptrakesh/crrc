@@ -485,3 +485,25 @@ jQuery(document).ready(function(){
 	}
 });	
 });
+
+function getInstitutions()
+{
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/institutions' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        return json;
+      }
+      else
+      {
+        console.log( `Unable to retrieve institution list.  Server returned status: ${xhr.status}` );
+        return [];
+      }
+    };
+    xhr.send( '' );
+}
