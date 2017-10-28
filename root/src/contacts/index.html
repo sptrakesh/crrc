@@ -58,7 +58,7 @@
   }
 </script>
 
-<div>
+<div style="margin-left: auto; margin-right: auto; ">
   <h2>Manage Contacts</h2>
   <div>
     <div style="display:inline-block; float: left; padding: 10px;"><a href="/contacts/create" style="float: left;">Create Contact</a></div>
@@ -74,6 +74,54 @@
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
   <div id="contacts">
+       <div class="viewUserContainer">
+            <div class="TitleHeader">
+               <h4>View User</h4>
+            </div> <!--End of Title Header </div-->
+            <!--Start of div view Users Multiline Select -->
+            <div class="viewUsersMultilineSelect">
+               <select multiple id="lstBoxselectUser_ViewUser">
+                   <option> <script type="text/javascript">displayAll();</script></option>
+                 
+               </select>
+               <br><br>
+               <input type="submit"  value="Select User"  id="selectUserButton">
+               <a href="/contacts/create"><input type="button" name="addUser" value="Add User" id="addUserButton"></a>
+               <input type="submit" name="removeUser" value="Remove User" id="removeUserButton">
+               
+               <br>
+            </div> <!--End of div viewUsersMultilineSelect -->
+           
+            <!--Start of div filterBy -->
+            <div class="filterByInViewUsers">
+               <h2 id="filterByHeader"> Filter By </h2>
+               <fieldset>
+                  <p id="instituteLabelInFilterBy"> Institute: </p>
+                  <select class="commonCmbBox2CSS" name="institution" id="institution" >
+                   <option></option>
+                  </select>
+                  <br>
+                  <p id="instituteIDLabelInFilterBy"> Institute ID: </p>
+                  <input type="text" name="instituteIDInput" placeholder="Name of the Institute" class="InstituteIdFilterTextBoxInFilterBy">
+                  <br>
+                  <input type="button" value="Apply Filter" class="commonBtnInViewPrograms"><br>
+               </fieldset>
+               <fieldset>
+                  <p class="adminTypeLabelInFilterBy"> Admin Type: </p>
+                  <select class="commonCmbBox2CSS">
+                     
+                     <option></option>
+                  </select>
+                  <input type="button" value="Apply Filter" class="commonBtnInViewPrograms">
+               </fieldset>
+               <fieldset>
+                  <p id="UserIDLabelInFilterBy"> User ID: </p>
+                  <input type="text" name="userIDInput" placeholder="Name of the user" class="selectUserTextBoxInFilterBy"><br>
+                  <input type="submit" value="Search" name="searchButton" class="commonBtnInViewPrograms">
+               </fieldset>
+            </div> <!--End of div filterBy -->
+           
+         </div><!--viewUserContainer-->
     <script type="text/javascript">displayAll();</script>
   </div>
 </div>

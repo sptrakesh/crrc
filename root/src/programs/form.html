@@ -13,17 +13,15 @@
     return true;
   }
 </script>
-
-<!--div style="display: flex; margin: auto; width: 90%; padding: 10px;"-->
  <div class="addProgramContainer">
   <form id="edit" method="post" action="/programs/edit" onsubmit="return saveProgram( this );">
     {% if object %}
-    <h2>Edit Program</h2>
+    <h2 align="center">Edit Program</h2>
     {% else %}
-    <h2>Create Program</h2>
+    <h2 align="center">Create Program</h2>
     {% endif %}
-<div class="programInfoInAddProgram">
-     <table align="center">
+<div class="programInfoInAddProgram" >
+ <table align="center">
                   <tr>
                      <h4 class="programInformationHeader">Program Information</h4>
                      <br>
@@ -107,24 +105,18 @@
                   </tr>
                </table>
       </div>
-      
-      <div id="CareerCoursesDiv">
-               <h4 class="careerCourseHeader">Career Courses:</h4>
+     <div id="CareerCoursesDiv">
+         <h4 class="careerCourseHeader">Career Courses:</h4>
                <select class="selectProgramDropDown1" multiple>
                   <option></option>
                   <option></option>
                   <option></option>
                   <option></option>
                </select>
-               <textarea class="textarea1InAddProgram" placeholder="Course details"></textarea>
-               <form id="frmAddCourseAddProgram">
-                  <input type="button" value="Add Course"  id="btnAddCourseInAddProgram"class="commonBtnInCareerCourses">
-               </form>
-               <form  id="frmRemoveCourseAddProgram" >
-                  <input type="button" value="Remove Course" id="btnRemoveCourseInAddProgram"  class="commonBtnInCareerCourses">
-               </form>
-               <br>
-               <script>
+          <textarea class="textarea1InAddProgram" placeholder="Course details"></textarea>
+          <input type="button" value="Add Course" class="commonBtnInCareerCourses">
+         <input type="button" value="Remove Course" class="commonBtnInCareerCourses">
+          <script>
                   $(document).ready(function(){
                          $("#btnAddCourseInAddProgram").click(function(){
                              //Enable the Option A fields
@@ -132,8 +124,8 @@
                          });
                   });
                   
-               </script>
-               <div id="CareerCourseSubDiv" style="display: none">
+            </script>
+         <div id="CareerCourseSubDiv" style="display: none">
                   <select class="commonCmbBox3CSS">
                      <option>Department:</option>
                      <option></option>
@@ -145,15 +137,15 @@
                      <option></option>
                   </select>
                   <br>
-                  <form  id="frmAddCourseSelectProgram" >
+                  <!--form  id="frmAddCourseSelectProgram"-- >
                      <input type="submit" value="Add Course"   class="commonBtnInCareerCourses">
-                  </form>
-                  <form id="frmRemoveCourseSelectProgram" >
+                  <!--/form-->
+                  <!--form id="frmRemoveCourseSelectProgram" -->
                      <input type="submit" value="Cancel"  class="commonBtnInCareerCourses">
-                  </form>
-               </div>
-            </div>
-            <div id="generalEduInSelectProgram">
+                  <!--/form-->
+               </div><!--End of CareerCoursesSubDiv-->
+        </div> <!--End of CareerCoursesDiv-->
+       <div id="generalEduInSelectProgram">
                <h4 class="genEdReqHeader">General Education Requirements:</h4>
                <select class="selectProgramDropDown1" multiple>
                   <option></option>
@@ -162,12 +154,12 @@
                   <option></option>
                </select>
                <textarea class="textarea1InAddProgram" placeholder="Course Details"></textarea>
-               <form action="" id="frmAddCourseInSelectProgram" >
+              
                   <input type="button" value="Add Course" id="addCourseInGenEdReq" class="commonBtnInCareerCourses">
-               </form>
-               <form action="" id="frmRemoveCourseInSelectProgram" >
-                  <input type="submit" value="Remove Course"  class="commonBtnInCareerCourses">
-               </form>
+               
+               
+                  <input type="button" value="Remove Course"  class="commonBtnInCareerCourses">
+               
                <script>
                   $(document).ready(function(){
                          $("#addCourseInGenEdReq").click(function(){
@@ -189,22 +181,21 @@
                      <option></option>
                   </select>
                   <br>
-                  <form id="frmAddCourseSelectProgram" >
-                     <input type="submit" value="Add Course" class="commonBtnInCareerCourses">
-                  </form>
-                  <form id="frmRemoveCourseSelectProgram" >
-                     <input type="submit" value="Cancel"  class="commonBtnInCareerCourses">
-                  </form>
-               </div>
-               <!--End of div general Education Sub Div -->
-               <!--End of div general Education Requirements-->
-            </div>
+                  <!--form id="frmAddCourseSelectProgram" -->
+                     <input type="button" value="Add Course" class="commonBtnInCareerCourses">
+                  <!--/form-->
+                  <!--form id="frmRemoveCourseSelectProgram" -->
+                     <input type="button" value="Cancel"  class="commonBtnInCareerCourses">
+                  <!--/form-->
+               </div><!--End of div general Education Sub Div -->
+             </div> <!--End of div general Education Requirements-->
             
       <div style="clear:both;"></div>
     {% if object %}
     <input type="hidden" name="id" value="{{ object.id }}" />
     {% endif %}
-    <h4 align="center"><input type="submit" value="Save"  class="commonBtn2InViewPrograms"/ ></h4>
+      <p align="center"><input type="submit" value="Save"  class="commonBtn2InViewPrograms"/>
+    </p>
     <br/>
     <q id="warning" class="warning" style="display: none;"></q>
   </form>

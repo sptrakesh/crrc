@@ -48,7 +48,7 @@
   }
 </script>
 
-<div>
+<div style="margin-left: auto;margin-right: auto;">
   <h2>Manage Programs</h2>
   <div>
     <div style="display:inline-block; float: left; padding: 10px;"><a href="/programs/create" style="float: left;">Create Program</a></div>
@@ -63,6 +63,74 @@
   {% if searchText %}
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
+     <div class="viewProgramContainer">
+            <div class="TitleHeader">
+               <h4>View Programs</h4>
+            </div>
+            <div class="viewProgramsMultilineSelect">
+               <select multiple id="selectProgram">
+                  <option>  </option>
+                  <option>  </option>
+                  <option>  </option>
+               </select>
+               <br><br>
+                <input type="submit" name="selectProgram" value="Select Program" onclick="" id="selectProgramButton" class="commonBtn2InViewPrograms" >
+                <a href="/programs/create"><input type="button"  value="Add Program"  class="commonBtn2InViewPrograms" > </a>
+                <input type="submit" name="removeProgram" value="Remove Program" onclick="" id="removeProgramButton"
+                     class="commonBtn2InViewPrograms" >
+               <br>
+              
+            </div> <!--End of div viewProgramsMultilineSelect -->
+            <div class="filterByInViewPrograms">
+               <h2 id="filterByHeader"> Filter By </h2>
+               <fieldset>
+                  <legend>Program ID</legend>
+                  <p id="lblPID_viewPrograms"> Program ID: </p>
+                  <input type="text" name="instituteIDInput" placeholder="Name of the Program" class="commonTxtBoxCSS" >
+                  <input type="submit" value="Search" class="commonBtn3InViewPrograms">  
+               </fieldset>
+               <fieldset>
+                  <legend>Location</legend>
+                  <p id="adminTypeLabel"> Filter By State: </p>
+                  <select class="commonCmbBoxCSS">
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                  </select>
+                  <br>
+                  <p id="adminTypeLabel"> Filter By City: </p>
+                  <select class="commonCmbBoxCSS">
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                  </select>
+                  <input type="submit" value="Apply Filter" class="commonBtn3InViewPrograms">  
+               </fieldset>
+               <fieldset>
+                  <legend>Program Type</legend>
+                  <p id="adminTypeLabel"> Program Type: </p>
+                  <select class="commonCmbBoxCSS">
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                  </select>
+                  <input type="submit" value="Apply Filter" name="searchButton" class="commonBtn3InViewPrograms"> 
+               </fieldset>
+               <fieldset>
+                  <legend>CAE Designations</legend>
+                  <p id="adminTypeLabel"> CAE Designation: </p>
+                  <select class="commonCmbBoxCSS">
+                     <option></option>
+                     <option></option>
+                     <option></option>
+                  </select>
+                  <input type="submit" value="Apply Filter" class="commonBtn3InViewPrograms"> 
+               </fieldset>
+               <br>
+               
+            </div><!--End of div filterBy -->
+           
+         </div> <!--End of View Program Container-->
   <div id="programs">
     {% for program in programs %}
     <div id="p_{{ program.id }}">

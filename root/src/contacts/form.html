@@ -114,62 +114,54 @@
     xhr.send();
   }
 </script>
-<div class="addUserContainer">
+<div class="addUserContainer" style="margin-left: auto;margin-right: auto;">
 <!--div style="display: flex; margin: auto; width: 90%; padding: 10px;"-->
 
-<form id="edit" method="post" action="/contacts/edit" onsubmit="return false;" align="right">
+<form id="edit" method="post" action="/contacts/edit" onsubmit="return false;" align="right" >
     {% if object %}
-    <h2>Edit Contact</h2>
+    <h2 align="center">Edit Contact</h2>
     {% else %}
-    <h2>Create Contact</h2>
+    <h2 align="center">Create Contact</h2>
     {% endif %}
     <div class="addUserForm">  
-    <label class="label">Name:</label>
-    <input name="name" id="name" type="text" placeholder="Name"  class="addUserInput" size="30" width="100" required="required"
-           {% if object %}value="{{ object.name }}" {% endif %} />
-    <br />
-    <label class="label">Last Name:</label>
-    <input type="text" placeholder="Last Name to be added to Database"  class="addUserInput" size="30" width="100" required="required"
-           >
-    <br />
-    <label class="label">Email (Work):</label>
-    <input name="workEmail" id="workEmail" type="email" placeholder="email address" class="addUserInput" size="30" width="100"
-           {% if object %}value="{{ object.workEmail }}" {% endif %} />
-    <br />
-    <label class="label" style="display: none;">Email (Home):</label>
-    <input name="homeEmail" id="otherEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.homeEmail }}" {% endif %} / style="display: none;">
-    <br />
-    <label class="label" style="display: none;">Email (Other):</label>
-    <input name="otherEmail" id="otherEmail" type="email" size="30" width="100"
-           {% if object %}value="{{ object.otherEmail }}" {% endif %} / style="display: none;">
-    <br />
-    <label class="label">Telephone (Work):</label>
-    <input name="workPhone" id="workPhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.workPhone }}" {% endif %} />
-    <br />
-    <label class="label">Telephone (Mobile):</label>
-    <input name="mobilePhone" id="mobilePhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.mobilePhone }}" {% endif %} />
-    <br />
-    <label class="label" style="display: none;">Telephone (Other):</label>
-    <input name="otherPhone" id="otherPhone" type="tel" size="30" width="100"
-           {% if object %}value="{{ object.otherPhone }}" {% endif %} / style="display: none;">
-    <lable class="label">Link:</lable>
-    <input type="text" class="addUserInput" placeholder="URL">
+        <label class="label">First Name:</label>
+        <input name="name" id="name" type="text" placeholder=" First Name"  class="addUserInput" size="30" width="100" required="required"
+               {% if object %}value="{{ object.name }}" {% endif %} />
+        <br />
+        <label class="label">Last Name:</label>
+        <input type="text" placeholder="Last Name to be added to Database"  class="addUserInput" size="30" width="100" required="required"
+               >
+        <br />
+        <label class="label">Email (Work):</label>
+        <input name="workEmail" id="workEmail" type="email" placeholder="email address" class="addUserInput" size="30" width="100"
+               {% if object %}value="{{ object.workEmail }}" {% endif %} />
+        <br />
+       
+        <label class="label">Telephone (Work):</label>
+        <input name="workPhone" id="workPhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
+               {% if object %}value="{{ object.workPhone }}" {% endif %} />
+        <br />
+        <label class="label">Telephone (Mobile):</label>
+        <input name="mobilePhone" id="mobilePhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
+               {% if object %}value="{{ object.mobilePhone }}" {% endif %} />
+        <br />
+        <lable class="label">Link:</lable>
+        <input type="text" class="addUserInput" placeholder="URL">
     </div>
     
     <div class="institute_addUser">
     <label class="label">Institution:</label>
-    <select name="institution" id="institution" class="commonCmbBox3CSS">
-      <option value="-1">Select Institution</option>
+    <select name="institution" id="institution" class="commonCmbBox3CSS" style="margin: 10px 10px 10px 0px;">
+      <option value="-1" >Select Institution</option>
       {% for institution in institutions %}
-      <option value="{{ institution.id }}"
+      <option value="{{ institution.id }}" style="font-size: 16px;"
               {% if institution.id == object.institution.id %}selected{% endif %}>
         {{ institution.name }}
       </option>
       {% endfor %}
-    </select>
+    </select><br>
+        <label class="label">Position:</label>
+        <input type="text" placeholder="Postion of user in Institution" class="addUserInput">
     <q id="institutionWarning" class="warning" style="display: none;">Contact must be associated with an institution.</q>
     <br />
     <p align="center"><strong>Login Information</strong></p>
@@ -187,9 +179,9 @@
     <br />
     <label class="label">Role:</label>
     <select name="role" id="role" class="commonCmbBox4CSS" {% if object.user %}{% else %}disabled{% endif %}>
-      <option value="-1">Select Role</option>
+      <option value="-1" style="font-size: 16px;">Select Role</option>
       {% for role in roles %}
-      <option value="{{ role.id }}"
+      <option value="{{ role.id }}" style="font-size: 16px;"
               {% ifequal role.id object.user.role.id %}selected="selected" {% endifequal %}>
         {{ role.role }}
       </option>
@@ -203,6 +195,6 @@
     <button onclick="validate()" style="font-size: 20px;
 	border: 1px solid black;
 	border-radius: 5px;">Save</button>
+    </div>
   </form>
-</div>
 </div>
