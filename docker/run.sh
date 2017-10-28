@@ -6,9 +6,9 @@ then
   mkdir var
 fi
 
-docker run -it \
+docker run -d \
   --name crrc --rm=true \
   -v $PWD/root:/opt/crrc/root \
   -v $PWD/var:/opt/crrc/var \
-  -p 8080:80 \
+  -p 80:80 \
   crrc updateStart
