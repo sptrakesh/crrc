@@ -8,7 +8,6 @@ fi
 
 docker run -d \
   --name crrc --rm=true \
-  --cpus 4 \
   -v $PWD/root:/opt/crrc/root \
   -v $PWD/var:/opt/crrc/var \
   -p 80:80 \

@@ -1,5 +1,70 @@
-<<<<<<< HEAD
 <script type="text/javascript">
+  var institutions = [];
+    
+  function retrieveInstitutions()
+  {
+    let xhr = new XMLHttpRequest();
+        
+    xhr.open( 'POST', '/institutions' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        institutions = json;
+        populateInstitutionType();
+      }
+      else
+      {
+        console.log( `Error retrieving institution list.  Server returned status: ${xhr.start}` );
+      }
+    };
+    xhr.send( '' );
+  }
+    
+    function populateInstitutionType()
+    {
+        let element = document.getElementById( 'InstitutionType' );
+        let types = [];
+        for (let institution in institutions)
+            {
+                if ( !isEmpty(institution.type) )
+                    {
+                        if (!types.contains(institution.type) ) types.append(institution.type); 
+                    }
+            }
+        
+        for (let type in types)
+            {
+                let option = document.createElement( 'option' );
+                 option.value = type;
+                option.textContent = type;
+                element.appendChild( element );
+            }
+    }
+    
+    function filterByType(type)
+    {
+        let select = document.getElementById('institution');
+        var length = select.options.length;
+for (i = 0; i < length; i++) {
+  select.options[i] = null;
+}
+        
+        for (let institution in institutions)
+            {
+                if (institution.type != null && type == institution.type)
+                    {
+                        let option = document.createElement('option');
+                        option.value = institution.id;
+                        option.textContent = institution.name;
+                        select.appendChild( option );
+                    }
+            }
+    }
+    
   function check( form )
   {
     return confirm( 'Do you wish to permanently delete the institution?' );
@@ -7,7 +72,9 @@
     
     function displayInstitution()
     {
-        // Look up selected index in select box and display the details
+        let select = document.getElementById( 'institution' );
+        let institutionId = select.options[select.selectedIndex].value;
+        window.location.href = `/institutions/id/${institutionId}/view`;
     }
     
     function removeInsitution()
@@ -26,6 +93,7 @@
         let json = JSON.parse( xhr.responseText );
         if ( json.status && json.count === 1 )
         {
+            select.remove(select.selectedIndex);
         }
         else
         {
@@ -38,6 +106,7 @@
     xhr.send( `id=${institutionId}` );
         
     }
+
 
 </script>
 
@@ -94,9 +163,10 @@
                   <!-- table holding the buttons for selecting, adding and removing an institution -->
                   <tr>
                      <td>
-                        <form action = "">
-                           <input type="submit" name="selectInstitution" value="Select Institution" onclick="selectedInstitution.htm" id="selectInstitutionButton">
-                        </form>
+                         <!--
+                           <input type="submit" name="selectInstitution" value="Select Institution" onclick="displayInstitution()" id="selectInstitutionButton">
+-->
+                         <button onclick="displayInstitution()">Select Institution</button>
                      </td>
                      <td>
                         <form action = "/institutions/create"
@@ -114,31 +184,6 @@
       </table>
       
       <!-- end multiline select -->
-      
-      
-=======
- <div style="display:inline-block; float: left; padding: 10px;"><a href="/institutions/create" style="float: left;">{% if globalAdminRole == user.role.id %}Create Institution{% endif %}</a></div> <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
-    <div style="display:inline-block; float: right; padding: 10px;">
-      <form name="search" method="post" action="/institutions/search">
-      <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
-      </form>
-    </div><div id="institutions">
->>>>>>> 7463e6106173be2b0650be3c94f3e69f221859ae
-    {% for institution in institutions %}
-    <a href="/institutions/id/{{ institution.id }}/view">{{ institution.name }}</a>
-    {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
-      {% if globalAdminRole == user.role.id or userInstitution.id == institution.id %}
-      - <form action="/institutions/remove" method="post" style="display: inline-block;" onsubmit="return check( this );">
-        <input type="hidden" name="id" value="{{ institution.id }}"/>
-        <input type="submit" value="Delete" />
-      </form>
-      {% endif %}
-    {% endif %}
-    <br/>
-    {% endfor %}
-<<<<<<< HEAD
-      </div>
-  </div>
     
     <div id="SearchOptions" style="display:inline-block; float: right; padding: 10px;">
         <h2>Search By Institution Name</h2>
@@ -164,21 +209,7 @@
         
         
                <table id="AdvancedOptionTable" style="display:none">
-                  <th colspan=2 style="align: center"><u>Institution</u></th>
-                  <tr>
-                     <td>
-                        Institute ID:
-                     </td>
-                     <td>
-                        <input type="text" name="instituteIDInput" placeholder="Institution ID">
-                     </td>
-                  </tr>
-                  <tr>
-                     <td></td>
-                     <td>
-                        <input type="submit" value="Search" name="searchButton">
-                     </td>
-                  </tr>
+
                   <tr>
                      <th colspan=2 style="align: center"><u>User ID:</u></th>
                   </tr>
@@ -305,9 +336,6 @@
                      <td>Institution Type:</td>
                      <td>
                         <select id="InstitutionType" style="width:100%">
-                           <option></option>
-                           <option></option>
-                           <option></option>
                         </select>
                      </td>
                   </tr>
@@ -321,6 +349,5 @@
     </div>
     
 </div>
-=======
+
   </div>
->>>>>>> 7463e6106173be2b0650be3c94f3e69f221859ae
