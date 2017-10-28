@@ -6,10 +6,10 @@ then
   mkdir var
 fi
 
-docker run -d \
+docker run -it \
   --name crrc --rm=true \
   --cpus 4 \
   -v $PWD/root:/opt/crrc/root \
   -v $PWD/var:/opt/crrc/var \
-  -p 80:80 \
+  -p 8080:80 \
   crrc updateStart

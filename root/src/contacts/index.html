@@ -1,5 +1,28 @@
 <script type="text/javascript">
   let contacts = {{ contacts }};
+  var institutions = [];
+    
+    function getInstitutions()
+{
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/institutions' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        institutions = JSON.parse( xhr.responseText );
+        populateInstitutionsSelect();
+      }
+      else
+      {
+        console.log( `Unable to retrieve institution list.  Server returned status: ${xhr.status}` );
+      }
+    };
+    xhr.send( '' );
+}
+
   function sortContacts()
   {
     function compareInstitution( i1, i2 )
@@ -20,24 +43,16 @@
     }
     contacts.sort( compareContact );
   }
+
   function display( contact )
   {
-    let html = `<div style="float:left; width:80%;">
-      <a href="/contacts/id/${contact.id}/view">${contact.name}</a>
-    </div>
-    <div style="float:right; width:20%">
-      <form action="/contacts/remove" method="post" onsubmit="return deletePerson( this );">
-        <input type="hidden" name="id" value="${contact.id}"/>
-        <input type="hidden" name="name" value="${contact.name}"/>
-        <input type="submit" value="Delete" />
-      </form>
-    </div>
-    <div style="clear: both;"></div>`;
-    let div = document.createElement( 'div' );
-    div.innerHTML = html;
-    let parent = document.getElementById( 'contacts' );
-    parent.appendChild( div );
+      let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
+      let option = document.createElement( 'option' );
+      option.value = contact.id;
+      option.textContent = contact.name;
+      element.appendChild( option );
   }
+
   function displayAll()
   {
     sortContacts();
@@ -47,9 +62,24 @@
   {
     return confirm( `Do you wish to permanently delete contact ${form.name.value}?` );
   }
+    
+  function populateInstitutionsSelect()
+    {
+        let element = document.getElementById('institution');
+        for (var i = 0; i < institutions.length; ++i)
+            {
+                let option = document.createElement( 'option' );
+                option.value = institutions[i].id;
+                option.textContent = institutions[i].name;
+                element.appendChild( option );
+            }
+    }
+
+    getInstitutions();
 </script>
 
 <div style="margin-left: auto; margin-right: auto; ">
+    
   <h2>Manage Contacts</h2>
   <div>
     <!--div style="display:inline-block; float: left; padding: 10px;"><a href="/contacts/create" style="float: left;">Create Contact</a></div-->
@@ -72,8 +102,7 @@
             <!--Start of div view Users Multiline Select -->
             <div class="viewUsersMultilineSelect">
                <select multiple id="lstBoxselectUser_ViewUser">
-                   <option> <script type="text/javascript">displayAll();</script></option>
-                 
+                   <script type="text/javascript">displayAll();</script>
                </select>
                <br><br>
                <input type="submit"  value="Select User"  id="selectUserButton">
@@ -119,6 +148,5 @@
             </div> <!--End of div filterBy -->
            
          </div><!--viewUserContainer-->
-    <script type="text/javascript">displayAll();</script>
   </div>
 </div>
