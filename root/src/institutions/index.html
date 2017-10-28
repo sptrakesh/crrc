@@ -1,9 +1,129 @@
+<<<<<<< HEAD
+<script type="text/javascript">
+  function check( form )
+  {
+    return confirm( 'Do you wish to permanently delete the institution?' );
+  }
+    
+    function displayInstitution()
+    {
+        // Look up selected index in select box and display the details
+    }
+    
+    function removeInsitution()
+    {
+        let select = document.getElementById( 'institution' );
+        let institutionId = select.options[select.selectedIndex].value;
+        let xhr = new XMLHttpRequest();
+        
+    xhr.open( 'PUT', '/institutions/remove' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status && json.count === 1 )
+        {
+        }
+        else
+        {
+        }
+      }
+      else
+      {
+      }
+    };
+    xhr.send( `id=${institutionId}` );
+        
+    }
+
+</script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+      <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+      <script type="text/javascript" src="Script/script.js"></script>
+      <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+
+<div align="center">
+    
+        <!-- Div with search by name box and create institution link
+  <div id="Create">
+      
+    <div style="float: left; padding: 10px;">
+        <a href="/institutions/create" style="float: left;">
+            {% if globalAdminRole == user.role.id %}Create Institution{% endif %}
+        </a>
+      </div>  
+      
+  </div>
+ -->
+    <br>
+    
+    <div id="InstitutionDiv" style="float:left">
+  <h2 align="center">View Institutions</h2>
+        
+  {% if searchText %}
+  <h3>Search results for ({{ searchText }})</h3>
+  {% endif %}
+    
+    
+  <div id="institutions">
+      
+      <!-- multiline select -->
+      <table>
+          <tr>     
+              <td><select name="institution" id="institution" size="10" style="width:400px; height:250px">
+                              
+                              {% for institution in institutions %}
+                              <option value="{{ institution.id }}"
+                                      {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
+                                {{ institution.name}} {% if institution.city %}({{ institution.city}}){% endif %}
+                              </option>
+                              {% endfor %}
+                            </select>
+                        </td>
+                  </tr>
+
+          <tr align="center">
+              <td>
+                  <table align=center>
+                  <!-- table holding the buttons for selecting, adding and removing an institution -->
+                  <tr>
+                     <td>
+                        <form action = "">
+                           <input type="submit" name="selectInstitution" value="Select Institution" onclick="selectedInstitution.htm" id="selectInstitutionButton">
+                        </form>
+                     </td>
+                     <td>
+                        <form action = "/institutions/create"
+                              {% if globalAdminRole == user.role.id %}Create Institution{% endif %}>
+                           <input type="submit" name="addInstitution" value="Add Institution" onclick="" id="addInstitutionButton">
+                        </form>
+                     </td>
+                     <td>
+                        <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton">
+                     </td>
+                  </tr>
+               </table>
+              </td>
+          </tr>
+      </table>
+      
+      <!-- end multiline select -->
+      
+      
+=======
  <div style="display:inline-block; float: left; padding: 10px;"><a href="/institutions/create" style="float: left;">{% if globalAdminRole == user.role.id %}Create Institution{% endif %}</a></div> <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
     <div style="display:inline-block; float: right; padding: 10px;">
       <form name="search" method="post" action="/institutions/search">
       <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
       </form>
     </div><div id="institutions">
+>>>>>>> 7463e6106173be2b0650be3c94f3e69f221859ae
     {% for institution in institutions %}
     <a href="/institutions/id/{{ institution.id }}/view">{{ institution.name }}</a>
     {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
@@ -16,4 +136,191 @@
     {% endif %}
     <br/>
     {% endfor %}
+<<<<<<< HEAD
+      </div>
   </div>
+    
+    <div id="SearchOptions" style="display:inline-block; float: right; padding: 10px;">
+        <h2>Search By Institution Name</h2>
+        
+        <script>
+                     //this script is used to toggle the new prereq info
+                     $(document).ready(function()
+                       {
+                     $("#AdvancedSearchButton").click(function()
+                        {
+                     $("#AdvancedOptionTable").toggle();
+                     })
+                     
+                     
+                     })                                   
+                  </script>
+        
+      <form name="search" method="post" action="/institutions/search">
+      <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
+      </form>
+        <br>
+        <a href="#" id="AdvancedSearchButton">Advanced Search Options</a><br><br>
+        
+        
+               <table id="AdvancedOptionTable" style="display:none">
+                  <th colspan=2 style="align: center"><u>Institution</u></th>
+                  <tr>
+                     <td>
+                        Institute ID:
+                     </td>
+                     <td>
+                        <input type="text" name="instituteIDInput" placeholder="Institution ID">
+                     </td>
+                  </tr>
+                  <tr>
+                     <td></td>
+                     <td>
+                        <input type="submit" value="Search" name="searchButton">
+                     </td>
+                  </tr>
+                  <tr>
+                     <th colspan=2 style="align: center"><u>User ID:</u></th>
+                  </tr>
+                  <tr>
+                     <td>
+                        User ID:
+                     </td>
+                     <td>
+                        <input type="text" name="userIDInput" placeholder="User ID">
+                     </td>
+                  </tr>
+                  <tr>
+                     <td></td>
+                     <td>
+                        <input type="submit" value="Search" name="searchButton">
+                     </td>
+                  </tr>
+                  <tr>
+                     <th colspan=2 style="align: center"><u>Location</u></th>
+                  </tr>
+                  <tr>
+                     <td>
+                        State:
+                     </td>
+                     <td>
+                        <select name="state" id="state" style="width:100%"
+                                {% if object %}value="{{ object.state }}" {% endif %} >
+                        <option value="AL">Alabama (AL)</option>
+	<option value="AK">Alaska (AK)</option>
+	<option value="AZ">Arizona (AZ)</option>
+	<option value="AR">Arkansas (AR)</option>
+	<option value="CA">California (CA)</option>
+	<option value="CO">Colorado (CO)</option>
+	<option value="CT">Connecticut (CT)</option>
+	<option value="DE">Delaware (DE)</option>
+	<option value="DC">District Of Columbia (DC)</option>
+	<option value="FL">Florida (FL)</option>
+	<option value="GA">Georgia (GA)</option>
+	<option value="HI">Hawaii (HI)</option>
+	<option value="ID">Idaho (ID)</option>
+	<option value="IL">Illinois (IL)</option>
+	<option value="IN">Indiana (IN)</option>
+	<option value="IA">Iowa (IA)</option>
+	<option value="KS">Kansas (KS)</option>
+	<option value="KY">Kentucky (KY)</option>
+	<option value="LA">Louisiana (LA)</option>
+	<option value="ME">Maine (ME)</option>
+	<option value="MD">Maryland (MD)</option>
+	<option value="MA">Massachusetts (MA)</option>
+	<option value="MI">Michigan (MI)</option>
+	<option value="MN">Minnesota (MN)</option>
+	<option value="MS">Mississippi (MS)</option>
+	<option value="MO">Missouri (MO)</option>
+	<option value="MT">Montana (MT)</option>
+	<option value="NE">Nebraska (NE)</option>
+	<option value="NV">Nevada (NV)</option>
+	<option value="NH">New Hampshire (NH)</option>
+	<option value="NJ">New Jersey (NJ)</option>
+	<option value="NM">New Mexico (NM)</option>
+	<option value="NY">New York (NY)</option>
+	<option value="NC">North Carolina (NC)</option>
+	<option value="ND">North Dakota (ND)</option>
+	<option value="OH">Ohio (OH)</option>
+	<option value="OK">Oklahoma (OK)</option>
+	<option value="OR">Oregon (OR)</option>
+	<option value="PA">Pennsylvania (PA)</option>
+	<option value="RI">Rhode Island (RI)</option>
+	<option value="SC">South Carolina (SC)</option>
+	<option value="SD">South Dakota (SD)</option>
+	<option value="TN">Tennessee (TN)</option>
+	<option value="TX">Texas (TX)</option>
+	<option value="UT">Utah (UT)</option>
+	<option value="VT">Vermont (VT)</option>
+	<option value="VA">Virginia (VA)</option>
+	<option value="WA">Washington (WA)</option>
+	<option value="WV">West Virginia (WV)</option>
+	<option value="WI">Wisconsin (WI)</option>
+	<option value="WY">Wyoming (WY)</option>
+                        </select>
+                    
+                     </td>
+                  </tr>
+                  <tr>
+                     <td>
+                        City:
+                     </td>
+                     <td>
+                        <select id="City" style="width: 100%">
+                           <option></option>
+                           <option></option>
+                           <option></option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td></td>
+                     <td><input type="submit" value="Apply Filter" name="searchButton"></td>
+                  </tr>
+                  <tr>
+                     <th colspan=2 style="align: center"><u>Program Type</u></th>
+                  </tr>
+                  <tr>
+                     <td>
+                        Program Type:
+                     </td>
+                     <td>
+                        <select id="ProgramType" style="width:100%">
+                           <option></option>
+                           <option></option>
+                           <option></option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td></td>
+                     <td>
+                        <input type="submit" value="Apply Filter" name="searchButton">
+                     </td>
+                  </tr>
+                  <tr>
+                     <th colspan=2 style="align: center"><u>Institution Type</u></th>
+                  </tr>
+                  <tr>
+                     <td>Institution Type:</td>
+                     <td>
+                        <select id="InstitutionType" style="width:100%">
+                           <option></option>
+                           <option></option>
+                           <option></option>
+                        </select>
+                     </td>
+                  </tr>
+                  <tr>
+                     <td></td>
+                     <td><input type="submit" value="Apply Filter" name="searchButton"></td>
+                  </tr>
+               </table>
+            
+        
+    </div>
+    
+</div>
+=======
+  </div>
+>>>>>>> 7463e6106173be2b0650be3c94f3e69f221859ae
