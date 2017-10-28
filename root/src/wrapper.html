@@ -16,19 +16,12 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
      
 </head>
+    
+    
 <body>
-  <div id="container">
+  <div id="container" align="center">
     <!-- Start container -->
 
-    <div id="pageHeader">
-      <!-- Start page header -->
-
-      <!--h1>CSSI</h1-->
-      <!--h2>CRRC Database</h2-->
-    </div><!-- End page header -->
-
-    <div id="sidebarContainer">
-      <!-- Start Sidebar wrapper -->
       <div id="navcontainer">
           <!-- Testing, Testing: 1,2,3 -->
       <h2 align="center" style="margin: 0px"><img src="/static/rw_common/themes/business/images/crrc-logo.png"  class="CRRClogo"></h2>
@@ -88,23 +81,13 @@
             </li>
          </ul>
       </div><!--End of DDNav-->
-        <!-- Start Navigation -->
-      <!--<ul><li><a href="/institutions" rel="">Institutions</a></li><li><a href="/contacts" rel="">Contacts</a></li><li><a href="/degrees" rel="">Degrees</a></li><li><a href="/programs">Programs</a></li><li><a href="/agreements">Agreements</a></li><li><a href="/logout" rel="">Logout</a></li></ul-->
       </div><!-- End navigation -->
-      <div id="sidebar">
-        <!-- Start sidebar content -->
-        <h1 class="sideHeader"></h1><!-- Sidebar header -->
-        <br /><!-- sidebar content you enter in the page inspector -->
-        <!-- sidebar content such as the blog archive links -->
-        
-      </div><!-- End sidebar content -->
-    </div><!-- End sidebar wrapper -->
 
     <div id="contentContainer">
       <!-- Start main content wrapper -->
       <div id="content">
         <!-- Start content -->
-        <div style="display: flex; margin: auto; padding: 10px; min-height: 300px;">
+        <div style="margin: auto; padding: 10px; min-height: 300px; align:center">
           {% comment %} Status and error messages {% endcomment %}
           <span class="message">{{ status_msg }}{{ c.request.params.status_msg|escape }}</span>
           <span class="error">{{ error_msg }}</span>
@@ -115,6 +98,8 @@
         </div><!-- End breadcrumb -->
       </div><!-- End content -->
     </div><!-- End main content wrapper -->
+      
+      
     <div class="clearer"></div>
     <div id="footer">
       <!-- Start Footer -->
