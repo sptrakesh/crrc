@@ -30,13 +30,22 @@ Program::Ptr Program::create( Cutelyst::Context* context )
   if ( !id.isEmpty() ) ptr->id = id.toUInt();
 
   ptr->title = context->request()->param( "title" );
-  ptr->credits = context->request()->param( "credits" );
+  
+  const auto& credits = context->request()->param( "credits" );
+  ptr->credits = credits.isEmpty() ? "Unspecified" : credits;
+
   ptr->type = context->request()->param( "type" );
   ptr->curriculumCode = context->request()->param( "curriculumCode" );
   ptr->url = context->request()->param( "url" );
-  ptr->institutionId = context->request()->param( "institution" ).toUInt();
-  ptr->degreeId = context->request()->param( "degree" ).toUInt();
-  ptr->designationId = context->request()->param( "designation" ).toUInt();
+
+  const auto& institution = context->request()->param( "institution" );
+  ptr->institutionId = institution.isEmpty() ? 0 : institution.toUInt();
+
+  const auto& degree = context->request()->param( "degree" );
+  ptr->degreeId = degree.isEmpty() ? 0 : degree.toUInt();
+
+  const auto& designation = context->request()->param( "designation" );
+  ptr->designationId = designation.isEmpty() ? 0 : designation.toUInt();
 
   return ptr;
 }
@@ -56,6 +65,21 @@ QVariant Program::getDesignation() const
   return dao::DesignationDAO().retrieve( designationId );
 }
 
+bool crrc::model::operator<( const Program& lhs, const Program& rhs )
+{
+  const auto func = []( const Program& program ) -> QString
+  {
+    const auto ptr = model::Institution::from( program.getInstitution() );
+    return ptr ?
+      QString{ "%1:%2" }.arg( ptr->getName() ).arg( program.getTitle() ) : 
+      program.getTitle();
+  };
+
+  const auto& title1 = func( lhs );
+  const auto& title2 = func( rhs );
+  return title1 < title2;
+}
+
 QJsonObject crrc::model::toJson( const Program& program, bool compact )
 {
   QJsonObject obj;
@@ -65,12 +89,14 @@ QJsonObject crrc::model::toJson( const Program& program, bool compact )
 
   if ( program.getDegreeId() )
   {
-    obj.insert( "degree", toJson( *( Degree::from( program.getDegree() ) ) ) );
+    const auto ptr = Degree::from( program.getDegree() );
+    obj.insert( "degree", ptr ? toJson( *ptr ) : QJsonObject{} );
   }
 
   if ( program.getInstitutionId() )
   {
-    obj.insert( "institution", toJson( *( Institution::from( program.getInstitution() ) ), true ) );
+    const auto ptr = Institution::from( program.getInstitution() );
+    obj.insert( "institution", ptr ? toJson( *ptr, true ) : QJsonObject{} );
   }
 
   if ( compact ) return obj;
@@ -81,7 +107,8 @@ QJsonObject crrc::model::toJson( const Program& program, bool compact )
 
   if ( program.getDesignationId() )
   {
-    obj.insert( "designation", toJson( *( Designation::from( program.getDesignation() ) ) ) );
+    const auto ptr = Designation::from( program.getDesignation() );
+    obj.insert( "designation", ptr ? toJson( *ptr ) : QJsonObject{} );
   }
 
   return obj;

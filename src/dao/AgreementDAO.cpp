@@ -7,11 +7,14 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtSql/QtSql>
 #include <Cutelyst/Upload>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Agreement;
+
+Q_LOGGING_CATEGORY( AGREEMENT_DAO, "crrc.model.AgreementDAO" )
 
 namespace crrc
 {
@@ -39,7 +42,11 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select agreement_id, filename, mimetype, filesize, checksum, updated, transfer_institution_id, transferee_institution_id from agreements order by filename",
+        R"(
+select agreement_id, filename, mimetype, filesize, checksum, updated,
+  transfer_institution_id, transferee_institution_id
+from agreements order by filename
+)",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -61,7 +68,7 @@ namespace crrc
 
       auto bytes = upload->readAll();
       const QFileInfo file{ upload->filename() };
-      qDebug() << "File: " << upload;
+      qDebug( AGREEMENT_DAO ) << "File: " << upload;
       query.bindValue( ":filename", file.fileName() );
       query.bindValue( ":mimetype", upload->contentType() );
       query.bindValue( ":filesize", upload->size() );
@@ -123,16 +130,21 @@ QByteArray AgreementDAO::contents( Cutelyst::Context* context, const uint32_t id
   }
 
   context->stash()["error_msg"] = query.lastError().text();
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   return QByteArray();
 }
 
 
 uint32_t AgreementDAO::insert( Cutelyst::Context* context ) const
 {
-  qDebug() << "Inserting new agreement document";
+  qDebug( AGREEMENT_DAO ) << "Inserting new agreement document";
   auto query = CPreparedSqlQueryThreadForDB(
-    "insert into agreements (filename, mimetype, filesize, document, checksum, updated) values (:filename, :mimetype, :filesize, :document, :checksum, :updated)",
+    R"(
+insert into agreements
+(filename, mimetype, filesize, document, checksum, updated)
+values
+(:filename, :mimetype, :filesize, :document, :checksum, :updated)
+)",
     crrc::DATABASE_NAME );
   auto bytes = bindAgreement( context, query );
 
@@ -147,7 +159,7 @@ uint32_t AgreementDAO::insert( Cutelyst::Context* context ) const
   }
 
   context->stash()["error_msg"] = query.lastError().text();
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   return 0;
 }
 
@@ -161,7 +173,11 @@ uint32_t AgreementDAO::update( Cutelyst::Context* context ) const
   }
 
   auto query = CPreparedSqlQueryThreadForDB( 
-    "update agreements set filename=:filename, mimetype=:mimetype, filesize=:filesize, document=:document, checksum=:checksum, updated=:updated where agreement_id=:id",
+    R"(
+update agreements set filename=:filename, mimetype=:mimetype, filesize=:filesize,
+  document=:document, checksum=:checksum, updated=:updated
+where agreement_id=:id
+)",
     crrc::DATABASE_NAME );
   auto bytes = bindAgreement( context, query );
   query.bindValue( ":id", id.toInt() );
@@ -177,7 +193,7 @@ uint32_t AgreementDAO::update( Cutelyst::Context* context ) const
     return query.numRowsAffected();
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   context->stash()["error_msg"] = query.lastError().text();
   return 0;
 }
@@ -188,7 +204,11 @@ QVariantList AgreementDAO::search( Cutelyst::Context* context ) const
   const QString clause = "%" % text % "%";
 
   auto query = CPreparedSqlQueryThreadForDB(
-   "select agreement_id from agreements where filename like :text order by filename",
+   R"(
+select agreement_id from agreements
+where filename like :text
+order by filename
+)",
     DATABASE_NAME );
 
   query.bindValue( ":text", clause );
@@ -200,7 +220,7 @@ QVariantList AgreementDAO::search( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( AGREEMENT_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -220,7 +240,7 @@ uint32_t AgreementDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   return 0;
 }
 
@@ -229,7 +249,11 @@ uint32_t AgreementDAO::saveProgram( Cutelyst::Context* context ) const
   const auto id = context->request()->param( "id" ).toUInt();
 
   auto query = CPreparedSqlQueryThreadForDB(
-    "update agreements set transfer_institution_id = :i, transferee_institution_id = :ei where agreement_id = :id",
+    R"(
+update agreements set transfer_institution_id = :i,
+  transferee_institution_id = :ei
+where agreement_id = :id
+)",
     DATABASE_NAME );
   query.bindValue( ":i", context->request()->param( "transfer_institution_id" ).toUInt() );
   query.bindValue( ":ei", context->request()->param( "transferee_institution_id" ).toUInt() );
@@ -245,7 +269,7 @@ uint32_t AgreementDAO::saveProgram( Cutelyst::Context* context ) const
     }
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( AGREEMENT_DAO ) << query.lastError().text();
   context->stash()["error_msg"] = query.lastError().text();
   return 0;
 }

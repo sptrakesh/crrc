@@ -5,11 +5,14 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Degree;
+
+Q_LOGGING_CATEGORY( DEGREE_DAO, "crrc.dao.DegreeDAO" )
 
 namespace crrc
 {
@@ -145,7 +148,7 @@ QVariantList DegreeDAO::search( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( DEGREE_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -166,6 +169,6 @@ uint32_t DegreeDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qDebug() << query.lastError().text();
+  qWarning( DEGREE_DAO ) << query.lastError().text();
   return 0;
 }

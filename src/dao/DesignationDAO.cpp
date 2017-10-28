@@ -3,11 +3,15 @@
 #include "model/Designation.h"
 
 #include <mutex>
-#include <QtSql/QtSql>
-#include <Cutelyst/Plugins/Utils/sql.h>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
+#include <QtSql/QtSql>
+#include <Cutelyst/Plugins/Utils/sql.h>
+
 using crrc::model::Designation;
+
+Q_LOGGING_CATEGORY( DESIGNATION_DAO, "crrc.dao.DesignationDAO" )
 
 namespace crrc
 {
@@ -101,7 +105,7 @@ uint32_t DesignationDAO::insert( Cutelyst::Context* context ) const
 
   if ( !query.exec() )
   {
-    qWarning() << query.lastError().text();
+    qWarning( DESIGNATION_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
@@ -135,7 +139,7 @@ uint32_t DesignationDAO::update( Cutelyst::Context* context ) const
   else
   {
     context->stash()["error_msg"] = query.lastError().text();
-    qDebug() << query.lastError().text();
+    qWarning( DESIGNATION_DAO ) << query.lastError().text();
   }
 
   return query.numRowsAffected();
@@ -155,6 +159,6 @@ uint32_t DesignationDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qDebug() << query.lastError().text();
+  qWarning( DESIGNATION_DAO ) << query.lastError().text();
   return 0;
 }

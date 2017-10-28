@@ -8,11 +8,13 @@
 #include <unordered_map>
 
 #include <QtCore/QCryptographicHash>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::User;
+Q_LOGGING_CATEGORY( USER_DAO, "crrc.dao.UserDAO" )
 
 namespace crrc
 {
@@ -44,7 +46,12 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select user_id, username, password, email, first_name, last_name, middle_name, role_id from users order by username",
+        R"(
+select user_id, username, password, email, first_name, last_name,
+  middle_name, role_id
+from users
+order by username
+)",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -119,7 +126,12 @@ uint32_t UserDAO::insert( Cutelyst::Context* context ) const
 {
   loadUsers();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into users (username, password, email, first_name, last_name, middle_name, role_id) values (:un, :passwd, :email, :fn, :ln, :mn, :roleId)",
+    R"(
+insert into users
+(username, password, email, first_name, last_name, middle_name, role_id)
+values
+(:un, :passwd, :email, :fn, :ln, :mn, :roleId)
+)",
     crrc::DATABASE_NAME );
   const auto hashed = bindUser( context, query );
 
@@ -143,7 +155,11 @@ void UserDAO::update( Cutelyst::Context* context ) const
   loadUsers();
   auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
-    "update users set username=:un, password=:passwd, email=:email, first_name=:fn, last_name=:ln, middle_name=:mn, role_id = :roleId where user_id=:id",
+    R"(
+update users set username=:un, password=:passwd, email=:email, first_name=:fn,
+  last_name=:ln, middle_name=:mn, role_id = :roleId
+where user_id=:id
+)",
     crrc::DATABASE_NAME );
   const auto hashed = bindUser( context, query );
   query.bindValue( ":id", id.toUInt() );
@@ -186,7 +202,7 @@ QVariantList UserDAO::search( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( USER_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -207,7 +223,7 @@ uint32_t UserDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qDebug() << query.lastError().text();
+  qWarning( USER_DAO ) << query.lastError().text();
   return 0;
 }
 
@@ -239,7 +255,7 @@ bool UserDAO::updateRole( uint32_t userId, uint32_t roleId ) const
     std::lock_guard<std::mutex> lock{ userMutex };
     iter->second->setRoleId( roleId );
   }
-  else qWarning() << query.lastError().text();
+  else qWarning( USER_DAO ) << query.lastError().text();
 
   return result;
 }
@@ -265,9 +281,9 @@ bool UserDAO::updatePassword( const QString& username, const QString& password )
   {
     auto iter = users.find( uptr->getId() );
     iter->second->setPassword( passwd );
-    qDebug() << "Updated plain text password for user: " << uptr->getId();
+    qDebug( USER_DAO ) << "Updated plain text password for user: " << uptr->getId();
   }
-  else qWarning() << query.lastError().text();
+  else qWarning( USER_DAO ) << query.lastError().text();
 
   return result;
 }

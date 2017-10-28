@@ -20,6 +20,8 @@ namespace crrc
       Q_PROPERTY( QString workPhone READ getWorkPhone )
       Q_PROPERTY( QString homePhone READ getHomePhone )
       Q_PROPERTY( QString otherPhone READ getOtherPhone )
+      Q_PROPERTY( QString title READ getTitle )
+      Q_PROPERTY( QString url READ getUrl )
       Q_PROPERTY( QVariant user READ getUser )
       Q_PROPERTY( QVariant institution READ getInstitution )
 
@@ -52,6 +54,8 @@ namespace crrc
       const QString& getWorkPhone() const { return workPhone; }
       const QString& getHomePhone() const { return homePhone; }
       const QString& getOtherPhone() const { return otherPhone; }
+      const QString& getTitle() const { return title; }
+      const QString& getUrl() const { return url; }
 
       uint32_t getUserId() const { return userId; }
       QVariant getUser() const;
@@ -75,6 +79,8 @@ namespace crrc
       QString mobilePhone;
       QString homePhone;
       QString otherPhone;
+      QString title;
+      QString url;
       uint32_t userId = 0;
       uint32_t institutionId = 0;
     };

@@ -9,12 +9,14 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Program;
 
+Q_LOGGING_CATEGORY( PROGRAM_DAO, "crrc.dao.ProgramDAO" )
 
 namespace crrc
 {
@@ -42,8 +44,7 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select p.program_id, p.title, p.credits, p.institution_id, p.degree_id, p.type, p.designation_id, p.curriculum_code, p.url, i.name from programs p left join institutions i on (i.institution_id = p.institution_id) order by i.name, p.title",
-        DATABASE_NAME );
+        "select * from programs order by title", DATABASE_NAME );
 
       if ( query.exec() )
       {
@@ -54,7 +55,7 @@ namespace crrc
         }
 
         programsLoaded = true;
-      }
+      } else qWarning( PROGRAM_DAO ) << query.lastError().text();
     }
 
     void bindProgram( Cutelyst::Context* c, QSqlQuery& query )
@@ -89,18 +90,7 @@ using crrc::dao::ProgramDAO;
 QVariantList ProgramDAO::retrieveAll() const
 {
   loadPrograms();
-  QVariantList list;
-
-  auto query = CPreparedSqlQueryThreadForDB(
-    "select p.program_id, i.name, p.title from programs p left join institutions i on (i.institution_id = p.institution_id) order by i.name, p.title",
-    DATABASE_NAME );
-
-  if ( query.exec() )
-  {
-    while ( query.next() ) list << retrieve( query.value( 0 ).toUInt() );
-  }
-
-  return list;
+  return fromPrograms();
 }
 
 QVariantList ProgramDAO::retrieveByInstitution( uint32_t institutionId ) const
@@ -132,13 +122,21 @@ uint32_t ProgramDAO::insert( Cutelyst::Context* context ) const
 {
   loadPrograms();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into programs (title, credits, institution_id, degree_id, type, designation_id, curriculum_code, url) values (:title, :credits, :institutionId, :degreeId, :type, :designationId, :cc, :url)",
+    R"(
+insert into programs
+(
+  title, credits, institution_id, degree_id, type, designation_id,
+  curriculum_code, url
+)
+values
+(:title, :credits, :institutionId, :degreeId, :type, :designationId, :cc, :url)
+)",
     crrc::DATABASE_NAME );
   bindProgram( context, query );
 
   if ( !query.exec() )
   {
-    qWarning() << query.lastError().text();
+    qWarning( PROGRAM_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
@@ -156,7 +154,12 @@ uint32_t ProgramDAO::update( Cutelyst::Context* context ) const
   loadPrograms();
   auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
-    "update programs set title=:title, credits=:credits, institution_id=:institutionId, degree_id=:degreeId, type=:type, designation_id=:designationId, curriculum_code=:cc, url=:url where program_id=:id",
+    R"(
+update programs set title=:title, credits=:credits,
+  institution_id=:institutionId, degree_id=:degreeId, type=:type,
+  designation_id=:designationId, curriculum_code=:cc, url=:url
+where program_id=:id
+)",
     crrc::DATABASE_NAME );
   bindProgram( context, query );
   query.bindValue( ":id", id.toInt() );
@@ -175,7 +178,7 @@ uint32_t ProgramDAO::update( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( PROGRAM_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -207,7 +210,7 @@ QVariantList ProgramDAO::search( Cutelyst::Context* context) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( PROGRAM_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -228,6 +231,6 @@ uint32_t ProgramDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( PROGRAM_DAO ) << query.lastError().text();
   return 0;
 }

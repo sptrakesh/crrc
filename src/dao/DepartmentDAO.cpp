@@ -6,11 +6,14 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Department;
+
+Q_LOGGING_CATEGORY( DEPARTMENT_DAO, "crrc.dao.DepartmentDAO" )
 
 namespace crrc
 {
@@ -38,7 +41,11 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select department_id, name, prefix, institution_id from departments order by institution_id, name",
+        R"(
+select department_id, name, prefix, institution_id
+from departments
+order by institution_id, name
+)",
         DATABASE_NAME );
 
       if ( query.exec() )
@@ -94,7 +101,12 @@ uint32_t DepartmentDAO::insert( Cutelyst::Context* context ) const
 {
   loadDepartments();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into departments (name, prefix, institution_id) values (:name, :prefix, :inst)",
+    R"(
+insert into departments
+(name, prefix, institution_id)
+values
+(:name, :prefix, :inst)
+)",
     crrc::DATABASE_NAME );
   bindDepartment( context, query );
 
@@ -117,7 +129,10 @@ uint32_t DepartmentDAO::update( Cutelyst::Context* context ) const
   loadDepartments();
   auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
-    "update departments set name=:name, prefix=:prefix, institution_id=:inst where department_id=:id",
+    R"(
+update departments set name=:name, prefix=:prefix, institution_id=:inst
+where department_id=:id
+)",
     crrc::DATABASE_NAME );
   bindDepartment( context, query );
   query.bindValue( ":id", id.toInt() );
@@ -133,7 +148,7 @@ uint32_t DepartmentDAO::update( Cutelyst::Context* context ) const
   else
   {
     context->stash()["error_msg"] = query.lastError().text();
-    qDebug() << query.lastError().text();
+    qWarning( DEPARTMENT_DAO ) << query.lastError().text();
   }
 
   return query.numRowsAffected();
@@ -153,6 +168,6 @@ uint32_t DepartmentDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qDebug() << query.lastError().text();
+  qWarning( DEPARTMENT_DAO ) << query.lastError().text();
   return 0;
 }

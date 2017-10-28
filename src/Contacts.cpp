@@ -135,7 +135,8 @@ void Contacts::edit( Cutelyst::Context* c ) const
   if ( "PUT" == c->request()->method() )
   {
     const auto contact = dao.retrieve( id.toUInt() );
-    dao::sendJson( c, toJson( *model::Contact::from( contact ) ) );
+    const auto ptr = model::Contact::from( contact );
+    dao::sendJson( c, ptr ? toJson( *ptr ) : QJsonObject() );
     return;
   }
 

@@ -60,7 +60,7 @@ QJsonObject crrc::model::toJson( const Institution& institution, bool compact )
   if ( institution.getLogoId() )
   {
     const auto ptr = Logo::from( institution.getLogo() );
-    obj.insert( "logo", toJson( *ptr ) );
+    obj.insert( "logo", ptr ? toJson( *ptr ) : QJsonObject{} );
   }
 
   return obj;

@@ -2,10 +2,12 @@
 #include "constants.h"
 #include "model/InstitutionDesignation.h"
 
+#include <QtCore/QLoggingCategory>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::InstitutionDesignation;
+Q_LOGGING_CATEGORY( INSTITUTION_DESIGNATION_DAO, "crrc.dao.InstitutionDesignationDAO" )
 
 namespace crrc
 {
@@ -28,7 +30,11 @@ QVariantList InstitutionDesignationDAO::retrieve(
   QVariantList list;
 
   auto query = CPreparedSqlQueryThreadForDB( 
-    "select institution_id, designation_id, expiration from institution_designations where institution_id = :iid",
+    R"(
+select institution_id, designation_id, expiration
+from institution_designations
+where institution_id = :iid
+)",
     crrc::DATABASE_NAME );
   query.bindValue( ":iid", institutionId );
   if ( query.exec() )
@@ -58,7 +64,7 @@ uint32_t InstitutionDesignationDAO::remove( Cutelyst::Context* context ) const
 
   if ( query.exec() ) return query.numRowsAffected();
 
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
   context->setStash( "error_msg", query.lastError().text() );
   return 0;
 }
@@ -71,32 +77,41 @@ uint32_t InstitutionDesignationDAO::remove( uint32_t institutionId ) const
   query.bindValue( ":iid", institutionId );
   if ( query.exec() ) return query.numRowsAffected();
 
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
   return 0;
 }
 
 uint32_t InstitutionDesignationDAO::update( Cutelyst::Context* context ) const
 {
   auto query = CPreparedSqlQueryThreadForDB( 
-    "update institution_designations set expiration = :expiration where institution_id = :iid and designation_id = :did",
+    R"(
+update institution_designations set expiration = :expiration
+where institution_id = :iid
+and designation_id = :did
+)",
     crrc::DATABASE_NAME );
   bindInstitutionDesignation( context, query );
   if ( query.exec() ) return query.numRowsAffected();
 
   context->setStash( "error_msg", query.lastError().text() );
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
   return 0;
 }
 
 uint32_t InstitutionDesignationDAO::insert( Cutelyst::Context* context ) const
 {
   auto query = CPreparedSqlQueryThreadForDB( 
-    "insert into institution_designations (institution_id, designation_id, expiration) values (:iid, :did, :expiration)",
+    R"(
+insert into institution_designations
+(institution_id, designation_id, expiration)
+values
+(:iid, :did, :expiration)
+)",
     crrc::DATABASE_NAME );
   bindInstitutionDesignation( context, query );
   if ( query.exec() ) return query.numRowsAffected();
 
   context->setStash( "error_msg", query.lastError().text() );
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
   return 0;
 }

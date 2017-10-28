@@ -1,6 +1,7 @@
 #pragma once
-#include <Cutelyst/Controller>
 
+#include <QtCore/QJsonArray>
+#include <Cutelyst/Controller>
 
 namespace crrc
 {
@@ -40,5 +41,7 @@ namespace crrc
 
   private:
     bool checkInstitution( Cutelyst::Context* context ) const;
+    QJsonArray toArray( const QVariantList& list ) const;
+    void editAndRespond( Cutelyst::Context* c ) const;
   };
 }
