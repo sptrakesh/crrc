@@ -64,7 +64,7 @@ QJsonObject crrc::model::toJson( const User& user )
   if ( user.getRoleId() )
   {
     const auto ptr = Role::from( user.getRole() );
-    obj.insert( "role", toJson( *ptr ) );
+    obj.insert( "role", ptr ? toJson( *ptr ) : QJsonObject{} );
   }
 
   return obj;

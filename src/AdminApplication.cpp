@@ -64,6 +64,7 @@ bool AdminApplication::init()
 
 bool AdminApplication::postFork()
 {
+  std::lock_guard<std::mutex> lock{ mutex };
   auto db = QSqlDatabase::addDatabase( "QSQLITE",
     Cutelyst::Sql::databaseNameThread( DATABASE_NAME ) );
   db.setDatabaseName( "var/crrc.db" );

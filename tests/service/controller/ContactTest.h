@@ -9,7 +9,8 @@ namespace crrc
   public:
     ContactTest( QObject* parent = nullptr ) : BaseTest( parent ),
         name{ "UnitTestContact" }, workEmail{ "testcontact@unittest.com" },
-        username{ "unittestuser" }, password{ "Unit5@stUser" } {}
+        username{ "unittestuser" }, password{ "Unit5@stUser" },
+      title{ "Unit Test Title" } {}
 
   private slots:
     void create();
@@ -29,6 +30,7 @@ namespace crrc
     const QString workEmail;
     const QString username;
     const QString password;
+    const QString title;
     const uint32_t roleId = 3;
   };
 }

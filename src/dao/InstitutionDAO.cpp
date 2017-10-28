@@ -8,11 +8,13 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Institution;
+Q_LOGGING_CATEGORY( INSTITUTION_DAO, "crrc.dao.InstitutionDAO" )
 
 namespace crrc
 {
@@ -61,9 +63,7 @@ namespace crrc
       query.bindValue( ":city", c->request()->param( "city" ) );
       query.bindValue( ":state", c->request()->param( "state" ) );
       query.bindValue( ":postalCode", c->request()->param( "postalCode" ) );
-      auto country = c->request()->param( "country", "" );
-      if ( country.isEmpty() ) country = "USA";
-      query.bindValue( ":country", country );
+      query.bindValue( ":country", c->request()->param( "country", "USA" ) );
       query.bindValue( ":website", c->request()->param( "website" ) );
       query.bindValue( ":logo", c->request()->param( "logoId" ) );
     }
@@ -96,6 +96,7 @@ uint32_t InstitutionDAO::insert( Cutelyst::Context* context ) const
 
   if ( !query.exec() )
   {
+    qWarning( INSTITUTION_DAO ) << "Database error: " << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
@@ -125,7 +126,11 @@ void InstitutionDAO::update( Cutelyst::Context* context ) const
     std::lock_guard<std::mutex> lock{ institutionMutex };
     institutions[iid] = std::move( institution );
   }
-  else context->stash()["error_msg"] = query.lastError().text();
+  else
+  {
+    qWarning( INSTITUTION_DAO ) << "Database error: " << query.lastError().text();
+    context->stash()["error_msg"] = query.lastError().text();
+  }
 }
 
 QVariantList InstitutionDAO::search( Cutelyst::Context* context ) const
@@ -151,7 +156,7 @@ QVariantList InstitutionDAO::search( Cutelyst::Context* context ) const
   }
   else
   {
-    qWarning() << query.lastError().text();
+    qWarning( INSTITUTION_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
   }
 
@@ -182,7 +187,7 @@ uint32_t InstitutionDAO::remove( uint32_t id ) const
     return count;
   }
 
-  qWarning() << query.lastError().text();
+  qWarning( INSTITUTION_DAO ) << query.lastError().text();
   return 0;
 }
 

@@ -1,4 +1,4 @@
-FROM sptrakesh/cutelyst
+FROM sptrakesh/cutelyst:1.10
 
 ENV PS1='$PWD \$ ' EDITOR=vi
 COPY scripts /tmp/crrc

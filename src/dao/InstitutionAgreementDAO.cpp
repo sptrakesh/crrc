@@ -4,9 +4,12 @@
 #include "model/InstitutionAgreement.h"
 
 #include <mutex>
+#include <QtCore/QLoggingCategory>
 #include <QtCore/QStringBuilder>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
+
+Q_LOGGING_CATEGORY( INSITUTIONAGREEMENTDAO, "crrc.dao.InstitutionAgreementDAO" )
 
 using crrc::model::InstitutionAgreement;
 
@@ -36,14 +39,19 @@ QVariantList InstitutionAgreementDAO::retrieve( Cutelyst::Context* context,
 uint32_t InstitutionAgreementDAO::insert( Cutelyst::Context* context ) const
 {
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into institution_agreements (agreement_id, transfer_program_id, transferee_program_id) values (:id, :tp1, :tp2)",
+    R"(
+insert into institution_agreements
+(agreement_id, transfer_program_id, transferee_program_id)
+values
+(:id, :tp1, :tp2)
+)",
     crrc::DATABASE_NAME );
   bindInstitutionAgreement( context, query );
 
   if ( !query.exec() )
   {
     context->stash()["error_msg"] = query.lastError().text();
-    qWarning() << query.lastError().text();
+    qWarning( INSITUTIONAGREEMENTDAO ) << query.lastError().text();
     return 0;
   }
 
@@ -53,7 +61,12 @@ uint32_t InstitutionAgreementDAO::insert( Cutelyst::Context* context ) const
 void InstitutionAgreementDAO::remove( Cutelyst::Context* context ) const
 {
   auto query = CPreparedSqlQueryThreadForDB(
-    "delete from institution_agreements where agreement_id = :id and transfer_program_id = :tp1 and transferee_program_id = :tp2",
+    R"(
+delete from institution_agreements
+where agreement_id = :id
+and transfer_program_id = :tp1
+and transferee_program_id = :tp2
+)",
     DATABASE_NAME );
   bindInstitutionAgreement( context, query );
 
@@ -75,7 +88,12 @@ QVariantList InstitutionAgreementDAO::retrieveByKey(
 {
   QVariantList list;
   auto query = CPreparedSqlQueryThreadForDB(
-    "select * from institution_agreements where agreement_id = :id and transfer_program_id = :tp1 and transferee_program_id = :tp2",
+    R"(
+select * from institution_agreements
+where agreement_id = :id
+and transfer_program_id = :tp1
+and transferee_program_id = :tp2
+)",
     crrc::DATABASE_NAME );
   query.bindValue( ":id", ids.at( 0 ) );
   query.bindValue( ":tp1", ids.at( 1 ) );

@@ -5,8 +5,10 @@
 #include "dao/UserDAO.h"
 
 #include <QtCore/QDebug>
+#include <QtCore/QLoggingCategory>
 
 using crrc::model::Contact;
+Q_LOGGING_CATEGORY( CONTACT, "crrc.model.Contact" )
 
 Contact::Ptr Contact::create( QSqlQuery& query )
 {
@@ -22,6 +24,8 @@ Contact::Ptr Contact::create( QSqlQuery& query )
   ptr->otherPhone = query.value( 8 ).toString();
   ptr->userId = query.value( 9 ).toUInt();
   ptr->institutionId = query.value( 10 ).toUInt();
+  ptr->title = query.value( 11 ).toString();
+  ptr->url = query.value( 12 ).toString();
   return ptr;
 }
 
@@ -41,19 +45,21 @@ Contact::Ptr Contact::create( Cutelyst::Context* context )
   ptr->homePhone = context->request()->param( "homePhone" );
   ptr->otherPhone = context->request()->param( "otherPhone" );
   ptr->institutionId = context->request()->param( "institution" ).toUInt();
+  ptr->title = context->request()->param( "title" );
+  ptr->url = context->request()->param( "url" );
 
   const auto username = context->request()->param( "username" );
   if ( !username.isEmpty() )
   {
     const auto user = dao::UserDAO().retrieveByUsername( username );
-    auto uptr = const_cast<model::User*>( model::User::from( user ) );
+    auto uptr = const_cast<User*>( User::from( user ) );
     if ( uptr )
     {
       ptr->userId = uptr->getId();
       const auto role = context->request()->param( "role" );
       uptr->setRoleId( ( role == "-1" ) ? 0 : role.toUInt() );
     }
-    else qDebug() << "No user with username: " << username;
+    else qDebug( CONTACT ) << "No user with username: " << username;
   }
 
   return ptr;
@@ -80,16 +86,19 @@ QJsonObject crrc::model::toJson( const Contact& contact )
   if ( !contact.getWorkPhone().isEmpty() ) obj.insert( "workPhone", contact.getWorkPhone() );
   if ( !contact.getHomePhone().isEmpty() ) obj.insert( "homePhone", contact.getHomePhone() );
   if ( !contact.getOtherPhone().isEmpty() ) obj.insert( "otherPhone", contact.getOtherPhone() );
+  if ( !contact.getTitle().isEmpty() ) obj.insert( "title", contact.getTitle() );
+  if ( !contact.getUrl().isEmpty() ) obj.insert( "url", contact.getUrl() );
 
   if ( contact.getUserId() )
   {
     const auto ptr = User::from( contact.getUser() );
-    obj.insert( "user", toJson( *ptr ) );
+    obj.insert( "user", ptr ? toJson( *ptr ) : QJsonObject{} );
   }
 
   if ( contact.getInstitutionId() )
   {
-    obj.insert( "institution", toJson( *( Institution::from( contact.getInstitution() ) ), true ) );
+    const auto ptr = Institution::from( contact.getInstitution() );
+    obj.insert( "institution", ptr ? toJson( *ptr, true ) : QJsonObject{} );
   }
 
   return obj;

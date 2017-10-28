@@ -77,14 +77,12 @@ void Degrees::edit( Cutelyst::Context* c ) const
   dao::DegreeDAO dao;
   if ( id.isEmpty() )
   {
-    qDebug() << "Inserting new degree";
     const auto cid = dao.insert( c );
     obj.insert( "id", static_cast<int>( cid ) );
     obj.insert( "status", true );
   }
   else
   {
-    qDebug() << "Updating degree";
     dao.update( c );
     obj.insert( "status", true );
     obj.insert( "id", id.toInt() );

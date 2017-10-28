@@ -4,10 +4,12 @@ Application for managing articulation agreements between educational institution
 ## Sections
 * [Technology Stack](#techStack)
 * [Managing Entities](#entities)
+  * [Authentication and Authorisation](#auth)
   * [Institutions](#institutions)
   * [Contacts](#contacts)
   * [Departments](#departments)
   * [Designations](#designations)
+  * [Programs](#programs)
 
 
 ## <a name="techStack"></a>Technology Stack
@@ -43,6 +45,34 @@ The templates for managing entities follow a common naming convention:
 *  `<path to>/index.html` - Used to display a list of entities.
 *  `<path to>/view.html` - Used to display details of an entity.
 *  `<path to>/form.html` - Used to create/edit entities.
+
+### <a name="auth"></a>Authentication and Authorisation
+The application is currently designed to be only accessed by authenticated
+users.  Users are granted the following roles:
+
+*  Global Administrator - Allowed to administer all entities at all levels in
+   the application.
+*  Institution Administrator - Allowed to administer entities associated with
+   the user's institution.
+*  Institution User - Allowed to view the entities in the system.
+
+#### Authentication
+Authentication is enforced throughout the application.  Only logged in users
+with a valid session may access the various screens/services supported by the
+application.  User's may login and establish a session with the server using
+either a traditional `HTML form` presented by the Web UI, or a `REST` style service
+supported by the server.
+
+*  Login - Users/clients wishing to authenticate and establish a valid session
+   with the application may use the `/login` endpoint.  Submit the credentials
+   using either a `POST` request (for HTML response) or a `PUT` request for
+   a JSON response indicating success/failure of the authentication attempt.
+*  Logout - Users/clients wishing to end their session may be access the
+   `/logout` endpoint.  Making a `GET` request will invalidate the session and
+   redirect the user to the `login` screen.  Making a `POST` request will invalidate
+   the session and respond with a `JSON` response that indicates the status of
+   the logout operation.  Note that unless there are server issues, a `logout`
+   should always return a success message.
 
 ### <a name="institutions"></a>Institutions
 Institutions are the logical starting point for managing entities within the
@@ -109,7 +139,7 @@ The following screens and associated web services are available:
    * A `PUT` request to `/contacts/remove` will remove the entity and
      return a JSON message indicating success/failure of the operation.
      
-## <a name="departments"></a>Departments
+### <a name="departments"></a>Departments
 Departments are managed primarily at the institution level.  Service based
 management is available through the following end points.
 
@@ -125,13 +155,13 @@ management is available through the following end points.
    endpoint.  A JSON structure indicating success/failure of the operation is
    returned.
 
-### Screens
+#### Screens
 Departments for an institution are managed using a single `index.html` template
 which is available under the `root/src/institutions/departments` directory.
 The various CRUD operations are supported as JSON services which are implemented
 in the template.
 
-## <a name="designations"></a>Designations
+### <a name="designations"></a>Designations
 At present there is no web UI to manage designations.  Designations are metadata
 that are associated with institutions and programs.  Web service endpoints are
 available for managing designations.
@@ -150,7 +180,7 @@ available for managing designations.
    endpoint.  A JSON structure indicating success/failure of the operation is
    returned.  May be accessed using either `POST` or `PUT`.
 
-### Screens
+#### Screens
 The following screens and services are available for managing institution to
 designation mappings:
 
@@ -167,6 +197,29 @@ designation mappings:
 *  Remove service.  Existing institution-designation mapping may be removed via
    a `POST` request to `/institution/designations/id/<institution id>/remove`
    endpoint.
+
+### <a name="programs"></a>Programs
+Programs associated with an institution are managed via the web UI or using 
+simple web services similar to the other entities.
+
+#### Screens
+
+*  Index or listing.  Listing of all the programs in the database, or associated
+   with an institution is displayed using the `/index.html` template bound
+   to `/programs` endpoint.  The same data may be retrieved as a JSON array
+   by making a `POST` request instead of a `GET` request.
+*  JSON data representation of a program may be retrieved using the
+   `/programs/id/<id value>/data` endpoint.  The JSON representation may be
+    retrieved using a `GET` request.
+*  New programs may be created, or existing ones updated by submitting a form
+   to the `/programs/edit` endpoint.  `POST` requests will redirect the user
+   to the program listing page.  `PUT` request will result in a JSON  data
+   structure that indicates the success or failure of the operation.
+*  Programs may be deleted using the `/programs/remove`
+   endpoint.  The Web UI makes a `POST` request to this end point which results
+   in the user being redirected to the listing page.  A `PUT` request may be
+   made, in which case a JSON structure indicating the success/failure of the
+   operation will be returned.
 
 ## Tests
 Integration tests are being developed for the backend interactions and are

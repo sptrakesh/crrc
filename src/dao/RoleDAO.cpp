@@ -5,10 +5,12 @@
 #include <mutex>
 #include <unordered_map>
 
+#include <QtCore/QLoggingCategory>
 #include <QtSql/QtSql>
 #include <Cutelyst/Plugins/Utils/sql.h>
 
 using crrc::model::Role;
+Q_LOGGING_CATEGORY( ROLE_DAO, "crrc.dao.RoleDAO" )
 
 namespace crrc
 {
@@ -48,6 +50,7 @@ namespace crrc
 
         rolesLoaded = true;
       }
+      else qWarning( ROLE_DAO ) << query.lastError().text();
     }
   }
 }
