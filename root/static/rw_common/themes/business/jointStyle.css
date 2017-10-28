@@ -534,11 +534,11 @@ float:left;
 .viewUserContainer p[id="instituteIDLabelInFilterBy"]{
 	float:left;
 	text-align: center;
-	font-size: 20px;
+	font-size: 18px;
 	padding: 0px;
 	border: 0px;
-	width: 100px;
-	margin: 15px 5px 10px 15px;
+	width: 120px;
+	margin: 15px 0px 10px 00px;
 }
 .viewUserContainer input[class="InstituteIdFilterTextBoxInFilterBy"]{
 	width: 250px;
@@ -552,20 +552,20 @@ float:left;
     padding: 5px 7px;
 }
 
-.viewUserContainer p[class="adminTypeLabelInFilterBy"]{
-	margin: 10px 05px 5px 0px;
-	width: 115px;
+.viewUserContainer p[class="roleLabelInFilterBy"]{
+	margin: 10px 05px 5px 65px;
+	width: 50px;
 	padding: 0px;
 	float:left;
     font-size: 20px;
 }
 
 .viewUserContainer p[id="UserIDLabelInFilterBy"]{
-	margin: 15px 5px 15px 40px;
-	width: 70px;
+	margin: 15px 5px 15px 30px;
+	width: 90px;
 	padding: 0px;
     float:  left;
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .viewUserContainer input[class="selectUserTextBoxInFilterBy"]{
@@ -600,7 +600,7 @@ float:left;
 	border-style: solid;
 	border-width: 1px;
 	border-color: black;
-	border-radius: 10px;
+	border-radius: 5px;
     width: 120px;
     height: 30px;
     margin: 5px;
