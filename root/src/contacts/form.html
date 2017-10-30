@@ -151,10 +151,10 @@
     
     <div class="institute_addUser">
     <label class="label">Institution:</label>
-    <select name="institution" id="institution" class="commonCmbBox3CSS" style="margin: 10px 10px 10px 0px;">
-      <option value="-1" >Select Institution</option>
+    <select name="institution" id="institution" class="commonCmbBox3CSS" style="margin: 10px 10px 10px 0px;width: 300px;">
+      <option value="-1" selected>Select Institution</option>
       {% for institution in institutions %}
-      <option value="{{ institution.id }}" style="font-size: 16px;"
+      <option value="{{ institution.id }}" style="font-size: 14px;"
               {% if institution.id == object.institution.id %}selected{% endif %}>
         {{ institution.name }}
       </option>
@@ -178,12 +178,12 @@
     {% endif %}
     <br />
     <label class="label">Role:</label>
-    <select name="role" id="role" class="commonCmbBox4CSS" {% if object.user %}{% else %}disabled{% endif %}>
+    <select name="role" id="role" class="commonCmbBox4CSS" {% if object.user %}{% else %}disabled{% endif %} >
       <option value="-1" style="font-size: 16px;">Select Role</option>
       {% for role in roles %}
       <option value="{{ role.id }}" style="font-size: 16px;"
               {% ifequal role.id object.user.role.id %}selected="selected" {% endifequal %}>
-        {{ role.role }}
+        {{ role
       </option>
       {% endfor %}
     </select>

@@ -977,17 +977,17 @@ div[class="addUserContainer"]{
     text-align: center;
     width: 200px;
     border-radius: 5px;
-    font-size: 18pt;
-    border-width: 1px; 
+    font-size: 14pt;
+    border-width: 1px;  
 }
 
 .addUserContainer select[class="commonCmbBox4CSS"]{
     margin: 0px 0px 0px 35px;
 	padding: 0px;
     text-align: center;
-    width: 200px;
+    width: 230px;
     border-radius: 5px;
-    font-size: 18pt;
+    font-size: 14pt;
     border-width: 1px; 
 }
 /*.addUserContainer button[class="addUserButton"]{

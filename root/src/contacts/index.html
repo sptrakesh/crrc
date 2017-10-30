@@ -3,25 +3,25 @@
   var institutions = [];
     
     function getInstitutions()
-{
-    let xhr = new XMLHttpRequest();
-    xhr.open( 'POST', '/institutions' );
-    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-    xhr.onload = function ()
     {
-      if ( xhr.status === 200 )
-      {
-        console.log( xhr.responseText );
-        institutions = JSON.parse( xhr.responseText );
-        populateInstitutionsSelect();
-      }
-      else
-      {
-        console.log( `Unable to retrieve institution list.  Server returned status: ${xhr.status}` );
-      }
-    };
-    xhr.send( '' );
-}
+        let xhr = new XMLHttpRequest();
+        xhr.open( 'POST', '/institutions' );
+        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        xhr.onload = function ()
+        {
+          if ( xhr.status === 200 )
+          {
+            console.log( xhr.responseText );
+            institutions = JSON.parse( xhr.responseText );
+            populateInstitutionsSelect();
+          }
+          else
+          {
+            console.log( `Unable to retrieve institution list.  Server returned status: ${xhr.status}` );
+          }
+        };
+        xhr.send( '' );
+    }
 
   function sortContacts()
   {
@@ -51,6 +51,7 @@
       option.value = contact.id;
       option.textContent = contact.name;
       element.appendChild( option );
+      console.log(contact.name + "Retrieved");
   }
 
   function displayAll()
@@ -101,7 +102,7 @@
             </div> <!--End of Title Header </div-->
             <!--Start of div view Users Multiline Select -->
             <div class="viewUsersMultilineSelect">
-               <select multiple id="lstBoxselectUser_ViewUser">
+               <select multiple id="lstBoxselectUser_ViewUser" style="font-size: 16px;">
                    <script type="text/javascript">displayAll();</script>
                </select>
                <br><br>
