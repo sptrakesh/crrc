@@ -42,6 +42,7 @@ crrc()
     sqlite3 var/crrc.db < /tmp/crrc/sqlite/crrc.sql
     sqlite3 var/crrc.db < /tmp/crrc/sqlite/crrc1.sql
     sqlite3 var/crrc.db < /tmp/crrc/sqlite/crrc2.sql
+    sqlite3 var/crrc.db < /tmp/crrc/sqlite/crrc3.sql
   fi
 
   /opt/local/bin/cutelyst --server -p 80 --app-file $PWD/build/src/libcrrc.so -- > var/crrc.log 2>&1 &

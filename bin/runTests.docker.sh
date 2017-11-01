@@ -31,6 +31,7 @@ moveDatabase()
   sqlite3 var/crrc.db < docker/scripts/sqlite/crrc.sql
   sqlite3 var/crrc.db < docker/scripts/sqlite/crrc1.sql
   sqlite3 var/crrc.db < docker/scripts/sqlite/crrc2.sql
+  sqlite3 var/crrc.db < docker/scripts/sqlite/crrc3.sql
 }
 
 restoreDatabase()
