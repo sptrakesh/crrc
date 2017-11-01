@@ -1,4 +1,43 @@
 <script type="text/javascript">
+    let programs = {{programs}};
+    var programList = [];
+     function getPrograms()
+        {
+            let xhr = new XMLHttpRequest();
+            xhr.open( 'POST', '/programs' );
+            xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+            xhr.onload = function ()
+            {
+              if ( xhr.status === 200 )
+              {
+                console.log( xhr.responseText );
+                programList = JSON.parse( xhr.responseText );
+                populateProgramSelect();
+              }
+              else
+              {
+                console.log( `Unable to retrieve Program list.  Server returned status: ${xhr.status}` );
+              }
+            };
+            xhr.send( '' );
+        }
+
+        function populateProgramSelect()
+        {
+             
+           let element = document.getElementById('selectProgram');
+           let option = document.createElement( 'option' );
+            for (var i = 0; i < programList.length; ++i)
+                {
+                    let option = document.createElement( 'option' );
+                    option.value = programList[i].id;
+                    option.textContent = programList[i].title;
+                    element.appendChild( option );
+                }
+        }
+
+         getPrograms();
+
   function displayProgram( programId )
   {
     document.getElementById( `pv_${programId}` ).style.display = 'inline';
@@ -67,58 +106,47 @@
             <div class="TitleHeader">
                <h4>View Programs</h4>
             </div>
+         <div style="min-height: 500px; margin-left: auto; margin-right: auto; width: 1000px;">
             <div class="viewProgramsMultilineSelect">
                <select multiple id="selectProgram">
-                  <option>  </option>
-                  <option>  </option>
-                  <option>  </option>
+               
                </select>
                <br><br>
-                <input type="submit" name="selectProgram" value="Select Program" onclick="" id="selectProgramButton" class="commonBtn2InViewPrograms" >
-                <a href="/programs/create"><input type="button"  value="Add Program"  class="commonBtn2InViewPrograms" > </a>
-                <input type="submit" name="removeProgram" value="Remove Program" onclick="" id="removeProgramButton"
-                     class="commonBtn2InViewPrograms" >
+                <button onclick="display()" class="commonBtn2InViewPrograms" >View Program Detail</button>
+                <a href="/programs/create"><button class="commonBtn2InViewPrograms" >Add Program</button> </a>
+                <button onclick="" class="commonBtn2InViewPrograms" >Remove Program</button>
                <br>
               
             </div> <!--End of div viewProgramsMultilineSelect -->
-            <div class="filterByInViewPrograms">
+            <div class="filterByInViewPrograms" align="right">
                <h2 id="filterByHeader"> Filter By </h2>
                <fieldset>
-                  <legend>Program ID</legend>
-                  <p id="lblPID_viewPrograms"> Program ID: </p>
+                 Program Name:
                   <input type="text" name="instituteIDInput" placeholder="Name of the Program" class="commonTxtBoxCSS" >
                   <input type="submit" value="Search" class="commonBtn3InViewPrograms">  
                </fieldset>
                <fieldset>
-                  <legend>Location</legend>
-                  <p id="adminTypeLabel"> Filter By State: </p>
+                   Institution:
                   <select class="commonCmbBoxCSS">
-                     <option></option>
-                     <option></option>
                      <option></option>
                   </select>
                   <br>
-                  <p id="adminTypeLabel"> Filter By City: </p>
+                  Filter By State: 
                   <select class="commonCmbBoxCSS">
                      <option></option>
-                     <option></option>
-                     <option></option>
-                  </select>
+                  </select><br>
                   <input type="submit" value="Apply Filter" class="commonBtn3InViewPrograms">  
                </fieldset>
                <fieldset>
-                  <legend>Program Type</legend>
-                  <p id="adminTypeLabel"> Program Type: </p>
+                   Degree Type:
                   <select class="commonCmbBoxCSS">
-                     <option></option>
-                     <option></option>
                      <option></option>
                   </select>
                   <input type="submit" value="Apply Filter" name="searchButton" class="commonBtn3InViewPrograms"> 
                </fieldset>
                <fieldset>
-                  <legend>CAE Designations</legend>
-                  <p id="adminTypeLabel"> CAE Designation: </p>
+               
+                 CAE Designation:
                   <select class="commonCmbBoxCSS">
                      <option></option>
                      <option></option>
@@ -129,7 +157,7 @@
                <br>
                
             </div><!--End of div filterBy -->
-           
+           </div>
          </div> <!--End of View Program Container-->
   <div id="programs">
     {% for program in programs %}

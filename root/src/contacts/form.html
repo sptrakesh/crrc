@@ -62,7 +62,7 @@
     return true;
   }
 
-  function enableRole()
+  function enableRole(form)
   {
     let username = document.getElementById( 'username' );
     if ( !isEmpty( username ) )
@@ -123,13 +123,14 @@
     {% else %}
     <h2 align="center">Create Contact</h2>
     {% endif %}
+    <div style="margin-left: auto; margin-right: auto; width: 1000px; min-height: 500px;">
     <div class="addUserForm">  
         <label class="label">First Name:</label>
         <input name="name" id="name" type="text" placeholder=" First Name"  class="addUserInput" size="30" width="100" required="required"
                {% if object %}value="{{ object.name }}" {% endif %} />
         <br />
         <label class="label">Last Name:</label>
-        <input type="text" placeholder="Last Name to be added to Database"  class="addUserInput" size="30" width="100" required="required"
+        <input type="text" placeholder="Last Name"  class="addUserInput" size="30" width="100" required="required"
                >
         <br />
         <label class="label">Email (Work):</label>
@@ -183,7 +184,7 @@
       {% for role in roles %}
       <option value="{{ role.id }}" style="font-size: 16px;"
               {% ifequal role.id object.user.role.id %}selected="selected" {% endifequal %}>
-        {{ role
+        {{ role.role }}
       </option>
       {% endfor %}
     </select>
@@ -195,6 +196,7 @@
     <button onclick="validate()" style="font-size: 20px;
 	border: 1px solid black;
 	border-radius: 5px;">Save</button>
+    </div>
     </div>
   </form>
 </div>

@@ -454,7 +454,7 @@ border-width: 1px;
 border-radius: 10px;
 width: 450px;
 height: 400px;
- margin: 20px 20px 20px 120px;
+ margin: 20px 20px 20px 20px;
 float:left;
 }
 
@@ -470,12 +470,8 @@ float:left;
     border-color: black;
 }
 
-.viewUserContainer form[id="selectUserButtonForm"]{
-	width: 120px;
-	float: left;
-	margin: 0px 5px 0px 20px;
-}
-.viewUserContainer input[id="selectUserButton"]{
+
+.viewUserContainer button[class="selectUserButton"]{
 	font-size: 20px;
 	border-style: solid;
 	border-width: 1px;
@@ -498,12 +494,13 @@ float:left;
 	width: 140px;
 	float: left;
 }
-.viewUserContainer input[id="removeUserButton"]{
+.viewUserContainer button[class="removeUserButton"]{
 	font-size: 20px;
     border-style: solid;
 	border-width: 1px;
 	border-color: black;
 	border-radius: 5px;
+    width: 140px;
 }
 
 /* End of div viewUserMultiLineSelect for viewUsers page */
@@ -518,7 +515,7 @@ float:left;
     border-radius: 10px;
     width: 450px;
     height: 400px;
-    margin: 20px 120px 20px 20px;
+    margin: 20px 20px 20px 20px;
     float:right;
 }
 .viewUserContainer #instituteLabelInFilterBy{
@@ -527,8 +524,7 @@ float:left;
 	font-size: 20px;
 	padding: 0px;
 	border: 0px;
-	width: 80px;
-	margin: 5px 5px 0px 35px;
+	margin: 5px 5px 0px 5px;
 }
 
 .viewUserContainer p[id="instituteIDLabelInFilterBy"]{
@@ -537,7 +533,6 @@ float:left;
 	font-size: 18px;
 	padding: 0px;
 	border: 0px;
-	width: 120px;
 	margin: 15px 0px 10px 00px;
 }
 .viewUserContainer input[class="InstituteIdFilterTextBoxInFilterBy"]{
@@ -586,16 +581,22 @@ float:left;
 	text-align: center;
 	padding: 0px;
 }
+
+
 .viewUserContainer select[class="commonCmbBox2CSS"]{
     margin: 0px 0px 0px 5px;
 	padding: 0px;
     text-align: center;
     width: 250px;
     border-radius: 5px;
-    font-size: 20pt;
+    font-size: 14pt;
     border-width:1px; 
 }
-.viewUserContainer input[class="commonBtnInViewPrograms"]{
+
+.viewUserContainer option{
+    font-size: 12pt;
+}
+.viewUserContainer button[class="commonBtnInViewPrograms"]{
      font-size: 15px;
 	border-style: solid;
 	border-width: 1px;
@@ -815,7 +816,7 @@ div[class="GeneralEducationSubDiv"]{
     border-radius: 10px;
     width: 450px;
     height: 400px;
-    margin: 20px 0px 20px 140px;
+    margin: 20px 20px 20px 20px;
     float:left;
 }
 .viewProgramContainer select[id="selectProgram"]{
@@ -830,13 +831,10 @@ div[class="GeneralEducationSubDiv"]{
     border-color: black;
 }
 
-.viewProgramContainer input[class="commonBtn2InViewPrograms"]{
-       font-size: 15px;
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
+.viewProgramContainer button[class="commonBtn2InViewPrograms"]{
+    font-size: 15px;
+	border: 1px solid black;
 	border-radius: 3px;
-    width: 130px;
     height: 25px;
     margin: 4px;
 }
@@ -858,7 +856,7 @@ div[class="GeneralEducationSubDiv"]{
     border-radius: 10px;
     width: 450px;
     height: 400px;
-    margin: 20px 130px 20px 0px;
+    margin: 20px 20px 20px 20px;
     float:right;
 }
 .viewProgramContainer input[class="commonTxtBoxCSS"]{
@@ -925,7 +923,7 @@ div[class="addUserContainer"]{
 	background-color: #858fa0;
 	padding: 10px;
 	float: left;
-	margin: 20px 0px 19px 120px;
+	margin: 20px 20px 19px 20px;
 	border-style: solid;
 	border-color: black;
 	border-width: 1px;
@@ -957,7 +955,7 @@ div[class="addUserContainer"]{
 	border-style: solid;
 	border-width: 1px;
 	border-radius: 10px;
-	margin: 20px 150px 20px 2px;
+	margin: 20px 20px 20px 20px;
 
 }
 .addUserContainer input[class="commonTxtBox2CSS"]{
@@ -1211,7 +1209,7 @@ div[class="addProgramContainer"]{
 	float: right;
 }
 
-.addProgramContainer input[class="commonBtn2InViewPrograms"]{
+.addProgramContainer button[class="commonBtn2InViewPrograms"]{
      font-size: 15px;
 	border-style: solid;
 	border-width: 1px;

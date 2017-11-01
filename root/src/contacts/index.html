@@ -61,7 +61,9 @@
   }
   function deletePerson( form )
   {
+      /*
     return confirm( `Do you wish to permanently delete contact ${form.name.value}?` );
+    */
   }
     
   function populateInstitutionsSelect()
@@ -77,9 +79,60 @@
     }
 
     getInstitutions();
+    
+    function removeUser(){
+        let select = document.getElementById('lstBoxselectUser_ViewUser');
+        let contactId = select.options[select.selectedIndex].value;
+        let contactName = select.options[select.selectedIndex].text;
+        let xhr = new XMLHttpRequest();
+        
+        if(contactId == -1)
+            {
+                alert("Please select a User to Remove");
+            }
+        else{
+              if( window.confirm("Are you sure you want to delete " + contactName + " ?"))
+            {
+                console.log("The response is YES");
+                xhr.open('PUT' , '/contacts/remove' );
+                xhr.setRequestHeader('content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function()
+                {
+                    console.log("onload funtion is working");
+                    if (xhr.status === 200 )
+                        {
+                            console.log(xhr.responseText );
+                            let json = JSON.parse( xhr.responseText );
+                            if(json.status && json.count === 1 )
+                                {
+                                    select.remove(select.selectedIndex);
+                                     console.log(contactName + " is now Sucessfully deleted!");
+                                }
+                            else
+                                {
+                                    console.log("Error Deleting this person");         
+                                }
+                        }
+                    else
+                    {
+                        console.log("xhr status is not 200");
+                    }
+                };
+                xhr.send (`id=${contactId}` );
+             }
+        }
+       
+      
+    }
+    function displayContactDetails()
+    {
+        let select = document.getElementById('lstBoxselectUser_ViewUser');
+        let contactId = select.options[select.selectedIndex].value;
+        window.location.href = `/contacts/id/${contactId}/view`;
+    }
 </script>
 
-<div style="margin-left: auto; margin-right: auto; ">
+<div style="margin-left: auto; margin-right: auto;min-height: 700px ;">
     
   <h2>Manage Contacts</h2>
   <div>
@@ -101,14 +154,16 @@
                <h4>View User</h4>
             </div> <!--End of Title Header </div-->
             <!--Start of div view Users Multiline Select -->
+           <div style="margin-left: auto; margin-right: auto; width: 1000px;">
             <div class="viewUsersMultilineSelect">
                <select multiple id="lstBoxselectUser_ViewUser" style="font-size: 16px;">
+                   <option value="-1" selected style="display: none;"></option>
                    <script type="text/javascript">displayAll();</script>
                </select>
                <br><br>
-               <input type="submit"  value="Select User"  id="selectUserButton">
+                <button onclick = "displayContactDetails()" class="selectUserButton">View User Details</button>
                <a href="/contacts/create"><input type="button" name="addUser" value="Add User" id="addUserButton"></a>
-               <input type="submit" name="removeUser" value="Remove User" id="removeUserButton">
+                <button class="removeUserButton" onclick="removeUser()">Remove User</button>
                
                <br>
             </div> <!--End of div viewUsersMultilineSelect -->
@@ -117,15 +172,18 @@
             <div class="filterByInViewUsers">
                <h2 id="filterByHeader"> Filter By </h2>
                <fieldset>
-                  <p id="instituteLabelInFilterBy"> Institute: </p>
-                  <select class="commonCmbBox2CSS" name="institution" id="institution" >
-                   <option></option>
-                  </select>
+                   <div>
+                       <p id="instituteLabelInFilterBy"> Institute: </p>
+                      <select class="commonCmbBox2CSS" id="institution" style="width: 300px;">
+                       <option value="-1" selected>Select Institution</option>
+                      </select>
+                   </div>
+                  
                   <br>
-                  <p id="instituteIDLabelInFilterBy"> Institute Name: </p>
-                  <input type="text" name="instituteIDInput" placeholder="Name of the Institute" class="InstituteIdFilterTextBoxInFilterBy">
+                  <p id="instituteIDLabelInFilterBy"> Search Institute: </p>
+                  <input type="text" placeholder="This feature is currently not available" class="InstituteIdFilterTextBoxInFilterBy" disabled>
                   <br>
-                  <input type="button" value="Apply Filter" class="commonBtnInViewPrograms"><br>
+                   <button class="commonBtnInViewPrograms">Apply Filter</button><br>
                </fieldset>
                <fieldset>
                   <p class="roleLabelInFilterBy"> Role: </p>
@@ -138,7 +196,7 @@
                       </option>
                       {% endfor %}
                     </select>
-                  <input type="button" value="Apply Filter" class="commonBtnInViewPrograms">
+                   <button class="commonBtnInViewPrograms">Apply Filter</button>
                </fieldset>
                <fieldset>
                  <form name="search" method="post" action="/contacts/search">
@@ -147,7 +205,7 @@
                     </form>
                </fieldset>
             </div> <!--End of div filterBy -->
-           
+           </div>
          </div><!--viewUserContainer-->
   </div>
 </div>
