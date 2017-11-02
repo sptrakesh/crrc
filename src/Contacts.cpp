@@ -39,23 +39,10 @@ using crrc::Contacts;
 
 void Contacts::index( Cutelyst::Context* c ) const
 {
-  dao::ContactDAO dao;
-  auto list = dao::isGlobalAdmin( c ) ? dao.retrieveAll() :
-    dao.retrieveByInstitution( dao::institutionId( c ) );
-  qSort( list.begin(), list.end(), util::contactComparator );
+  if ( !dao::isGlobalAdmin( c ) ) return byInstitution( c, QString::number( dao::institutionId( c ) ) );
 
-
-  const auto& arr = util::contactsToArray( list );
-  if ( "POST" == c->request()->method() )
-  {
-    dao::sendJson( c, arr );
-    return;
-  }
-
-  c->stash( {
-    { "contacts", QJsonDocument( arr ).toJson() },
-    { "template", "contacts/index.html" }
-  } );
+  auto list = dao::ContactDAO().retrieveAll();
+  contactList( c, list );
 }
 
 void Contacts::base( Cutelyst::Context* c ) const
@@ -85,19 +72,17 @@ void Contacts::object( Cutelyst::Context* c, const QString& id ) const
 
 void Contacts::create( Cutelyst::Context* c ) const
 {
-  if ( dao::isGlobalAdmin( c ) )
+  auto list = dao::isGlobalAdmin( c ) ?
+    dao::InstitutionDAO().retrieveAll() : QVariantList{};
+
+  if ( list.isEmpty() )
   {
-    c->setStash( "institutions", dao::InstitutionDAO().retrieveAll() );
-  }
-  else
-  {
-    QVariantList list;
     list << c->stash( "userInstitution" ).toHash();
-    c->setStash( "institutions", list );
   }
 
   c->stash( {
     { "template", "contacts/form.html" },
+    { "institutions", list },
     { "roles", dao::RoleDAO().retrieveAll() }
   } );
 }
@@ -160,29 +145,13 @@ void Contacts::data( Cutelyst::Context* c ) const
 
 void Contacts::search( Cutelyst::Context* c ) const
 {
-  const auto text = c->request()->param( "text", "" );
+  const auto institution = c->request()->param( "institution" );
+  if ( !institution.isEmpty() ) return byInstitution( c, institution );
 
-  if ( text.isEmpty() )
-  {
-    c->response()->redirect( "/contacts" );
-    return;
-  }
-
-  const dao::ContactDAO dao{};
-  const auto& list = dao.search( c );
-
-  if ( "PUT" == c->request()->method() )
-  {
-    const auto& arr = util::contactsToArray( list );
-    dao::sendJson( c, arr );
-    return;
-  }
-
-  c->stash( {
-    { "contacts", list },
-    { "searchText", text },
-    { "template", "contacts/index.html" }
-  } );
+  const auto text = c->request()->param( "text" );
+  auto list = text.isEmpty() ? QVariantList() : dao::ContactDAO().search( c );
+  c->setStash( "searchText", text );
+  contactList( c, list, "PUT" );
 }
 
 void Contacts::remove( Cutelyst::Context* c )
@@ -216,7 +185,7 @@ void Contacts::remove( Cutelyst::Context* c )
   c->response()->redirect( "/contacts" );
 }
 
-void Contacts::isUsernameAvailable( Cutelyst::Context* c )
+void Contacts::isUsernameAvailable( Cutelyst::Context* c ) const
 {
   const auto status = dao::isGlobalAdmin( c ) ?
     dao::UserDAO().isUsernameAvailable( c->request()->param( "username" ) ) :
@@ -225,4 +194,30 @@ void Contacts::isUsernameAvailable( Cutelyst::Context* c )
   c->response()->setContentType( "text/plain" );
   c->response()->setContentLength( string.size() );
   c->response()->setBody( string );
+}
+
+void Contacts::byInstitution( Cutelyst::Context* c, const QString& id ) const
+{
+  const auto iid = id.toUInt();
+  auto list = ( dao::isGlobalAdmin( c ) || dao::institutionId( c ) == iid ) ?
+    dao::ContactDAO().retrieveByInstitution( iid ) : QVariantList{};
+  contactList( c, list, "PUT" );
+}
+
+void Contacts::contactList( Cutelyst::Context* c, QVariantList& list,
+  const QString& method ) const
+{
+  qSort( list.begin(), list.end(), util::contactComparator );
+  const auto& arr = util::contactsToArray( list );
+
+  if ( method == c->request()->method() )
+  {
+    dao::sendJson( c, arr );
+    return;
+  }
+
+  c->stash( {
+    { "contacts", QJsonDocument( arr ).toJson() },
+    { "template", "contacts/index.html" }
+  } );
 }

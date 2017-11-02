@@ -10,7 +10,7 @@ namespace crrc
     explicit Contacts( QObject* parent = nullptr ) : Controller( parent ) {}
     ~Contacts() = default;
 
-    C_ATTR( index, :Path("/contacts"):Args( 0 ) )
+    C_ATTR( index, : Path("/contacts") : Args( 0 ) )
     void index( Cutelyst::Context* c ) const;
 
     C_ATTR( base, :Chained( "/" ) : PathPart( "contacts" ) : CaptureArgs( 0 ) )
@@ -41,6 +41,11 @@ namespace crrc
     void remove( Cutelyst::Context* c );
 
     C_ATTR( isUsernameAvailable, :Chained( "base" ) : PathPart( "isUsernameAvailable" ) : Args( 0 ) )
-    void isUsernameAvailable( Cutelyst::Context* c );
+    void isUsernameAvailable( Cutelyst::Context* c ) const;
+
+  private:
+    void byInstitution( Cutelyst::Context* c, const QString& id ) const;
+    void contactList( Cutelyst::Context* c, QVariantList& list, 
+      const QString& method = "POST" ) const;
   };
 }

@@ -96,6 +96,15 @@ The following screens and associated web services are available:
       resulting created/modified entity will be displayed on screen.
    *  Using `PUT` instead of `POST` will return a JSON representation of the
       created/modified institution.
+*  Search.  This end point is used to retrieve a subset of the institutions that
+   match some user specified filter.  The results are rendered using the same template
+   as the index page.  This endpoint is available at the `/institutions/search`
+   endpoint and may be accessed using either `POST` (html output )or `PUT` 
+   (JSON output) requests.
+   *   Name search.  Institutions who name contains the user specified text
+       specified using the `text` parameter is returned.
+   *   Degree search.  Insitutions that offer programs that are associated with
+       the degree identifier specified using the `degree` parameter are returned.
 *  Check unique.  This end point returns the text `true` or `false` is the
    specified institution name and city is not unique.  Used when creating an
    institution to avoid duplicates.  The end point may be accessed at
@@ -119,7 +128,11 @@ The following screens and associated web services are available:
    directory.
 *  Index or listing page.  This page is rendered by the `index.html` template.
    *   The list of contacts may also be retrieved as a JSON array by making a
-     `POST` request to the page instead of a `GET` request.
+       `POST` request to the page instead of a `GET` request.
+   *   A list of contacts that belong to a particular institution may be retrieved
+       by making a `GET` request to `/contacts/institution/id/<institution id>`
+       endpoint.  The same data may be retrieved as a JSON array by making a
+       `POST` request instead. 
 *  Detail page.  This page displays the pertinent details about a contact.
    This page is rendered by the `view.html` template.
    *  A JSON representation of the contact may be retrieved by making a
@@ -130,6 +143,15 @@ The following screens and associated web services are available:
       resulting created/modified entity will be displayed on screen.
    *  Using `PUT` instead of `POST` will return a JSON representation of the
       created/modified contact.
+*  Search.  This end point is used to find contact instances.  This page is rendered
+   by the `contacts/index.html` template and displays a list of matching contacts.
+   This end point may be accessed by making a `POST` (for HTML output) or a `PUT`
+   request (for JSON output) to the `/contacts/search` endpoint.
+   *   Text search.  This is executed by specifying a `POST/PUT` parameter named
+       `text` and will return contacts with name matching the specified value.
+   *   Institution search.  This is executed by specifying a `institution`
+       parameter with the value being the identifier of the institution to which
+       the search results is to be limited to.
 *  Check username.  This end point is used to validate whether a specified
    `username` value is available for use or not.  Returns the text `true` or
    `false`.  The end point may be accessed at `/contacts/isUsernameAvailable/?username=<value>`.

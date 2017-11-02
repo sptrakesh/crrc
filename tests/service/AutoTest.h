@@ -3,69 +3,75 @@
 #include <QtCore/QCoreApplication>
 #include <QtTest/QTest>
 #include <QtCore/QList>
+#include <QtCore/QMap>
 #include <QtCore/QString>
 #include <QtCore/QSharedPointer>
 
 namespace AutoTest
 {
-    typedef QList<QObject*> TestList;
+  using TestList = QList<QObject*>;
 
-    inline TestList& testList()
+  inline TestList& testList()
+  {
+    static TestList list;
+    return list;
+  }
+
+  inline bool findObject( QObject* object )
+  {
+    auto& list = testList();
+    if ( list.contains( object ) ) return true;
+
+    foreach( QObject* test, list )
     {
-        static TestList list;
-        return list;
+      if ( test->objectName() == object->objectName() ) return true;
+    }
+    return false;
+  }
+
+  inline void addTest( QObject* object )
+  {
+    auto& list = testList();
+    if ( !findObject( object ) )
+    {
+      list.append( object );
+    }
+  }
+
+  inline int run( int argc, char *argv[] )
+  {
+    QMap<QObject*, int> map;
+    auto ret = 0;
+
+    foreach( QObject* test, testList() )
+    {
+      const auto result = QTest::qExec( test, argc, argv );
+      if ( result ) map[test] = result;
+      ret += result;
     }
 
-    inline bool findObject(QObject* object)
+    qDebug() << "Finished running " << testList().size() << 
+      " tests cases with " << ret << " failures.";
+
+    for ( auto it = map.cbegin(); it != map.cend(); ++it )
     {
-        TestList& list = testList();
-        if (list.contains(object))
-        {
-            return true;
-        }
-        foreach (QObject* test, list)
-        {
-            if (test->objectName() == object->objectName())
-            {
-                return true;
-            }
-        }
-        return false;
+      qWarning() << "Test case: " << it.key()->objectName() << " had " << it.value() << "failure(s).";
     }
-
-    inline void addTest(QObject* object)
-    {
-        TestList& list = testList();
-        if (!findObject(object))
-        {
-            list.append(object);
-        }
-    }
-
-    inline int run(int argc, char *argv[])
-    {
-        int ret = 0;
-
-        foreach (QObject* test, testList())
-        {
-            ret += QTest::qExec(test, argc, argv);
-        }
-
-        return ret;
-    }
+    return ret;
+  }
 }
 
 template <class T>
 class Test
 {
 public:
-    QSharedPointer<T> child;
+  QSharedPointer<T> child;
 
-    Test(const QString& name) : child(new T)
-    {
-        child->setObjectName(name);
-        AutoTest::addTest(child.data());
-    }
+  Test( const QString& name ) : child( new T )
+  {
+    child->setObjectName( name );
+    AutoTest::addTest( child.data() );
+  }
 };
 
 #define CONCAT_(x,y) x##y

@@ -21,8 +21,16 @@ namespace crrc
     void index();
     void update();
     void retrieveModified();
+    void searchInstitutions();
+    void search();
     void remove();
     void retrieveAfterDelete();
+
+  private:
+    void createInstitution();
+    void createDegree();
+    void removeInstitution();
+    void removeDegree();
 
   private:
     QString title;
