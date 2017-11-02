@@ -13,6 +13,9 @@
                 console.log( xhr.responseText );
                 programList = JSON.parse( xhr.responseText );
                 populateProgramSelect();
+                  populateInstituteSelect();
+                  populateDegrees();
+                  populateDesignations();
               }
               else
               {
@@ -31,13 +34,96 @@
                 {
                     let option = document.createElement( 'option' );
                     option.value = programList[i].id;
-                    option.textContent = programList[i].title;
+                    option.textContent = programList[i].title + " - " + programList[i].institution.name;
                     element.appendChild( option );
                 }
         }
-
+        
+        
+        function populateInstituteSelect()
+        {
+            /* for searching the duplicates
+            
+            var newList = [];
+          for(var j=0;j<programList.length;++j){
+              //alert(programList[j].institution.name);
+                
+              if(newList[0] == null){
+                  newList[0] = programList[0].institution.name;
+                  alert("New list " + newList[0]);
+              }
+              
+            function checkNewList( number){
+                  for (var i=0; i<newList.length; ++i){
+                      if(number === newList[i])
+                          {
+                              alert(number + "is equals " + newList[i]);
+                              return false;
+                              
+                          }
+                      else{
+                          console.log(newList[i]+ "Added");
+                      }
+                  }
+              }
+              
+              if(checkNewList(programList[j].institution.name) == false)
+                  {
+                      alert("check");
+                  }
+          } 
+        }
+              */       
+   
+                 
+           let element = document.getElementById('InstitutionListFilter');
+           let option = document.createElement( 'option' );
+            
+            
+            
+            for (var i = 0; i < programList.length; ++i)
+            {
+                let option = document.createElement( 'option' );
+                option.value = programList[i].institution.id;
+                option.textContent = programList[i].institution.name ;
+                element.appendChild( option );
+            }
+    }
+      
+    function populateDegrees()
+    {
+        
+        
+        let element = document.getElementById('DegreeListFilter');
+           let option = document.createElement( 'option' );
+            for (var i = 0; i < programList.length; ++i)
+                {
+                    let option = document.createElement( 'option' );
+                    option.value = programList[i].degree.id;
+                    option.textContent = programList[i].degree.title ;
+                    element.appendChild( option );             
+                }
+    }
+              
+    function populateDesignations()
+    {
+        
+        let element = document.getElementById('DesignationsFilter');
+           let option = document.createElement( 'option' );
+            for (var i = 0; i < programList.length; ++i)
+                {
+                    let option = document.createElement( 'option' );
+                    option.value = programList[i].designation.id;
+                    option.textContent = programList[i].designation.title ;
+                    element.appendChild( option );             
+                }
+    }
          getPrograms();
 
+  
+  
+  /*The code from Rakesh.*/
+  
   function displayProgram( programId )
   {
     document.getElementById( `pv_${programId}` ).style.display = 'inline';
@@ -85,9 +171,53 @@
     xhr.send( `id=${programId}` );
     return false;
   }
+    
+    function removeProgram(){
+        let select = document.getElementById('selectProgram');
+        let programId = select.options[select.selectedIndex].value;
+        let programName = select.options[select.selectedIndex].text;
+        let xhr = new XMLHttpRequest();
+        
+        if(programId == -1)
+            {
+                alert("Please select a Program to Remove");
+            }
+        else{
+              if( window.confirm("Are you sure you want to delete " + programName + " ?"))
+              {
+                xhr.open('PUT' , '/programs/remove' );
+                xhr.setRequestHeader('content-Type', 'application/x-www-form-urlencoded');
+                xhr.onload = function()
+                {
+                    if (xhr.status === 200 )
+                        {
+                            console.log(xhr.responseText );
+                            let json = JSON.parse( xhr.responseText );
+                            if(json.status && json.count === 1 )
+                                {
+                                    select.remove(select.selectedIndex);
+                                     console.log(programName + " is now Sucessfully deleted!");
+                                }
+                            else
+                                {
+                                    console.log("Error Deleting this person");         
+                                }
+                        }
+                    else
+                    {
+                        console.log("xhr status is not 200");
+                    }
+                };
+                xhr.send (`id=${programId}` );
+             }
+        }
+       
+      
+    }
+        
 </script>
 
-<div style="margin-left: auto;margin-right: auto;">
+<div style="min-height: 700px; margin-left: auto;margin-right: auto;">
   <h2>Manage Programs</h2>
   <div>
     <div style="display:inline-block; float: left; padding: 10px;"><a href="/programs/create" style="float: left;">Create Program</a></div>
@@ -102,19 +232,18 @@
   {% if searchText %}
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
-     <div class="viewProgramContainer">
+     <div class="viewProgramContainer" style="min-height: 600px;">
             <div class="TitleHeader">
                <h4>View Programs</h4>
             </div>
-         <div style="min-height: 500px; margin-left: auto; margin-right: auto; width: 1000px;">
             <div class="viewProgramsMultilineSelect">
                <select multiple id="selectProgram">
-               
+               <option value="-1" style="display: none" selected></option>
                </select>
                <br><br>
-                <button onclick="display()" class="commonBtn2InViewPrograms" >View Program Detail</button>
+                <button onclick="display()" class="commonBtn2InViewPrograms" disabled>View Program Detail</button>
                 <a href="/programs/create"><button class="commonBtn2InViewPrograms" >Add Program</button> </a>
-                <button onclick="" class="commonBtn2InViewPrograms" >Remove Program</button>
+                <button onclick="removeProgram()" class="commonBtn2InViewPrograms" >Remove Program</button>
                <br>
               
             </div> <!--End of div viewProgramsMultilineSelect -->
@@ -127,37 +256,35 @@
                </fieldset>
                <fieldset>
                    Institution:
-                  <select class="commonCmbBoxCSS">
-                     <option></option>
+                  <select class="commonCmbBoxCSS" id="InstitutionListFilter">
+                     <option value="-1" style="display: none"> Select Institute</option>
                   </select>
                   <br>
                   Filter By State: 
                   <select class="commonCmbBoxCSS">
                      <option></option>
                   </select><br>
-                  <input type="submit" value="Apply Filter" class="commonBtn3InViewPrograms">  
+                  <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="removeDuplicates()">  
                </fieldset>
                <fieldset>
                    Degree Type:
-                  <select class="commonCmbBoxCSS">
-                     <option></option>
+                  <select class="commonCmbBoxCSS" id = "DegreeListFilter">
+                     <option value="-1" style="display: none"> Select Degree</option>
                   </select>
                   <input type="submit" value="Apply Filter" name="searchButton" class="commonBtn3InViewPrograms"> 
                </fieldset>
                <fieldset>
                
                  CAE Designation:
-                  <select class="commonCmbBoxCSS">
-                     <option></option>
-                     <option></option>
-                     <option></option>
-                  </select>
+                  <select class="commonCmbBox3CSS" id ="DesignationsFilter">
+                     <option value="-1" style="display: none"> Select Designations</option>
+                   </select>
                   <input type="submit" value="Apply Filter" class="commonBtn3InViewPrograms"> 
                </fieldset>
                <br>
                
             </div><!--End of div filterBy -->
-           </div>
+         
          </div> <!--End of View Program Container-->
   <div id="programs">
     {% for program in programs %}

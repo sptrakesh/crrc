@@ -49,7 +49,7 @@
       let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
       let option = document.createElement( 'option' );
       option.value = contact.id;
-      option.textContent = contact.name;
+      option.textContent = contact.name ;
       element.appendChild( option );
       console.log(contact.name + "Retrieved");
   }
@@ -93,12 +93,10 @@
         else{
               if( window.confirm("Are you sure you want to delete " + contactName + " ?"))
             {
-                console.log("The response is YES");
                 xhr.open('PUT' , '/contacts/remove' );
                 xhr.setRequestHeader('content-Type', 'application/x-www-form-urlencoded');
                 xhr.onload = function()
                 {
-                    console.log("onload funtion is working");
                     if (xhr.status === 200 )
                         {
                             console.log(xhr.responseText );
@@ -128,7 +126,13 @@
     {
         let select = document.getElementById('lstBoxselectUser_ViewUser');
         let contactId = select.options[select.selectedIndex].value;
-        window.location.href = `/contacts/id/${contactId}/view`;
+        if(contactId == -1){
+            alert("Please select a User to View Details");
+        }
+        else{
+            window.location.href = `/contacts/id/${contactId}/view`;    
+        }
+        
     }
 </script>
 

@@ -814,22 +814,22 @@ div[class="GeneralEducationSubDiv"]{
     border-style: solid;
     border-width: 1px;
     border-radius: 10px;
-    width: 450px;
+    width: 550px;
     height: 400px;
     margin: 20px 20px 20px 20px;
     float:left;
 }
 .viewProgramContainer select[id="selectProgram"]{
-	margin: 10px;
+	padding: 5px;
+    margin: 10px;
 	text-align: center;
-    width: 400px;
+    width: 530px;
     height: 300px;
-    font-size: 20pt;
-    border-width: 1px;
-    border-style: solid;
+    font-size: 14pt;
+    border: 1px solid black;
     border-radius: 5px;
-    border-color: black;
-}
+    overflow: scroll;
+    }
 
 .viewProgramContainer button[class="commonBtn2InViewPrograms"]{
     font-size: 15px;
@@ -894,12 +894,23 @@ div[class="GeneralEducationSubDiv"]{
     text-align: center;
     width: 200px;
     border-radius: 5px;
-    font-size: 20pt;
+    font-size: 14pt;
     border-width:1px;
     border-color: black;
     margin: 2px;
 }
 
+.viewProgramContainer select[class="commonCmbBox3CSS"]{
+    margin: 0px 0px 0px 5px;
+	padding: 0px;
+    text-align: center;
+    width: 270px;
+    border-radius: 5px;
+    font-size: 12pt;
+    border-width:1px;
+    border-color: black;
+    margin: 2px;
+}
 .viewProgramContainer p[id="adminTypeLabel"]{
 	margin: 5px;
 	width: 100px;
