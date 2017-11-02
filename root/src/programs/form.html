@@ -27,11 +27,12 @@
                      <br>
                   </tr>
                   <tr>
-                     <td>Program ID:</td>
+                     <td align="right">Program Title:</td>
                      <td>
-                        <input type="text" name="name" placeholder="Program ID" class="commonTxtBoxCSS">
+                        <input name="title" id="title" placeholder="Program Title"   class="commonTxtBoxCSS" type="text" size="35" width="50" required="required"
+                               {% if object %}value="{{ object.title }}"{% endif %} /> 
                      </td>
-                      <td>Institution:</td>
+                      <td align="right">Institution:</td>
                         <td><select name="institution" id="institution" class="commonCmbBox3CSS">
                               <option value="0">Select Institution</option>
                               {% for institution in institutions %}
@@ -44,10 +45,10 @@
                         </td>
                   </tr>
                   <tr>
-                     <td>Program Title:</td>
+                     <td align="right">Total Credit Hours:</td>
                      <td>
-                        <input name="title" id="title" placeholder="Program Title"   class="commonTxtBoxCSS" type="text" size="35" width="50" required="required"
-           {% if object %}value="{{ object.title }}"{% endif %} /> 
+                        <input name="credits" id="credits" class="commonTxtBoxCSS" type="text" size="35" width="250" placeholder="Total Credit Hours"
+                               {% if object %}value="{{ object.credits }}"{% endif %} />
                      </td>
                       <td> CAE Designation:</td>
                      <td>
@@ -63,12 +64,12 @@
                      </td>
                   </tr>
                   <tr>
-                     <td>Curriculam Code:</td>
+                     <td align="right">Curriculam Code:</td>
                      <td>
                         <input name="curriculumCode" id="curriculumCode" type="text" size="35" width="250" class="commonTxtBoxCSS" placeholder="Enter Program Code"
            {% if object %}value="{{ object.curriculumCode }}"{% endif %} />
                      </td>
-                        <td>Degree:</td>
+                        <td align="right">Degree:</td>
                         <td> <select name="degree" id="degree" class="commonCmbBox3CSS">
                               <option value="0">Select Degree</option>
                               {% for degree in degrees %}
@@ -80,18 +81,6 @@
                             </select>
                         </td>
                   </tr>
-                    <tr>
-                        <td>Total Credit Hours:</td>
-                     <td>
-                        <input name="credits" id="credits" class="commonTxtBoxCSS" type="text" size="35" width="250" placeholder="Total Credit Hours"
-           {% if object %}value="{{ object.credits }}"{% endif %} />
-                     </td>
-                         <td>Program Type:</td>
-                     <td>
-                        <input name="type" id="type" type="text" size="35" width="250"
-           class="commonTxtBoxCSS"  placeholder="Type of Degree"  {% if object %}value="{{ object.type }}"{% endif %} / >
-                     </td>
-                    </tr>
                   <tr align="center">
                      <td colspan="6">
                         Program URL:
@@ -99,9 +88,8 @@
                   </tr>
                   <tr>
                      <td colspan="5">
-                           <input name="url" id="url" type="text"  class="commonTxtBox3CSS" size="35" width="250" placeholder="URL link to the Program"
-                        {% if object %}value="{{ object.url }}"{% endif %} />
-                     </td>
+                          <input name="url" id="url" type="text" class="commonTxtBox3CSS" size="35" width="250"  {% if object %}value="{{ object.url }}"{% endif %} />
+                    </td>
                   </tr>
                </table>
       </div>

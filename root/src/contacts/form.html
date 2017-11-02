@@ -62,7 +62,7 @@
     return true;
   }
 
-  function enableRole()
+  function enableRole(form)
   {
     let username = document.getElementById( 'username' );
     if ( !isEmpty( username ) )
@@ -123,13 +123,14 @@
     {% else %}
     <h2 align="center">Create Contact</h2>
     {% endif %}
+    <div style="margin-left: auto; margin-right: auto; width: 1000px; min-height: 500px;">
     <div class="addUserForm">  
         <label class="label">First Name:</label>
         <input name="name" id="name" type="text" placeholder=" First Name"  class="addUserInput" size="30" width="100" required="required"
                {% if object %}value="{{ object.name }}" {% endif %} />
         <br />
         <label class="label">Last Name:</label>
-        <input type="text" placeholder="Last Name to be added to Database"  class="addUserInput" size="30" width="100" required="required"
+        <input type="text" placeholder="Last Name"  class="addUserInput" size="30" width="100" required="required"
                >
         <br />
         <label class="label">Email (Work):</label>
@@ -151,10 +152,10 @@
     
     <div class="institute_addUser">
     <label class="label">Institution:</label>
-    <select name="institution" id="institution" class="commonCmbBox3CSS" style="margin: 10px 10px 10px 0px;">
-      <option value="-1" >Select Institution</option>
+    <select name="institution" id="institution" class="commonCmbBox3CSS" style="margin: 10px 10px 10px 0px;width: 300px;">
+      <option value="-1" selected>Select Institution</option>
       {% for institution in institutions %}
-      <option value="{{ institution.id }}" style="font-size: 16px;"
+      <option value="{{ institution.id }}" style="font-size: 14px;"
               {% if institution.id == object.institution.id %}selected{% endif %}>
         {{ institution.name }}
       </option>
@@ -178,7 +179,7 @@
     {% endif %}
     <br />
     <label class="label">Role:</label>
-    <select name="role" id="role" class="commonCmbBox4CSS" {% if object.user %}{% else %}disabled{% endif %}>
+    <select name="role" id="role" class="commonCmbBox4CSS" {% if object.user %}{% else %}disabled{% endif %} >
       <option value="-1" style="font-size: 16px;">Select Role</option>
       {% for role in roles %}
       <option value="{{ role.id }}" style="font-size: 16px;"
@@ -195,6 +196,7 @@
     <button onclick="validate()" style="font-size: 20px;
 	border: 1px solid black;
 	border-radius: 5px;">Save</button>
+    </div>
     </div>
   </form>
 </div>

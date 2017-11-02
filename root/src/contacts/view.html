@@ -5,37 +5,67 @@
   }
 </script>
 
-<div style="margin-left: auto;margin-right: auto; background-color: aqua">
-  <h3>Name: {{ object.name }}</h3>
-  {% if object.workEmail %}
-  <label class="label">Work Email:</label> <a href="mailto:{{ object.workEmail }}">{{ object.workEmail }}</a><br />
-  {% endif %}
-  {% if object.homeEmail %}
-  <label class="label">Home Email:</label> <a href="mailto:{{ object.homeEmail }}">{{ object.homeEmail }}</a><br />
-  {% endif %}
-  {% if object.otherEmail %}
-  <label class="label">Other Email:</label> <a href="mailto:{{ object.otherEmail }}">{{ object.otherEmail }}</a><br />
-  {% endif %}
-
-  {% if object.workPhone %}
-  <label class="label">Work Number:</label> {{ object.workPhone }}<br />
-  {% endif %}
-  {% if object.home_phone %}
-  <label class="label">Home Number:</label> {{ object.home_phone }}<br />
-  {% endif %}
-  {% if object.mobilePhone %}
-  <label class="label">Mobile Number:</label> {{ object.mobilePhone }}<br />
-  {% endif %}
-  {% if object.institution.name %}
-  <label class="label">Institution:</label><a href="/institutions/id/{{ object.institution.institution_id }}/view">{{ object.institution.name }}</a><br />
-  {% endif %}
-  {% if object.user.username %}
-  <label class="label">Username:</label> {{ object.user.username }}<br />
-  {% endif %}
-  {% if object.user.role.role %}
-  <label class="label">Role:</label> {{ object.user.role.role }}<br />
-  {% endif %}
-
+<div style="margin-left: auto;margin-right: auto;">
+    <table>
+        <thead>User Details</thead>
+        <tr>
+            <h3>Name: {{object.name}} </h3>
+        </tr>
+         {% if object.workEmail %}
+        <tr>
+            <td><label class="label">Work Email:</label></td>
+            <td><a href="mailto:{{ object.workEmail }}">{{ object.workEmail }}</a></td>
+        </tr>
+        {% endif %}
+        {% if object.homeEmail %}
+        <tr>
+            <td><label class="label">Home Email:</label></td>
+            <td> <a href="mailto:{{ object.homeEmail }}">{{ object.homeEmail }}</a></td>
+        </tr>
+        {% endif %}
+        {% if object.otherEmail %}
+        <tr>
+            <td><label class="label">Other Email:</label></td>
+            <td><a href="mailto:{{ object.otherEmail }}">{{ object.otherEmail }}</a></td>
+        </tr>
+        {% endif %}
+        {% if object.workPhone %}
+        <tr>
+            <td><label class="label">Work Number:</label></td>
+            <td>{{ object.workPhone }}</td>
+        </tr> 
+        {% endif %}
+        {% if object.home_phone %}
+        <tr>
+            <td> <label class="label">Home Number:</label></td>
+            <td> {{ object.home_phone }}</td>
+        </tr> 
+        {% endif %}
+        {% if object.mobilePhone %}
+        <tr>
+            <td><label class="label">Mobile Number:</label> </td>
+            <td>{{ object.mobilePhone }}</td>
+        </tr>
+        {% endif %}
+        {% if object.institution.name %}
+        <tr>
+            <td><label class="label">Institution:</label></td>
+            <td><a href="/institutions/id/{{ object.institution.institution_id }}/view">{{ object.institution.name }}</a></td>
+        </tr>
+        {% endif %}
+        {% if object.user.username %}
+        <tr>
+            <td><label class="label">Username:</label></td>
+            <td>{{ object.user.username }}</td>
+        </tr>
+        {% endif %}
+        {% if object.user.role.role %}
+        <tr>
+            <td><label class="label">Role:</label> </td>
+            <td>{{ object.user.role.role }}</td>
+        </tr>
+        {% endif %}
+</table>
   <div>
     <form id="details" method="post" action="/contacts/id/{{ object.id }}/update" style="display: inline-block;">
       <input type="submit" value="Edit" />
