@@ -116,15 +116,16 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 
-<div id="InstitutionsContainer" class="InstitutionsContainer" align="center" style="border:1px solid black">
-   
-   <br>
+<div id="InstitutionsContainer" class="InstitutionsContainer" align="center">
+
+    <div id="PageTitle">
    <h2 align="center">View Institutions</h2>
+        </div>
    {% if searchText %}
    <h3>Search results for ({{ searchText }})</h3>
    {% endif %}
    
-    <div id="institutions" class="institutions" style="float:left; border:1px solid red; margin: 0px 0px 0px 250px; height: 450px; width:450px">
+    <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 280px; height: 450px; width:450px">
       <!-- multiline select -->
       <table>
           <tr><h4>Select An Institution</h4></tr>
@@ -166,7 +167,7 @@
       </table>
    </div>
    
-    <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; border:1px solid blue; margin: 0px 250px 0px 0px; width:350px; height: 450px">
+    <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 280px 0px 0px; width:350px; height: 450px">
       <h4>Search By Institution Name</h4>
       <script>
          //this script is used to toggle the new prereq info
@@ -269,7 +270,7 @@
          </tr>
          <tr>
             <td>
-               City:
+               City (Optional):
             </td>
             <td>
                <select id="City" style="width: 100%">
@@ -307,7 +308,7 @@
          <tr>
             <th colspan=2 style="align: center"><u>Institution Type</u></th>
          </tr>
-         <tr>
+          <tr>
             <td>Institution Type:</td>
             <td>
                <select id="InstitutionType" style="width:100%">
@@ -319,7 +320,9 @@
             <td><input type="submit" value="Apply Filter" name="searchButton"></td>
          </tr>
       </table>
-   </div>
-</div>
+   </div><!-- end div id="SearchOptions" -->
+    
+</div> <!-- div id="InstitutionsContainer" -->
+<div id="clear"></div>
 
 <!-- end institutions container -->
