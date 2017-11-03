@@ -312,6 +312,12 @@
                City (Optional):
             </td>
             <td>
+                <script>
+                    var sel = document.getElementById("state");
+                    var value = sel.value;
+                    var text = sel.options[sel.selectedIndex].text;
+                </script>
+                
                <select id="city" name="city" style="width: 100%">
                   {% for institution in institutions %}
                <option value="{{ institution.id }}"
