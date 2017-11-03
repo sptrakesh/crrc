@@ -163,6 +163,8 @@
                <select multiple id="lstBoxselectUser_ViewUser" style="font-size: 16px;">
                    <option value="-1" selected style="display: none;"></option>
                    <script type="text/javascript">displayAll();</script>
+                   {% for contact in contacts %}
+                   <option value="{{ contact.id }}" {% if contact.id == object.contact.id %}selected="selected"{% endif %}>{{contact.name}} </option> {% endfor %}
                </select>
                <br><br>
                 <button onclick = "displayContactDetails()" class="selectUserButton">View User Details</button>
