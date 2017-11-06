@@ -23,7 +23,9 @@
      };
      xhr.send( '' );
    }
-     
+    
+    
+    
      function populateInstitutionType()
      {
          let element = document.getElementById( 'InstitutionType' );
@@ -49,9 +51,11 @@
      {
          let select = document.getElementById('institution');
          var length = select.options.length;
-   for (i = 0; i < length; i++) {
-   select.options[i] = null;
-   }
+   
+         for (i = 0; i < length; i++) 
+            {
+                select.options[i] = null;
+            }
          
          for (let institution in institutions)
              {
@@ -64,6 +68,42 @@
                      }
              }
      }
+    
+    /****************************************************************************/
+    
+    function filterByLocation(city, state)
+    {
+        let selectCity = document.getElementById('City');
+        let selectState = document.getElementById('state');
+        var lengthCity = selectCity.options.length;
+        var lengthState = selectState.options.length;
+        
+        for (i = 0; i < lengthCity; i++) 
+            {
+                selectCity.options[i] = null;
+            }
+        
+        for (x = 0; x < lengthState; x++ )
+            {
+                selectState.options[x] = null;
+            }
+        
+        for (let institution in institutions)
+            {
+                if (institution.state != null && state == institution.state)
+                    {
+                        let option = document.createElement('option');
+                        option.value = institution.id;
+                        option.textContent = institution.name;
+                        select.appendChild( option );
+                    }
+            }
+        
+        
+    }
+    
+    /*****************************************************************************/
+    
      
    function check( form )
    {
@@ -140,6 +180,22 @@
                </select>
             </td>
          </tr>
+          
+          <!-- **************************************************** 
+          <tr>
+            <td><select name="institution" id="institution" size="10" style="width:400px; height:250px">
+               {% for institution in institutions %}
+               <option value="{{ institution.id }}"
+               {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
+               {% if institution.state %}({{ institution.state}}){% endif %}
+               </option>
+               {% endfor %}
+               </select>
+            </td>
+         </tr>
+          
+           **************************************************** -->
+          
          <tr align="center">
             <td>
                <table align=center>
@@ -212,74 +268,71 @@
                State:
             </td>
             <td>
-               <select name="state" id="state" style="width:100%"
+               <!-- <select name="state" id="state" style="width:100%"
                {% if object %}value="{{ object.state }}" {% endif %} >
-               <option value="AL">Alabama (AL)</option>
-               <option value="AK">Alaska (AK)</option>
-               <option value="AZ">Arizona (AZ)</option>
-               <option value="AR">Arkansas (AR)</option>
-               <option value="CA">California (CA)</option>
-               <option value="CO">Colorado (CO)</option>
-               <option value="CT">Connecticut (CT)</option>
-               <option value="DE">Delaware (DE)</option>
-               <option value="DC">District Of Columbia (DC)</option>
-               <option value="FL">Florida (FL)</option>
-               <option value="GA">Georgia (GA)</option>
-               <option value="HI">Hawaii (HI)</option>
-               <option value="ID">Idaho (ID)</option>
-               <option value="IL">Illinois (IL)</option>
-               <option value="IN">Indiana (IN)</option>
-               <option value="IA">Iowa (IA)</option>
-               <option value="KS">Kansas (KS)</option>
-               <option value="KY">Kentucky (KY)</option>
-               <option value="LA">Louisiana (LA)</option>
-               <option value="ME">Maine (ME)</option>
-               <option value="MD">Maryland (MD)</option>
-               <option value="MA">Massachusetts (MA)</option>
-               <option value="MI">Michigan (MI)</option>
-               <option value="MN">Minnesota (MN)</option>
-               <option value="MS">Mississippi (MS)</option>
-               <option value="MO">Missouri (MO)</option>
-               <option value="MT">Montana (MT)</option>
-               <option value="NE">Nebraska (NE)</option>
-               <option value="NV">Nevada (NV)</option>
-               <option value="NH">New Hampshire (NH)</option>
-               <option value="NJ">New Jersey (NJ)</option>
-               <option value="NM">New Mexico (NM)</option>
-               <option value="NY">New York (NY)</option>
-               <option value="NC">North Carolina (NC)</option>
-               <option value="ND">North Dakota (ND)</option>
-               <option value="OH">Ohio (OH)</option>
-               <option value="OK">Oklahoma (OK)</option>
-               <option value="OR">Oregon (OR)</option>
-               <option value="PA">Pennsylvania (PA)</option>
-               <option value="RI">Rhode Island (RI)</option>
-               <option value="SC">South Carolina (SC)</option>
-               <option value="SD">South Dakota (SD)</option>
-               <option value="TN">Tennessee (TN)</option>
-               <option value="TX">Texas (TX)</option>
-               <option value="UT">Utah (UT)</option>
-               <option value="VT">Vermont (VT)</option>
-               <option value="VA">Virginia (VA)</option>
-               <option value="WA">Washington (WA)</option>
-               <option value="WV">West Virginia (WV)</option>
-               <option value="WI">Wisconsin (WI)</option>
-               <option value="WY">Wyoming (WY)</option>
+               </select> -->
+                
+                <!-- -->
+                   <select name="state" id="state" style="width:100%">
+               {% for institution in institutions %}
+               <option value="{{ institution.id }}"
+               {% if institution.id == object.institution.id %}
+                       selected="selected"
+                       {% endif %}>
+               {% if institution.state %}
+                   {{ institution.state}}
+                   {% endif %}
+               </option>
+               {% endfor %}
                </select>
+                
+                <script>
+                    var repeatDept = {};
+                    $("select[name='state'] > option").each(function () {
+                        if(repeatDept[this.text]) 
+                            {
+                                $(this).remove();
+                            }
+                        else 
+                            {
+                                repeatDept[this.text] = this.value;
+                            }
+                            });
+                </script>
+                
+                <!-- --> 
+                
             </td>
          </tr>
+          
+          
+          <!--   -->
          <tr>
             <td>
                City (Optional):
             </td>
             <td>
-               <select id="City" style="width: 100%">
-                  <option></option>
-                  <option></option>
-                  <option></option>
+                <script>
+                    var sel = document.getElementById("state");
+                    var value = sel.value;
+                    var text = sel.options[sel.selectedIndex].text;
+                </script>
+                
+               <select id="city" name="city" style="width: 100%">
+                  {% for institution in institutions %}
+               <option value="{{ institution.id }}"
+               {% if institution.id == object.institution.id %}
+                       selected="selected"
+                       {% endif %}>
+               {% if institution.city %}
+                   {{ institution.city}}
+                   {% endif %}
+               </option>
+               {% endfor %}
                </select>
             </td>
          </tr>
+          <!-- -->
          <tr>
             <td></td>
             <td><input type="submit" value="Apply Filter" name="searchButton"></td>
