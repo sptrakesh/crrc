@@ -12,7 +12,7 @@
               {
                 console.log( xhr.responseText );
                 programList = JSON.parse( xhr.responseText );
-                populateProgramSelect();
+               // populateProgramSelect();
                   populateInstituteSelect();
                   populateDegrees();
                   populateDesignations();
@@ -219,7 +219,7 @@
 
 <div style="min-height: 700px; margin-left: auto;margin-right: auto;">
   <h2>Manage Programs</h2>
-  <div>
+  <!--div>
     <div style="display:inline-block; float: left; padding: 10px;"><a href="/programs/create" style="float: left;">Create Program</a></div>
     <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
     <div style="display:inline-block; float: right; padding: 10px;">
@@ -228,17 +228,21 @@
       </form>
     </div>
     <div style="clear: both;"></div>
-  </div>
+  </div-->
   {% if searchText %}
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
-     <div class="viewProgramContainer" style="min-height: 600px;">
+     <div class="viewProgramContainer" style="min-height: 600px; width: 1100px;">
             <div class="TitleHeader">
                <h4>View Programs</h4>
             </div>
             <div class="viewProgramsMultilineSelect">
                <select multiple id="selectProgram">
                <option value="-1" style="display: none" selected></option>
+                   {% for program in programs %}
+                   <option value="{{ program.id }}"
+                           {% if program.id == object.program.id %}selecteed="selected"{% endif %}>{{ program.title }} {% if program.institution %} {{ program.institution.name }} {% endif %}</option>
+                   {% endfor %}
                </select>
                <br><br>
                 <button onclick="display()" class="commonBtn2InViewPrograms" disabled>View Program Detail</button>
@@ -250,9 +254,9 @@
             <div class="filterByInViewPrograms" align="right">
                <h2 id="filterByHeader"> Filter By </h2>
                <fieldset>
-                 Program Name:
-                  <input type="text" name="instituteIDInput" placeholder="Name of the Program" class="commonTxtBoxCSS" >
-                  <input type="submit" value="Search" class="commonBtn3InViewPrograms">  
+                 <form name="search" method="post" action="/programs/search">
+                  Program Name: <input type="text" name="text" class="commonTxtBoxCSS" placeholder="Search by name..."/><input class="commonBtn3InViewPrograms" type="submit" value="Find"/>
+                  </form>
                </fieldset>
                <fieldset>
                    Institution:
