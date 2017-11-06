@@ -30,11 +30,12 @@
              
            let element = document.getElementById('selectProgram');
            let option = document.createElement( 'option' );
+            var dash = " - ";
             for (var i = 0; i < programList.length; ++i)
                 {
                     let option = document.createElement( 'option' );
                     option.value = programList[i].id;
-                    option.textContent = programList[i].title + " - " + programList[i].institution.name;
+                    option.textContent = programList[i].title + dash + programList[i].institution.name;
                     element.appendChild( option );
                 }
         }
@@ -83,6 +84,7 @@
             
             for (var i = 0; i < programList.length; ++i)
             {
+                
                 let option = document.createElement( 'option' );
                 option.value = programList[i].institution.id;
                 option.textContent = programList[i].institution.name ;
@@ -211,9 +213,22 @@
                 xhr.send (`id=${programId}` );
              }
         }
-       
-      
     }
+        
+        function displayProgramDetails(){
+        let select = document.getElementById('selectProgram');
+        let programId = select.options[select.selectedIndex].value;
+        let programName = select.options[select.selectedIndex].text;
+        
+        if(programId == -1)
+            {
+                alert("Please select a Program to view details");
+            }
+        else{
+                window.location.href = `/programs/id/${ programId }/view` ;
+            }
+      
+        }
         
 </script>
 
@@ -245,7 +260,7 @@
                    {% endfor %}
                </select>
                <br><br>
-                <button onclick="display()" class="commonBtn2InViewPrograms" disabled>View Program Detail</button>
+                <button onclick="displayProgramDetails()" class="commonBtn2InViewPrograms" >View Program Detail</button>
                 <a href="/programs/create"><button class="commonBtn2InViewPrograms" >Add Program</button> </a>
                 <button onclick="removeProgram()" class="commonBtn2InViewPrograms" >Remove Program</button>
                <br>
