@@ -1,6 +1,8 @@
 <script type="text/javascript">
    var institutions = [];
-     
+    
+    retrieveInstitutions();
+    
    function retrieveInstitutions()
    {
      let xhr = new XMLHttpRequest();
@@ -14,7 +16,9 @@
          console.log( xhr.responseText );
          let json = JSON.parse( xhr.responseText );
          institutions = json;
-         populateInstitutionType();
+         //populateInstitutionType();
+         populateInstitutionStateSelect();
+           
        }
        else
        {
@@ -24,6 +28,57 @@
      xhr.send( '' );
    }
     
+    function populateInstitutionStateSelect()
+    {
+       let element = document.getElementById('state');
+                      
+  
+        for(var i=0; i< institutions.length; ++i)
+            {
+                let option = document.createElement ('option');
+                 
+                option.value = institutions[i].id;
+                option.textContent = institutions[i].state;
+                element.appendChild(option);
+                
+            }
+        
+       // populateInstitutionCitySelect();
+            
+    }
+    
+    function populateInstitutionCitySelect()
+    {
+        clearSelectCities();
+        let select = document.getElementById('state');
+        //let stateID = select.options[select.selectedIndex].value;
+        let stateName = select.options[select.selectedIndex].text;
+       
+        for(var i = 0; i< institutions.length; ++i)
+            {
+                
+                if(institutions[i].state == stateName)
+                    {
+                        
+                        let element = document.getElementById('city');
+                        let option = document.createElement('option');
+                        
+                        option.value = i;
+                        option.textContent = institutions[i].city;
+                        element.appendChild(option);
+                    }
+            }
+    }
+    
+    function clearSelectCities()
+    {
+        let element = document.getElementById('city');
+        while(element.firstChild)
+            {
+                element.removeChild(element.firstChild);
+                
+            }
+    }
     
     
      function populateInstitutionType()
@@ -69,43 +124,9 @@
              }
      }
     
-    /********************************************************
-    
-    function filterByLocation(city, state)
-    {
-        let selectCity = document.getElementById('City');
-        let selectState = document.getElementById('state');
-        var lengthCity = selectCity.options.length;
-        var lengthState = selectState.options.length;
-        
-        for (i = 0; i < lengthCity; i++) 
-            {
-                selectCity.options[i] = null;
-            }
-        
-        for (x = 0; x < lengthState; x++ )
-            {
-                selectState.options[x] = null;
-            }
-        
-        for (let institution in institutions)
-            {
-                if (institution.state != null && state == institution.state)
-                    {
-                        let option = document.createElement('option');
-                        option.value = institution.id;
-                        option.textContent = institution.name;
-                        select.appendChild( option );
-                    }
-            }
-        
-        
-    }
-    
-************************************************************/
+    /*********************************************************/
     
 
-    
     /*********************************************************/
      
    function check( form )
@@ -270,13 +291,8 @@
                State:
             </td>
             <td>
-               <!-- <select name="state" id="state" style="width:100%"
-               {% if object %}value="{{ object.state }}" {% endif %} >
-               </select> -->
-                
-                <!-- -->
-                   <select name="state" id="state" style="width:100%" onChange="getCities(this)">
-                       <option selected></option>
+               <!--
+                <option selected></option>
                {% for institution in institutions %}
                <option value="{{ institution.id }}"
                {% if institution.id == object.institution.id %}
@@ -287,6 +303,9 @@
                    {% endif %}
                </option>
                {% endfor %}
+                 -->
+                   <select name="state" id="state" style="width:100%" onchange="populateInstitutionCitySelect()">
+                       <option selected></option>
                </select>
                 
                 <script>
@@ -301,18 +320,8 @@
                                 repeatDept[this.text] = this.value;
                             }
                             });
-                </script>
-                
-                <script>
-                    function getCities(selection)
-                    {
-                       let stateVal = selection.options[selection.selectedIndex].text;
-                        alert(stateVal);
-                        
-                        $("#city").selected = "{{institution.city}}";
 
-                         
-                    }
+
                 </script>
                 
                 <!-- --> 
@@ -334,7 +343,14 @@
                 </script>
                 
                <select id="city" name="city" style="width: 100%">
-                   <option selected></option>
+                   
+               </select>
+            </td>
+         </tr>
+          <!-- -->
+          <script>
+            /*
+    <option selected></option>
                   {% for institution in institutions %}
                <option value="{{ institution.id }}"
                {% if institution.id == object.institution.id %}
@@ -345,18 +361,6 @@
                    {% endif %}
                </option>
                {% endfor %}
-               </select>
-            </td>
-         </tr>
-          <!-- -->
-          <script>
-            /*function filterCities
-                {
-                    $("#state").change(function(){
-                    let stateVal = $(this).val();
-                    document.getElementById("city").innerhtml = stateVal;
-        })
-    }
     */
           </script>
           <!-- -->
