@@ -1,0 +1,90 @@
+<script type="text/javascript">
+   function deleteProgram( programId )
+  {
+    function displayWarning()
+    {
+      
+      let warning = document.getElementById( `pw_${programId}` );
+      warning.style.display = 'inline';
+      warning.innerText = 'Unable to delete program.  Please try again later.'
+    }
+
+    if ( !confirm( 'Do you wish to permanently delete program?' ) ) return false;
+
+    let xhr = new XMLHttpRequest();
+    xhr.open( 'POST', '/programs/remove' );
+    xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+    xhr.onload = function ()
+    {
+      if ( xhr.status === 200 )
+      {
+         
+        console.log( xhr.responseText );
+        let json = JSON.parse( xhr.responseText );
+        if ( json.status && json.count === 1 )
+        {
+               alert("check");
+          let element = document.getElementById( `p_${programId}` );
+          element.parentNode.removeChild( element );
+        }
+       // else displayWarning();
+      }
+      else
+      {
+        console.log( `Delete program response status: ${xhr.status} ${xhr.statusText} text: ${xhr.responseText }` );
+        displayWarning();
+      }
+    };
+    xhr.send( `id=${programId}` );
+    return false;
+  }
+  
+</script>
+
+<div style="margin-left: auto; margin-right: auto">
+    <table>
+        <tr>
+            <h3> Program Name : {{ object.title }} </h3>
+        </tr>
+        {% if object.institution.name %}
+        <tr>
+            <td> Institution Name :  </td>
+            <td><a href="/institutions/id/{{ object.institution.institution.id }}/view" >{{ object.institution.name }} - {{ object.institution.city }} </a></td>
+        </tr>
+        {% endif %}
+        {% if object.credits %}
+        <tr>
+            <td > Number of Credits : </td>
+            <td> {{ object.credits }} </td>
+        </tr>
+        {% endif %}
+        {% if object.designation.title %}
+        <tr>
+            <td>CAE designation : </td>
+            <td>{{object.designation.title}}</td>
+        </tr>
+        {% endif %}
+        {% if object.curriculumCode %}
+        <tr>
+            <td> Curriculum Code : </td>
+            <td> {{ object.curriculumCode }} </td>
+        </tr>
+        {% endif %}
+        {% if object.degree.title %}
+        <tr>
+        <td> Degree : </td>
+        <td> {{object.degree.title }}</td>
+        </tr>
+        {% endif %}
+        {% if object.url %}
+        <tr>
+            <td> URL : </td>
+            <td> {{object.url}} </td>
+        </tr>
+        {% endif %}
+    </table>
+    <button onclick="window.location.href='/programs/id/{{ object.id }}/update'"> Edit</button>
+    <button onclick="deleteProgram( {{ program.id }} )">Delete</button>
+    
+</div>
+

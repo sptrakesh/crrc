@@ -1109,7 +1109,7 @@ div[class="addProgramContainer"]{
 	background-color: #858fa0;
 	padding: 10px;
 	float: left;
-	margin: 20px 5px 20px 130px;
+	margin: 20px 5px 20px 20px;
 	border-style: solid;
 	border-color: black;
 	border-width: 1px;
@@ -1135,13 +1135,13 @@ div[class="addProgramContainer"]{
 	border-radius: 5px;
     margin: 5px;
 }
-.addProgramContainer input[class="commonBtnInCareerCourses"]{
+.addProgramContainer button[class="commonBtnInCareerCourses"]{
     font-size: 15px;
 	border-style: solid;
 	border-width: 1px;
 	border-color: black;
 	border-radius: 5px;
-    width: 120px;
+    width: 130px;
     height: 30px;
     margin: 5px;
     float: left;
@@ -1176,7 +1176,7 @@ div[class="addProgramContainer"]{
 	background-color: #858fa0;
 	padding: 10px;
 	float: right;
-	margin: 20px 140px 20px 5px;
+	margin: 20px 20px 20px 5px;
 	border-style: solid;
 	border-color: black;
 	border-width: 1px;
@@ -1185,10 +1185,7 @@ div[class="addProgramContainer"]{
 .addProgramContainer select[class="selectProgramDropDown1"]{
     width: 400px;
     height: 150px;
-    float: left;
-    border-style: solid;
-    border-width: 1px;
-    border-color:black;
+    border:1px solid black;
     border-radius: 5px;
 }
 
