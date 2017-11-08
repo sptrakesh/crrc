@@ -1,18 +1,18 @@
 <script type="text/javascript">
   let contacts = {{ contacts }};
   var institutions = [];
+  var contactsArray = [];
     
-    function getInstitutions()
-    {
+    function getContacts(){
         let xhr = new XMLHttpRequest();
-        xhr.open( 'POST', '/institutions' );
+        xhr.open( 'POST', '/contacts' );
         xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
         xhr.onload = function ()
         {
           if ( xhr.status === 200 )
           {
             console.log( xhr.responseText );
-            institutions = JSON.parse( xhr.responseText );
+            contactsArray = JSON.parse( xhr.responseText );
             populateInstitutionsSelect();
           }
           else
@@ -22,6 +22,9 @@
         };
         xhr.send( '' );
     }
+    
+    getContacts();
+
 
   function sortContacts()
   {
@@ -49,7 +52,7 @@
       let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
       let option = document.createElement( 'option' );
       option.value = contact.id;
-      option.textContent = contact.name ;
+      option.textContent = contact.name + " - " + contact.institution.name;
       element.appendChild( option );
       console.log(contact.name + "Retrieved");
   }
@@ -69,16 +72,32 @@
   function populateInstitutionsSelect()
     {
         let element = document.getElementById('institution');
-        for (var i = 0; i < institutions.length; ++i)
-            {
-                let option = document.createElement( 'option' );
-                option.value = institutions[i].id;
-                option.textContent = institutions[i].name;
-                element.appendChild( option );
-            }
+        var id = [];
+        var names = [];
+        var uniquesID = [];
+        var uniquesName = [];
+         for (var i = 0; i < contactsArray.length; ++i){
+                    //console.log("Contact id is " + contactsArray[i].id);       <--------- working.
+                    //console.log("Contact Name is " + contactsArray[i].user.role.id); <--- not working.
+                    id[i] = contactsArray[i].institution.id;
+                    names[i] = contactsArray[i].institution.name;
+                    console.log(names[i]+" Retrieved and id is " + id[i]);
+         }
+        $.each(names,function(i,el){
+            if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+        });
+        $.each(id,function(i,el){
+            if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+        });
+         for (var i = 0; i < uniquesName.length; ++i){
+                console.log(uniquesName[i]+" Unique Retrieved and unique id is " + uniquesID[i]);
+                let option = document.createElement('option');
+                option.value = uniquesID[i];
+                option.textContent = uniquesName[i];
+                element.appendChild( option );  
+         }   
     }
-
-    getInstitutions();
+    
     
     function removeUser(){
         let select = document.getElementById('lstBoxselectUser_ViewUser');
@@ -134,6 +153,39 @@
         }
         
     }
+    function instituteFilter(){
+        let select = document.getElementById('institution');
+        let institutionId = select.options[select.selectedIndex].value;
+        let institutionName = select.options[select.selectedIndex].text;
+   
+        var iName = []; //Institute Name
+        var cName = []; // Contact Name
+        var cID = []; // Contact ID 
+        for (var i = 0; i < contactsArray.length; ++i){
+            iName[i] = contactsArray[i].institution.name;  
+            cName[i] = contactsArray[i].name;
+            cID[i] = contactsArray[i].id;
+        }
+        removeAllUsers();
+         for (var i = 0; i < contactsArray.length; ++i){
+            if (iName[i]  == institutionName)   //If the institution Name from select box is same as iName at i.
+                {
+                    let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
+                    let option = document.createElement( 'option' );
+                      option.value = cID[i];
+                      option.textContent = cName[i] +" - " + iName[i];
+                      element.appendChild( option );
+                }
+        }
+    }
+    function removeAllUsers(){
+        
+            let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
+           while (element.firstChild) {
+                element.removeChild(element.firstChild);
+            }
+        }
+    
 </script>
 
 <div style="margin-left: auto; margin-right: auto;min-height: 700px ;">
@@ -144,7 +196,9 @@
     <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
     <div style="display:inline-block; float: right; padding: 10px;">
       <form name="search" method="post" action="/contacts/search">
-      <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
+          <input type="text" name="text" placeholder="Search by name..."/>
+          <input type="text" name="institution" placeholder="Search by institute..."/>
+          <input type="submit" value="Find"/>
       </form>
     </div>
     <div style="clear: both;"></div>
@@ -180,16 +234,16 @@
                <fieldset>
                    <div>
                        <p id="instituteLabelInFilterBy"> Institute: </p>
-                      <select class="commonCmbBox2CSS" id="institution" style="width: 300px;">
-                       <option value="-1" selected>Select Institution</option>
+                      <select class="commonCmbBox2CSS" name="institute" id="institution" style="width: 300px;">
+                            <option value="-1" selected>Select Institution</option>
                       </select>
-                   </div>
+                  </div>
                   
                   <br>
                   <p id="instituteIDLabelInFilterBy"> Search Institute: </p>
                   <input type="text" placeholder="This feature is currently not available" class="InstituteIdFilterTextBoxInFilterBy" disabled>
                   <br>
-                   <button class="commonBtnInViewPrograms">Apply Filter</button><br>
+                   <button class="commonBtnInViewPrograms" onclick="instituteFilter()">Apply Filter</button><br>
                </fieldset>
                <fieldset>
                   <p class="roleLabelInFilterBy"> Role: </p>
