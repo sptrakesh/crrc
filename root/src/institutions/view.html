@@ -1,40 +1,149 @@
 <div>
-  <h3>Name: {{ object.name }}</h3>
-  {% if object.logo %}
+    
+    <h2>{{ object.name }}</h2><br>
+    
+        {% if object.logo %}
   <img src="/logos/id/{{ object.logo.id }}/display" style="max-width: 200px;"/><br />
   {% endif %}
-  {% if object.address %}
-  <strong>Address:</strong> {{ object.address }}<br />
-  {% endif %}
-  {% if object.city %}
-  <strong>City:</strong> {{ object.city }}<br />
-  {% endif %}
-  {% if object.state %}
-  <strong>State:</strong> {{ object.state }}<br />
-  {% endif %}
-  {% if object.postal_code %}
-  <strong>ZIP/Postal Code:</strong> {{ object.postal_code }}<br />
-  {% endif %}
-  {% if object.country %}
-  <strong>Country:</strong> {{ object.country }}<br />
-  {% endif %}
-  {% if object.website %}
-  <strong>Website:</strong> <a href="{{ object.website }}">{{ object.website }}</a><br />
-  {% endif %}
-  <strong>Designations:</strong>
-  <a href="/institution/designations/id/{{ object.id }}/view">View</a>
+    
+<div class="InstitutionInfo" style="height:350px;" align="center">
+    
+    <h3><u>Institution Information</u></h3>
+    <table>
+        <tr>
+            <td>
+                <b>Institution Name:</b>
+            </td>
+            <td>
+                {{ object.name }}
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <b>Institution Type:</b>
+            </td>
+            <td>
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <b>Address:</b>
+            </td>
+            {% if object.address %}
+            <td>
+                {{ object.address }}
+            </td>
+            {% endif %}
+        </tr>
+        
+        <tr>
+            {% if object.city %}
+            <td>
+                <b>City:</b>
+            </td>
+            <td>
+                {{ object.city }}
+            </td>
+            {% endif %}
+        </tr>
+        
+        <tr>
+            {% if object.state %}
+            <td>
+                <b>State:</b>
+            </td>
+            <td>
+                {{ object.state }}
+            </td>
+            {% endif %}
+        </tr>
+        
+        <tr>
+            {% if object.postal_code %}
+            <td>
+                <b>Zip:</b>
+            </td>
+            <td>
+                {{ object.postal_code }}
+            </td>
+            {%endif%}
+        </tr>
+        
+        <tr>
+            {% if object.website %}
+            <td>
+                <b>URL:</b>
+            </td>
+            <td>
+                <a href="{{ object.website }}">{{ object.website }}</a>
+            </td>
+            {% endif %}
+        </tr>
+        
+        <tr>
+            {% if object.country %}
+            <td>
+                <b>Country:</b>
+            </td>
+            <td>
+                {{ object.country }}
+            </td>
+            {%endif%}
+        </tr>
+        
+        <tr>
+            {% if object.contact %}
+            <td>
+                <b>Institution Contact:</b>
+            </td>
+            <td>
+                {{ object.contact }}
+            </td>
+            {%endif%}
+        </tr>
+        
+        <tr>
+            <td>
+                <b>Phone Number:</b>
+            </td>
+        </tr>
+        
+        <!-- -->
+        
+        <tr>
+            <td>
+                <b>Designations:</b>
+            </td>
+            <td>
+                <a href="/institution/designations/id/{{ object.id }}/view">View</a>
   {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
     {% if globalAdminRole == user.role.id or userInstitution.id == object.id %}
   | <a href="/institution/designations/id/{{ object.id }}/edit">Edit</a>
     {% endif %}
   {% endif %}
-  <br/>
-  <strong>Departments:</strong>
-  <a href="/institution/departments/id/{{ object.id }}/list">View</a><br/>
-
-  {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
+            </td>
+        </tr>
+        
+        <tr>
+            <td>
+                <b>Departments:</b>
+            </td>
+            <td>
+                <a href="/institution/departments/id/{{ object.id }}/list">View</a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p></p>
+            </td>
+        </tr>
+        
+        <tr align=center>
+            <td colspan="2">
+                {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
     {% if globalAdminRole == user.role.id or userInstitution.id == object.id %}
-  <div>
     <form id="details" method="post" action="/institutions/id/{{ object.id }}/update" style="display: inline-block;">
       <input type="submit" value="Edit" />
     </form>
@@ -42,7 +151,12 @@
       <input type="hidden" name="id" value="{{ object.id }}" />
       <input type="submit" value="Delete" />
     </form>
-  </div>
     {% endif %}
   {% endif %}
+            </td>
+        </tr>
+    </table>
+    </div>
+
+  
 </div>
