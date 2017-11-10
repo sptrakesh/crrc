@@ -1,6 +1,9 @@
 <script type="text/javascript">
     let programs = {{programs}};
     var programList = [];
+    var institutionList = [];
+    
+     getPrograms();
      function getPrograms()
         {
             let xhr = new XMLHttpRequest();
@@ -14,8 +17,10 @@
                 programList = JSON.parse( xhr.responseText );
                   populateProgramSelect();
                   populateInstituteSelect();
+                  //populateInstitutionStateSelect()
                   populateDegrees();
                   populateDesignations();
+                  
               }
               else
               {
@@ -40,6 +45,29 @@
                 }
         }
        
+    retrieveInstitutions();
+    
+    function retrieveInstitutions(){
+         let xhr = new XMLHttpRequest();
+
+         xhr.open( 'POST', '/institutions' );
+         xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+         xhr.onload = function ()
+         {
+           if ( xhr.status === 200 )
+           {
+             console.log( xhr.responseText );
+             institutionList = JSON.parse( xhr.responseText );
+               populateInstitutionStateSelect();
+               console.log(institutionList + " Retrieved");
+           }
+           else
+           {
+             console.log( `Error retrieving institution list.  Server returned status: ${xhr.start}` );
+           }
+         };
+         xhr.send( '' );
+       }
         
         function populateInstituteSelect()
         {
@@ -50,11 +78,8 @@
             var uniquesName = []; // This array is used to store unique names without repeatation
              
             for (var i = 0; i < programList.length; ++i){
-                        //console.log("Contact id is " + contactsArray[i].id);       <--------- working.
-                        //console.log("Contact Name is " + contactsArray[i].user.role.id); <--- not working.
                         id[i] = programList[i].institution.id;
                         names[i] = programList[i].institution.name;
-                        console.log(names[i]+" Retrieved and id is " + id[i]);
              }
             $.each(names,function(i,el){
                 if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
@@ -80,7 +105,7 @@
              for (var i = 0; i < programList.length; ++i){
                id[i] = programList[i].degree.id;
                names[i] = programList[i].degree.title ;
-               console.log(names[i]+" Retrieved and id is " + id[i] +" For degrees"); 
+              
              }
             $.each(names,function(i,el){
                 if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
@@ -95,10 +120,22 @@
                     element.appendChild( option );             
             }
     }
-              
+    
+    function populateInstitutionStateSelect(){
+        let element = document.getElementById('InstitutionStateFilter');
+       let option = document.createElement( 'option' );
+        for (var i = 0; i < institutionList.length; ++i){
+            //
+            let option = document.createElement( 'option' );
+             option.value  = i;
+             option.textContent= institutionList[i].state;
+            element.appendChild( option );  
+            console.log(programList[i].institution.name + " retrieved");
+        }
+    }
     function populateDesignations(){
          let element = document.getElementById('DesignationsFilter');
-           let option = document.createElement( 'option' );
+           
             for (var i = 0; i < programList.length; ++i)
                 {
                     let option = document.createElement( 'option' );
@@ -107,7 +144,7 @@
                     element.appendChild( option );             
                 }
     }
-    getPrograms();
+   
 
   
   
@@ -233,7 +270,7 @@
                       element.appendChild( option );
                 }
              else{
-                delete programList[i] ;
+                //delete programList[i] ;
              }
         }
        
@@ -256,9 +293,10 @@
                       element.appendChild( option );
                    }
             else{
-                delete programList[i] ;
+                //delete programList[i] ;
              }
         }
+        //removeAllInstitutions();
     }
     
      function removeAllPrograms(){
@@ -267,7 +305,14 @@
            while (element.firstChild) {
                 element.removeChild(element.firstChild);
             }
-        }
+    }
+    
+    function removeAllInstitutions(){
+        let element = document.getElementById('InstitutionListFilter');
+        while (element.firstChild) {
+                element.removeChild(element.firstChild);
+            }
+    }
 </script>
 
 <div style="min-height: 700px; margin-left: auto;margin-right: auto;">
@@ -310,14 +355,20 @@
                <fieldset>
                    Institution:
                   <select class="commonCmbBoxCSS" id="InstitutionListFilter">
-                     <option value="-1" style="display: none"> Select Institute</option>
+                     <option value="-1" style="display: none"> Select Institute </option>
                   </select>
-                  <br>
+                 <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="instituteFilter()">  
+                </fieldset>
+                <fieldset>
                   Filter By State: 
-                  <select class="commonCmbBoxCSS">
-                     <option></option>
+                  <select class="commonCmbBoxCSS" id="InstitutionStateFilter">
+                     <option value="-1" style="display: none"> Select State </option>
                   </select><br>
-                  <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="instituteFilter()">  
+                    Filter By City:
+                  <select class="commonCmbBoxCSS" id="InstitutionCityFilter">
+                     <option value="-1" style="display: none"> Select City </option>
+                  </select>
+                  <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="#">  
                </fieldset>
                <fieldset>
                    Degree Type:
