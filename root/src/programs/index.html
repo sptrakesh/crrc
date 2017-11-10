@@ -3,7 +3,7 @@
     var programList = [];
     var institutionList = [];
     
-     getPrograms();
+    getPrograms();
      function getPrograms()
         {
             let xhr = new XMLHttpRequest();
@@ -14,13 +14,12 @@
               if ( xhr.status === 200 )
               {
                 console.log( xhr.responseText );
-                programList = JSON.parse( xhr.responseText );
-                  populateProgramSelect();
-                  populateInstituteSelect();
-                  //populateInstitutionStateSelect()
-                  populateDegrees();
-                  populateDesignations();
-                  
+                let json = JSON.parse( xhr.responseText );
+                programList = json;
+                populateProgramSelect();
+                populateInstituteSelect();
+                populateDegrees();
+                populateDesignations();
               }
               else
               {
@@ -32,11 +31,9 @@
 
         function populateProgramSelect()
         {
-             
            let element = document.getElementById('selectProgram');
            let option = document.createElement( 'option' );
-            
-            for (var i = 0; i < programList.length; ++i)
+           for (var i = 0; i < programList.length; ++i)
                 {
                     let option = document.createElement( 'option' );
                     option.value = programList[i].id;
@@ -49,7 +46,6 @@
     
     function retrieveInstitutions(){
          let xhr = new XMLHttpRequest();
-
          xhr.open( 'POST', '/institutions' );
          xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
          xhr.onload = function ()
@@ -58,8 +54,7 @@
            {
              console.log( xhr.responseText );
              institutionList = JSON.parse( xhr.responseText );
-               populateInstitutionStateSelect();
-               console.log(institutionList + " Retrieved");
+             populateInstitutionStateSelect();
            }
            else
            {
@@ -76,7 +71,6 @@
             var names = [];     // This is used for getting name from html
             var uniquesID = []; // This array is used to store unique id without repeatation
             var uniquesName = []; // This array is used to store unique names without repeatation
-             
             for (var i = 0; i < programList.length; ++i){
                         id[i] = programList[i].institution.id;
                         names[i] = programList[i].institution.name;
@@ -102,10 +96,9 @@
             var names = [];
             var uniquesID = [];
             var uniquesName = []; 
-             for (var i = 0; i < programList.length; ++i){
+            for (var i = 0; i < programList.length; ++i){
                id[i] = programList[i].degree.id;
                names[i] = programList[i].degree.title ;
-              
              }
             $.each(names,function(i,el){
                 if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
@@ -123,26 +116,73 @@
     
     function populateInstitutionStateSelect(){
         let element = document.getElementById('InstitutionStateFilter');
-       let option = document.createElement( 'option' );
-        for (var i = 0; i < institutionList.length; ++i){
-            //
+            var id = [];
+            var names = [];
+            var uniquesID = [];
+            var uniquesName = []; 
+            for (var i = 0; i < institutionList.length; ++i){
+               id[i] = institutionList[i].id;
+               names[i] =  institutionList[i].state ;
+             }
+            $.each(names,function(i,el){
+                if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+            });
+            $.each(id,function(i,el){
+                if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+            });
+            for (var i = 0; i < uniquesName.length; ++i){
             let option = document.createElement( 'option' );
-             option.value  = i;
-             option.textContent= institutionList[i].state;
+            option.value  = uniquesID[i];
+            option.textContent= uniquesName[i];
             element.appendChild( option );  
-            console.log(programList[i].institution.name + " retrieved");
-        }
+            }
     }
+    
+    function populateCity(){
+        clearSelectCities();
+        let select = document.getElementById('InstitutionStateFilter');
+        let institutionID = select.options[select.selectedIndex].value;
+        let stateName = select.options[select.selectedIndex].text;
+        let elementCity = document.getElementById('InstitutionCityFilter');
+        let optionCity = document.createElement('option');
+        optionCity.value = -1;
+        optionCity.textContent = "Select City";
+        elementCity.appendChild(optionCity);
+           
+        var id = [];
+        var names = [];
+        var uniquesID = [];
+        var uniquesName = []; 
+        for(var i = 0; i < institutionList.length; ++i){
+            if(institutionList[i].state == stateName)
+                {
+                    id[i] =  institutionList[i].id;
+                    names[i] = institutionList[i].city;
+                }
+        }
+        
+        $.each(names,function(i,el){
+            if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+        });
+        $.each(id,function(i,el){
+            if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+        });
+        for(var i = 0; i < uniquesName.length; ++i){
+            let element = document.getElementById('InstitutionCityFilter');
+            let option = document.createElement('option');
+            option.value = uniquesID[i];
+            option.textContent = uniquesName[i];
+            element.appendChild(option);
+        }
+     }
     function populateDesignations(){
          let element = document.getElementById('DesignationsFilter');
-           
-            for (var i = 0; i < programList.length; ++i)
-                {
-                    let option = document.createElement( 'option' );
-                    option.value = programList[i].designation.id;
-                    option.textContent = programList[i].designation.title ;
-                    element.appendChild( option );             
-                }
+         for (var i = 0; i < programList.length; ++i){
+                 let option = document.createElement( 'option' );
+                 option.value = programList[i].designation.id;
+                 option.textContent = programList[i].designation.title ;
+                 element.appendChild( option );             
+             }
     }
    
 
@@ -222,7 +262,8 @@
                             if(json.status && json.count === 1 )
                                 {
                                     select.remove(select.selectedIndex);
-                                     console.log(programName + " is now Sucessfully deleted!");
+                                    console.log(programName + " is now Sucessfully deleted!");
+                                   // programId = -1;
                                 }
                             else
                                 {
@@ -282,7 +323,7 @@
         let select = document.getElementById('DegreeListFilter');
         let degreeId = select.options[select.selectedIndex].value;
         let degreeName = select.options[select.selectedIndex].text;
-         removeAllPrograms();
+        removeAllPrograms();
         for (var i = 0; i < programList.length; ++i){
                if (programList[i].degree.title  == degreeName)   //If the Degree Name from select box is same as the one in programList.
                    {
@@ -299,6 +340,63 @@
         //removeAllInstitutions();
     }
     
+    
+    
+    //    ----------------------------------------  Work on THIS -----------------------------------------
+    function locationFilter(){
+        let selectCity = document.getElementById('InstitutionCityFilter');
+        let cityId = selectCity.options[selectCity.selectedIndex].value;
+               var institutionState = [];
+            var institutionCity = [];
+        if( cityId == -1){
+            
+            let selectState = document.getElementById('InstitutionStateFilter');
+            let institutionID = selectState.options[selectState.selectedIndex].value;
+            let stateName = selectState.options[selectState.selectedIndex].text;
+            var iid = [];
+            
+    
+            
+            for(var i = 0; i<programList.length;++i){
+                iid[i] = programList[i].institution.id;
+              }
+            
+            for(var i = 0; i<institutionList.length;++i){
+                if(iid[i] == institutionList[i].id)
+                    {
+                        institutionState[i] = institutionList[i].state;
+                        institutionCity[i] = institutionList[i].city;
+                        console.log(institutionState[i] + " added");
+                    }
+            }
+           
+            if(institutionID == -1){
+                    alert("Please Select a State to Filter!");
+            }
+            else{
+                removeAllPrograms();   // Clear the list of Programs in Select Box.    
+            
+                
+                for (var i = 0; i < programList.length; ++i){
+                    console.log(institutionState[i]  + " " + stateName);
+                    if (institutionState[i]  == stateName){
+                      //  alert("institution list at " + i + " is " + programList[i].institution.id + " and iid = " + institutionID + " city is " + programList[i].institution.city);
+                        let element = document.getElementById('selectProgram');
+                        let option = document.createElement('option');
+                        option.value = programList[i].id;
+                        option.textContent = programList[i].title + " - " + programList[i].institution.name;
+                       // console.log( " Option " + programList[i].title + " is added at id = " + option.value);
+                        element.appendChild(option);
+                    }      
+            //
+                }
+            }
+        }
+        else{
+             alert("target by city");
+        }
+    }
+    
      function removeAllPrograms(){
         
             let element = document.getElementById( 'selectProgram' );
@@ -311,6 +409,16 @@
         let element = document.getElementById('InstitutionListFilter');
         while (element.firstChild) {
                 element.removeChild(element.firstChild);
+            }
+    }
+    
+    function clearSelectCities()
+    {
+        let element = document.getElementById('InstitutionCityFilter');
+        while(element.firstChild)
+            {
+                element.removeChild(element.firstChild);
+                
             }
     }
 </script>
@@ -361,14 +469,14 @@
                 </fieldset>
                 <fieldset>
                   Filter By State: 
-                  <select class="commonCmbBoxCSS" id="InstitutionStateFilter">
+                  <select class="commonCmbBoxCSS" id="InstitutionStateFilter" onchange="populateCity()">
                      <option value="-1" style="display: none"> Select State </option>
                   </select><br>
                     Filter By City:
                   <select class="commonCmbBoxCSS" id="InstitutionCityFilter">
                      <option value="-1" style="display: none"> Select City </option>
                   </select>
-                  <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="#">  
+                  <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="locationFilter()">  
                </fieldset>
                <fieldset>
                    Degree Type:
@@ -390,7 +498,7 @@
             </div><!--End of div filterBy -->
          
          </div> <!--End of View Program Container-->
-  <div id="programs">
+  <div id="programs" style="display: none">
     {% for program in programs %}
     <div id="p_{{ program.id }}">
       <a href="#" onclick="return displayProgram( {{ program.id }} );">{% if program.institution %}{{ program.institution.name }} - {% endif %}{{ program.title }}</a>
