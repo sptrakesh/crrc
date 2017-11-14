@@ -4,7 +4,8 @@
     /************* Institution Functions **************/
     retrieveInstitutions();
     
-   function retrieveInstitutions()
+   
+    function retrieveInstitutions()
    {
      let xhr = new XMLHttpRequest();
          
@@ -17,8 +18,7 @@
          console.log( xhr.responseText );
          let json = JSON.parse( xhr.responseText );
          institutions = json;
-         //populateInstitutionType();
-         populateInstitutionStateSelect();
+         //populateInstitutionStateSelect();
            
        }
        else
@@ -29,26 +29,54 @@
      xhr.send( '' );
    }
     
-    /************* Institution Locations ***************/
-    function populateInstitutionStateSelect()
-    {
-       let element = document.getElementById('state');
-                      
-  
-        for(var i=0; i< institutions.length; ++i)
-            {
-                let option = document.createElement ('option');
-                 
-                option.value = institutions[i].id;
-                option.textContent = institutions[i].state;
-                element.appendChild(option);
-                
-            }
-        
-       // populateInstitutionCitySelect();
-            
-    }
     
+    function displayInstitution()
+     {
+         let select = document.getElementById( 'institution' );
+         let institutionId = select.options[select.selectedIndex].value;
+         window.location.href = `/institutions/id/${institutionId}/view`;
+     }
+    
+    
+    function check( form )
+   {
+     return confirm( 'Do you wish to permanently delete the institution?' );
+   }
+     
+     
+     
+    function removeInsitution()
+     {
+         let select = document.getElementById( 'institution' );
+         let institutionId = select.options[select.selectedIndex].value;
+         let xhr = new XMLHttpRequest();
+         
+     xhr.open( 'PUT', '/institutions/remove' );
+     xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+     xhr.onload = function ()
+     {
+       if ( xhr.status === 200 )
+       {
+         console.log( xhr.responseText );
+         let json = JSON.parse( xhr.responseText );
+         if ( json.status && json.count === 1 )
+         {
+             select.remove(select.selectedIndex);
+         }
+         else
+         {
+         }
+       }
+       else
+       {
+       }
+     };
+     xhr.send( `id=${institutionId}` );
+         
+     }
+   
+    
+
     function populateInstitutionCitySelect()
     {
         clearSelectCities();
@@ -83,7 +111,7 @@
     }
     
     /************* Institution Type ********************/
-     function populateInstitutionType()
+    /* function populateInstitutionType()
      {
          let element = document.getElementById( 'InstitutionType' );
          let types = [];
@@ -102,7 +130,7 @@
                  option.textContent = type;
                  element.appendChild( element );
              }
-     }
+     }*/
      
      function filterByType(type)
      {
@@ -125,7 +153,7 @@
                      }
              }
      }
-    
+
     /****************** Degree Type ********************/
     
     var programList = [];
@@ -139,7 +167,7 @@
             xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
             xhr.onload = function ()
             {
-              if ( xhr.status === 200 )
+              if ( xhr.status === 200 && xhr.readyState == 4)
               {
                 console.log( xhr.responseText );
                 programList = JSON.parse( xhr.responseText );
@@ -154,7 +182,7 @@
             };
             xhr.send( '' );
         }
-    
+ 
     
     function populateDegrees(){
         
@@ -163,26 +191,18 @@
             var names = [];
             var uniquesID = [];
             var uniquesName = []; 
-        
-        
-             /*for (var i = 0; i < programList.length; ++i){
-               id[i] = programList[i].degree.id;
-               names[i] = programList[i].degree.title ;
-               console.log(names[i]+" Retrieved and id is " + id[i] +" For degrees"); 
-             }
-            $.each(names,function(i,el){
-                if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
-            });
-            $.each(id,function(i,el){
-                if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
-            });*/
+            
+          let optionDegree = document.createElement( 'option' );
+               optionDegree.value = 1;
+                optionDegree.textContent = "Kevin";
+        //element.appendChild(optionDegree);  // This does not work
         
             for (var i = 0; i < programList.length; ++i){
-                    let options = document.createElement( 'option' );
-                    options.value = i;
-                    options.textContent = programList[i].degree.title;
-                alert(programList[i].degree.title + " added");    
-                element.appendChild( options );             
+                    let optionDegree = document.createElement( 'option' );
+                    optionDegree.value = i;
+                    optionDegree.textContent = programList[i].degree.title;
+                    console.log(programList[i].degree.title + " added at name = " + optionDegree.textContent + " " + optionDegree.value);    
+                    //element.appendChild( optionDegree );           
             }
     }
       
@@ -202,59 +222,17 @@
                 }
         }
     
-    /*function clearPrograms(){
+    function clearPrograms(){
         
             let element = document.getElementById( 'DegreeType' );
            while (element.firstChild) {
                 element.removeChild(element.firstChild);
             }
-        }*/
+        }
     
 
     /*********************************************************/
      
-   function check( form )
-   {
-     return confirm( 'Do you wish to permanently delete the institution?' );
-   }
-     
-     function displayInstitution()
-     {
-         let select = document.getElementById( 'institution' );
-         let institutionId = select.options[select.selectedIndex].value;
-         window.location.href = `/institutions/id/${institutionId}/view`;
-     }
-     
-     function removeInsitution()
-     {
-         let select = document.getElementById( 'institution' );
-         let institutionId = select.options[select.selectedIndex].value;
-         let xhr = new XMLHttpRequest();
-         
-     xhr.open( 'PUT', '/institutions/remove' );
-     xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-     xhr.onload = function ()
-     {
-       if ( xhr.status === 200 )
-       {
-         console.log( xhr.responseText );
-         let json = JSON.parse( xhr.responseText );
-         if ( json.status && json.count === 1 )
-         {
-             select.remove(select.selectedIndex);
-         }
-         else
-         {
-         }
-       }
-       else
-       {
-       }
-     };
-     xhr.send( `id=${institutionId}` );
-         
-     }
-   
    
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
@@ -263,7 +241,7 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 
-<div id="InstitutionsContainer" class="InstitutionsContainer" align="center">
+<div id="InstitutionsContainer" class="InstitutionsContainer" align="center" style="">
 
     <div id="PageTitle">
    <h2 align="center">View Institutions</h2>
@@ -271,7 +249,7 @@
    {% if searchText %}
    <h3>Search results for ({{ searchText }})</h3>
    {% endif %}
-   
+   <div style="min-height: 600px; width: 1400px">
     <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 280px; height: 450px; width:450px">
       <!-- multiline select -->
       <table>
@@ -387,12 +365,25 @@
                    {% endif %}
                </option>
                {% endfor %}
+
+                <option selected></option>
+               {% for institution in institutions %}
+               <option value="{{ institution.id }}"
+               {% if institution.id == object.institution.id %}
+                       selected="selected"
+                       {% endif %}>
+               {% if institution.state %}
+                   {{ institution.state}}
+                   {% endif %}
+               </option>
+               {% endfor %}
                  -->
                    <select name="state" id="state" style="width:100%" onchange="populateInstitutionCitySelect()">
                        <option selected></option>
                </select>
                 
                 <script>
+                    populateInstitutionStateSelect();
                     var repeatDept = {};
                     $("select[name='state'] > option").each(function () {
                         if(repeatDept[this.text]) 
@@ -406,6 +397,25 @@
                             });
 
 
+                     function populateInstitutionStateSelect()
+                        {
+                           let element = document.getElementById('state');
+
+
+                            for(var i=0; i< institutions.length; ++i)
+                                {
+                                    let option = document.createElement ('option');
+
+                                    option.value = institutions[i].id;
+                                    option.textContent = institutions[i].state;
+                                   element.appendChild(option);
+
+                                }
+
+                           // populateInstitutionCitySelect();
+
+                        }
+    
                 </script>
                 
                 <!-- --> 
@@ -461,7 +471,7 @@
             </td>
             <td>
                <select id="DegreeType" style="width:100%">
-                  
+                  <option value="-1" selected>Select Degree</option>
                </select>
             </td>
          </tr>
@@ -487,7 +497,7 @@
          </tr>
       </table>
    </div><!-- end div id="SearchOptions" -->
-    
+    </div>
 </div> <!-- div id="InstitutionsContainer" -->
 <div id="clear"></div>
 
