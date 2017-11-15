@@ -593,14 +593,21 @@ float:left;
     border-width:1px; 
 }
 
-.viewUserContainer option{
+.viewUserContainer option{}
     font-size: 12pt;
+}
+
+.viewUserContainer input[class="commonBtnInViewPrograms"]{
+     font-size: 15px;
+	border: 1px black solid;
+	border-radius: 5px;
+    width: 120px;
+    height: 30px;
+    margin: 5px;
 }
 .viewUserContainer button[class="commonBtnInViewPrograms"]{
      font-size: 15px;
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
+	border: 1px black solid;
 	border-radius: 5px;
     width: 120px;
     height: 30px;
