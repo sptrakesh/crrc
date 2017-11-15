@@ -90,29 +90,7 @@
             }
        }
       
-    function populateDegrees(){
-            let element = document.getElementById('DegreeListFilter');
-            var id = [];
-            var names = [];
-            var uniquesID = [];
-            var uniquesName = []; 
-            for (var i = 0; i < programList.length; ++i){
-               id[i] = programList[i].degree.id;
-               names[i] = programList[i].degree.title ;
-             }
-            $.each(names,function(i,el){
-                if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
-            });
-            $.each(id,function(i,el){
-                if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
-            });
-            for (var i = 0; i < uniquesName.length; ++i){
-                    let option = document.createElement( 'option' );
-                    option.value = uniquesID[i];
-                    option.textContent = uniquesName[i];
-                    element.appendChild( option );             
-            }
-    }
+    
     
     function populateInstitutionStateSelect(){
         let element = document.getElementById('InstitutionStateFilter');
@@ -142,8 +120,9 @@
     
     function populateCity(){
         clearSelectCities();
+        var count = 0;
         let select = document.getElementById('InstitutionStateFilter');
-        //let institutionID = select.options[select.selectedIndex].value;
+   
         let stateName = select.options[select.selectedIndex].text;
         let elementCity = document.getElementById('InstitutionCityFilter');
         let optionCity = document.createElement('option');
@@ -151,25 +130,16 @@
         optionCity.textContent = "Select City";
         elementCity.appendChild(optionCity);
            
-      //  var id = [];
+  
         var names = [];
-        //var uniquesID = [];
+        
         var uniquesName = []; 
         for(var i = 0; i < institutionList.length; ++i){
             if(institutionList[i].state == stateName)
                 {
-                    //id[i] =  institutionList[i].id;
                     names[i] = institutionList[i].city;
                 }
         }
-        
-        /*$.each(id,function(i,el){
-            if(el != undefined)
-                {
-                     if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
-                }
-          
-        });*/
         $.each(names,function(i,el){
             if(el != undefined)
                 {
@@ -183,17 +153,55 @@
             option.value = i;
             option.textContent = uniquesName[i];
             element.appendChild(option);
-            
+            ++count;
+            document.getElementById("displayStatus").innerHTML = "Found " + count + " Cities for " + stateName;
         }
      }
-    function populateDesignations(){
-         let element = document.getElementById('DesignationsFilter');
-         for (var i = 0; i < programList.length; ++i){
-                 let option = document.createElement( 'option' );
-                 option.value = programList[i].designation.id;
-                 option.textContent = programList[i].designation.title ;
-                 element.appendChild( option );             
+    function populateDegrees(){
+            let element = document.getElementById('DegreeListFilter');
+            var id = [];
+            var names = [];
+            var uniquesID = [];
+            var uniquesName = []; 
+            for (var i = 0; i < programList.length; ++i){
+               id[i] = programList[i].degree.id;
+               names[i] = programList[i].degree.title ;
              }
+            $.each(names,function(i,el){
+                if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+            });
+            $.each(id,function(i,el){
+                if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+            });
+            for (var i = 0; i < uniquesName.length; ++i){
+                    let option = document.createElement( 'option' );
+                    option.value = uniquesID[i];
+                    option.textContent = uniquesName[i];
+                    element.appendChild( option );             
+            }
+    }
+    function populateDesignations(){
+        var id = [];
+        var names = [];
+        var uniquesID = [];
+        var uniquesName = [];
+        for (var i = 0; i < programList.length; ++i){
+               id[i] = programList[i].designation.id;
+               names[i] = programList[i].designation.title ;
+        }
+        $.each(names,function(i,el){
+            if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+        });
+        $.each(id,function(i,el){
+            if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+        });
+        let element = document.getElementById('DesignationsFilter');
+        for (var i = 0; i < uniquesName.length; ++i){
+                 let option = document.createElement( 'option' );
+                 option.value = uniquesID[i];
+                 option.textContent = uniquesName[i];
+                 element.appendChild( option );             
+         }
     }
    
 
@@ -257,7 +265,8 @@
         
         if(programId == -1)
             {
-                alert("Please select a Program to Remove");
+                document.getElementById("displayStatus").innerHTML = "Please select a Program to Remove";
+               
             }
         else{
               if( window.confirm("Are you sure you want to delete " + programName + " ?"))
@@ -298,7 +307,7 @@
         
         if(programId == -1)
             {
-                alert("Please select a Program to view details");
+                document.getElementById("displayStatus").innerHTML = "Please select a Program to view Details";
             }
         else{
                 window.location.href = `/programs/id/${ programId }/view` ;
@@ -307,11 +316,13 @@
         }
         
     function instituteFilter(){
+        var count = 0;
         let select = document.getElementById('InstitutionListFilter');
         let institutionId = select.options[select.selectedIndex].value;
         let institutionName = select.options[select.selectedIndex].text;
    
         removeAllPrograms();
+        
          for (var i = 0; i < programList.length; ++i){
             if (programList[i].institution.name  == institutionName)   //If the institution Name from select box is same as the one in programList.
                 {
@@ -320,6 +331,8 @@
                       option.value = programList[i].id;
                       option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " + programList[i].degree.title;
                       element.appendChild( option );
+                     ++count;
+                    document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + institutionName;
                 }
              else{
                 //delete programList[i] ;
@@ -329,36 +342,11 @@
         
     }
     
-    function degreeFilter(){
-        
-        let select = document.getElementById('DegreeListFilter');
-        let degreeId = select.options[select.selectedIndex].value;
-        let degreeName = select.options[select.selectedIndex].text;
-        removeAllPrograms();
-        for (var i = 0; i < programList.length; ++i){
-               if (programList[i].degree.title  == degreeName)   //If the Degree Name from select box is same as the one in programList.
-                   {
-                      let element = document.getElementById( 'selectProgram' );
-                      let option = document.createElement( 'option' );
-                      option.value = programList[i].id;
-                      option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " + programList[i].degree.title;
-                      element.appendChild( option );
-                   }
-            else{
-                //delete programList[i] ;
-             }
-        }
-        //removeAllInstitutions();
-    }
-    
-    
-    
-    //    ----------------------------------------  Work on THIS -----------------------------------------
    function locationFilter(){
         let selectCity = document.getElementById('InstitutionCityFilter');
         let cityId = selectCity.options[selectCity.selectedIndex].value;
         let cityName = selectCity.options[selectCity.selectedIndex].text;
-        var count = 0;
+       
         
         if( cityId == -1){
             
@@ -367,9 +355,12 @@
             let stateName = selectState.options[selectState.selectedIndex].text;
              
             if(optionValue == -1){
-                    alert("Please Select a State to Filter!");
+                document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
+                document.getElementById("displayStatus").style.color = "red";
+                document.getElementById("displayStatus").style.backgroundColor = "yellow";
             }
             else{
+                var count = 0;
                 for(var i = 0; i<institutionList.length;++i)
                 {
                     if(institutionList[i].state == stateName){
@@ -388,6 +379,8 @@
                              option.value = programList[i].id;
                             option.textContent = programList[i].title +" - "  + programList[i].institution.name + " - " + programList[i].degree.title;
                             element.appendChild( option );
+                            ++count;
+                          document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + stateName;
                     }
                 }
             }
@@ -395,6 +388,7 @@
        
         }
         else{
+            var count = 0;
              removeAllPrograms();
              for(var i = 0; i < programList.length; ++i){
                   if(cityName == programList[i].institution.city){
@@ -403,9 +397,62 @@
                        option.value = programList[i].id;
                        option.textContent = programList[i].title +" - "  + programList[i].institution.name + " - " + programList[i].degree.title;
                        element.appendChild( option );
+                       ++count;
+                       document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + cityName;
                   }
              }
         }
+    }
+    function degreeFilter(){
+        var count = 0;
+        let select = document.getElementById('DegreeListFilter');
+        let degreeId = select.options[select.selectedIndex].value;
+        let degreeName = select.options[select.selectedIndex].text;
+        removeAllPrograms();
+        for (var i = 0; i < programList.length; ++i){
+               if (programList[i].degree.title  == degreeName)   //If the Degree Name from select box is same as the one in programList.
+                   {
+                      let element = document.getElementById( 'selectProgram' );
+                      let option = document.createElement( 'option' );
+                      option.value = programList[i].id;
+                      option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " + programList[i].degree.title;
+                      element.appendChild( option );
+                       
+                        ++count;
+                       document.getElementById("displayStatus").innerHTML = "Found " + count + " record for " + degreeName;
+                   }
+            else{
+                //delete programList[i] ;
+             }
+        }
+        //removeAllInstitutions();
+    }
+    
+    //work on this
+    function designationFilter(){
+        var count = 0;
+        let select = document.getElementById('DesignationsFilter');
+        let designationId = select.options[select.selectedIndex].value;
+        let designationName = select.options[select.selectedIndex].text;
+        removeAllPrograms();
+        for (var i = 0; i < programList.length; ++i){
+               if (programList[i].designation.title  == designationName)   //If the Designation Name from select box is same as the one in programList.
+                   {
+                      
+                      let element = document.getElementById( 'selectProgram' );
+                      let option = document.createElement( 'option' );
+                      option.value = programList[i].id;
+                      option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " + programList[i].designation.title;
+                      element.appendChild( option );
+                       
+                        ++count;
+                       document.getElementById("displayStatus").innerHTML = "Found " + count + " record for " + designationName;
+                   }
+            else{
+                //delete programList[i] ;
+             }
+        }
+        
     }
     
      function removeAllPrograms(){
@@ -458,7 +505,7 @@
                <select multiple id="selectProgram">
                <option value="-1" style="display: none" selected></option>
                </select>
-               <br><br>
+               <br>
                 <button onclick="displayProgramDetails()" class="commonBtn2InViewPrograms" >View Program Detail</button>
                 <a href="/programs/create"><button class="commonBtn2InViewPrograms" >Add Program</button> </a>
                 <button onclick="removeProgram()" class="commonBtn2InViewPrograms" >Remove Program</button>
@@ -503,7 +550,7 @@
                   <select class="commonCmbBox3CSS" id ="DesignationsFilter">
                      <option value="-1" style="display: none"> Select Designations</option>
                    </select>
-                  <input type="submit" value="Apply Filter" class="commonBtn3InViewPrograms"> 
+                  <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="designationFilter()"> 
                </fieldset>
                <br>
                
