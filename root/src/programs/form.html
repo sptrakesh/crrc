@@ -90,18 +90,15 @@
             </tr>
             <tr>
                <td colspan="5">
-                  <input name="url" id="url" type="text" class="commonTxtBox3CSS" size="35" width="250"  {% if object %}value="{{ object.url }}"{% endif %} />
+                  <input name="url" id="url" type="text" placeholder="Program URL" class="commonTxtBox3CSS" size="35" width="250"  {% if object %}value="{{ object.url }}"{% endif %} />
                </td>
             </tr>
          </table>
       </div>
        <div style="width: 1000px;">
-      <div id="CareerCoursesDiv">
+      <div id="CareerCoursesDiv" style="display: none">
          <h4 class="careerCourseHeader">Career Courses:</h4>
          <select class="selectProgramDropDown1" multiple>
-            <option></option>
-            <option></option>
-            <option></option>
             <option></option>
          </select>
          <textarea class="textarea1InAddProgram" placeholder="Course details"></textarea>
@@ -138,7 +135,7 @@
          <!--End of CareerCoursesSubDiv-->
       </div>
       <!--End of CareerCoursesDiv-->
-      <div id="generalEduInSelectProgram">
+      <div id="generalEduInSelectProgram" style="display: none">
          <h4 class="genEdReqHeader">General Education Requirements:</h4>
          <select class="selectProgramDropDown1" multiple>
             <option></option>
