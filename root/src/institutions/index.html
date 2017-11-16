@@ -5,7 +5,7 @@
     retrieveInstitutions();
     
    
-    function retrieveInstitutions()
+    function retrieveInstitutions() //Gets institutions from the server
    {
      let xhr = new XMLHttpRequest();
          
@@ -30,7 +30,7 @@
    }
     
     
-    function displayInstitution()
+    function displayInstitution() //Redirects to institution information page
      {
          let select = document.getElementById( 'institution' );
          let institutionId = select.options[select.selectedIndex].value;
@@ -38,14 +38,14 @@
      }
     
     
-    function check( form )
+    function check( form ) //Alert before deleting
    {
      return confirm( 'Do you wish to permanently delete the institution?' );
    }
      
      
      
-    function removeInsitution()
+    function removeInsitution() //Delete selected institution
      {
          let select = document.getElementById( 'institution' );
          let institutionId = select.options[select.selectedIndex].value;
@@ -77,21 +77,26 @@
    
     
 
-    function populateInstitutionCitySelect()
+    function populateInstitutionCitySelect() //populate city filter
     {
         clearSelectCities();
         let select = document.getElementById('state');
         //let stateID = select.options[select.selectedIndex].value;
         let stateName = select.options[select.selectedIndex].text;
        
+        let element = document.getElementById('city');
+        let option = document.createElement('option');
+         option.value = -1;
+        option.textContent = "Select City";
+        element.appendChild(option);
         for(var i = 0; i< institutions.length; ++i)
             {
                 
                 if(institutions[i].state == stateName)
                     {
                         
-                        let element = document.getElementById('city');
-                        let option = document.createElement('option');
+                         element = document.getElementById('city');
+                         option = document.createElement('option');
                         
                         option.value = i;
                         option.textContent = institutions[i].city;
@@ -100,7 +105,7 @@
             }
     }
     
-    function clearSelectCities()
+    function clearSelectCities() //clear the cities for each state selected
     {
         let element = document.getElementById('city');
         while(element.firstChild)
@@ -111,7 +116,7 @@
     }
     
     /************* Institution Type ********************/
-    /* function populateInstitutionType()
+     /*function populateInstitutionType()
      {
          let element = document.getElementById( 'InstitutionType' );
          let types = [];
@@ -132,7 +137,7 @@
              }
      }*/
      
-     function filterByType(type)
+     /*function filterByType(type)
      {
          let select = document.getElementById('institution');
          var length = select.options.length;
@@ -152,14 +157,14 @@
                          select.appendChild( option );
                      }
              }
-     }
+     }*/
 
     /****************** Degree Type ********************/
     
     var programList = [];
     
     getPrograms();
-     function getPrograms()
+     function getPrograms() //Retrieves from the server and puts everything in the program list array
         {
            
             let xhr = new XMLHttpRequest();
@@ -171,9 +176,7 @@
               {
                 console.log( xhr.responseText );
                 programList = JSON.parse( xhr.responseText );
-                  //populateProgramSelect();
-                  populateDegrees();
-                  //populateDesignations();
+                 // populateDegrees();
               }
               else
               {
@@ -184,18 +187,18 @@
         }
  
     
-    function populateDegrees(){
+  /*  function populateDegrees(){
         
             let element = document.getElementById('DegreeType');
-            var id = [];
-            var names = [];
-            var uniquesID = [];
-            var uniquesName = []; 
+            //var id = [];
+           // var names = [];
+            //var uniquesID = [];
+            //var uniquesName = []; 
             
           let optionDegree = document.createElement( 'option' );
                optionDegree.value = 1;
                 optionDegree.textContent = "Kevin";
-        //element.appendChild(optionDegree);  // This does not work
+            element.appendChild(optionDegree);  // This does not work
         
             for (var i = 0; i < programList.length; ++i){
                     let optionDegree = document.createElement( 'option' );
@@ -204,27 +207,12 @@
                     console.log(programList[i].degree.title + " added at name = " + optionDegree.textContent + " " + optionDegree.value);    
                     //element.appendChild( optionDegree );           
             }
-    }
+    }*/
       
-
-        function populateProgramSelect()
-        {
-             
-           let element = document.getElementById('DegreeType');
-           let option = document.createElement( 'option' );
-            
-            for (var i = 0; i < programList.length; ++i)
-                {
-                    let option = document.createElement( 'option' );
-                    option.value = programList[i].id;
-                    option.textContent = programList[i].title +" - "  + programList[i].institution.name + " - " + programList[i].degree.title;
-                    element.appendChild( option );
-                }
-        }
-    
-    function clearPrograms(){
+  
+    function clearInstitutions(){
         
-            let element = document.getElementById( 'DegreeType' );
+            let element = document.getElementById( 'institution' );
            while (element.firstChild) {
                 element.removeChild(element.firstChild);
             }
@@ -232,6 +220,52 @@
     
 
     /*********************************************************/
+    
+    function locationFilter(){
+        let selectCity = document.getElementById('city');
+        let cityId = selectCity.options[selectCity.selectedIndex].value;
+        let cityName = selectCity.options[selectCity.selectedIndex].text;
+        var count = 0;
+        
+        if( cityId == -1){//if city not selected it will work on state
+            
+            let selectState = document.getElementById('state');
+            let optionValue = selectState.options[selectState.selectedIndex].value;
+            let stateName = selectState.options[selectState.selectedIndex].text;
+             
+            if(optionValue == -1){ //if state is not selected
+                    alert("Please Select a State to Filter!");
+            }
+            else{
+              
+                 clearInstitutions();
+                for(var i = 0; i < institutions.length; ++i){
+                    if(stateName == institutions[i].state){
+                           let element = document.getElementById('institution');
+                            let option = document.createElement( 'option' );
+                             option.value = institutions[i].id;
+                            option.textContent = institutions[i].name +" ( "  + institutions[i].city + ", " + institutions[i].state + ")";
+                            element.appendChild( option );
+                    }
+                }
+            }
+         
+       
+        }
+        else{ //add city to filter
+             clearInstitutions();
+             for(var i = 0; i < institutions.length; ++i){
+                  if(cityName == institutions[i].city){
+                       let element = document.getElementById('institution');
+                       let option = document.createElement( 'option' );
+                       option.value = institutions[i].id;
+                        option.textContent = institutions[i].name +" ( "  + institutions[i].city + ", " + institutions[i].state + ")";
+                       element.appendChild( option );
+                  }
+             }
+        } 
+    }
+    
      
    
 </script>
@@ -333,16 +367,16 @@
          </tr>
          <tr>
             <td>
-               User ID:
+               User Name:
             </td>
             <td>
-               <input type="text" name="userIDInput" placeholder="User ID">
+               <input type="text" name="userNameInput" placeholder="User Name">
             </td>
          </tr>
          <tr>
             <td></td>
             <td>
-               <input type="submit" value="Search" name="searchButton">
+               <input type="submit" value="Search" name="searchUserButton" id="searchUserButton">
             </td>
          </tr>
          <tr>
@@ -379,7 +413,7 @@
                {% endfor %}
                  -->
                    <select name="state" id="state" style="width:100%" onchange="populateInstitutionCitySelect()">
-                       <option selected></option>
+                       <option selected value="-1">Select State</option>
                </select>
                 
                 <script>
@@ -437,30 +471,14 @@
                 </script>
                 
                <select id="city" name="city" style="width: 100%">
-                   
+                   <option selected value="-1">Select City</option>
                </select>
             </td>
          </tr>
-          <!-- -->
-          <script>
-            /*
-    <option selected></option>
-                  {% for institution in institutions %}
-               <option value="{{ institution.id }}"
-               {% if institution.id == object.institution.id %}
-                       selected="selected"
-                       {% endif %}>
-               {% if institution.city %}
-                   {{institution.state}}, {{ institution.city}}
-                   {% endif %}
-               </option>
-               {% endfor %}
-    */
-          </script>
-          <!-- -->
+
          <tr>
             <td></td>
-            <td><input type="submit" value="Apply Filter" name="searchButton"></td>
+            <td><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()"></td>
          </tr>
          <tr>
             <th colspan=2 style="align: center"><u>Program Type</u></th>
@@ -471,14 +489,35 @@
             </td>
             <td>
                <select id="DegreeType" style="width:100%">
-                  <option value="-1" selected>Select Degree</option>
                </select>
+                
+                <script>
+                populateDegrees();
+                        function populateDegrees(){
+        
+                                let element = document.getElementById('DegreeType');
+
+                              let optionDegree = document.createElement( 'option' );
+                                   optionDegree.value = -1;
+                                    optionDegree.textContent = "Select Degree";
+                                element.appendChild(optionDegree); 
+
+                                for (var i = 0; i < programList.length; ++i){
+                                        let optionDegree = document.createElement( 'option' );
+                                        optionDegree.value = i;
+                                        optionDegree.textContent = programList[i].degree.title;  
+                                        element.appendChild( optionDegree );           
+                                }
+                        }
+
+
+                </script>
             </td>
          </tr>
          <tr>
             <td></td>
             <td>
-               <input type="submit" value="Apply Filter" name="searchButton">
+               <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton">
             </td>
          </tr>
          <tr>
