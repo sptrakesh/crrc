@@ -1,10 +1,10 @@
 <script type="text/javascript">
     let programs = {{programs}};
-    var programList = [];
-    var institutionList = [];
+    var programList = [];           // To hold the array of objects that contain list of program from JSON.
+    var institutionList = [];       // To hold the array of objects that contain list of institutions from JSON.
     
-    getPrograms();
-     function getPrograms()
+    getPrograms();          // Calling the function below.
+     function getPrograms()     // Function prototype to retrive programs from server.
         {
             let xhr = new XMLHttpRequest();
             xhr.open( 'POST', '/programs' );
@@ -15,11 +15,11 @@
               {
                 console.log( xhr.responseText );
                 let json = JSON.parse( xhr.responseText );
-                programList = json;
-                populateProgramSelect();
-                populateInstituteSelect();
-                populateDegrees();
-                populateDesignations();
+                programList = json;             
+                populateProgramSelect();        //This function will populate the multiline select with list of programs.
+                populateInstituteSelect();      //This function will populate the list of institution to filter from.
+                populateDegrees();              //This function will populate the list of degrees to filter from.
+                populateDesignations();         //This function will populate the list of program designation to filter from.
               }
               else
               {
@@ -29,7 +29,7 @@
             xhr.send( '' );
         }
 
-        function populateProgramSelect()
+        function populateProgramSelect()        //This function is called from getPrograms function.
         {
            let element = document.getElementById('selectProgram');
            let option = document.createElement( 'option' );
@@ -42,9 +42,9 @@
                 }
         }
        
-    retrieveInstitutions();
+    retrieveInstitutions();         // Calling the function below.
     
-    function retrieveInstitutions(){
+    function retrieveInstitutions(){            //Function prototype to get list of all institutions from server as form of JSON and put into institutionList variable.
          let xhr = new XMLHttpRequest();
          xhr.open( 'POST', '/institutions' );
          xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
@@ -54,7 +54,7 @@
            {
              console.log( xhr.responseText );
              institutionList = JSON.parse( xhr.responseText );
-             populateInstitutionStateSelect();
+             populateInstitutionStateSelect();          //  This function is calling to populate list for location filter.
            }
            else
            {
@@ -64,7 +64,7 @@
          xhr.send( '' );
        }
         
-        function populateInstituteSelect()
+        function populateInstituteSelect()      // This function is called in getPrograms().
         {
            let element = document.getElementById('InstitutionListFilter');
             var id = [];        // This is used for getting id from html
@@ -92,9 +92,13 @@
       
     
     
-    function populateInstitutionStateSelect(){
+    function populateInstitutionStateSelect(){      //This function is called from retrieveInstitutions(). This will populate states of Institution for location filter.
         let element = document.getElementById('InstitutionStateFilter');
-            var id = [];
+        let option1 = document.createElement('option');
+        option1.value = -1;
+        option1.textContent = "Select State";
+        element.appendChild( option1);
+        var id = [];
             var names = [];
             var uniquesID = [];
             var uniquesName = []; 
@@ -118,7 +122,7 @@
     
     
     
-    function populateCity(){
+    function populateCity(){      //This function is called by html event onChange. This will execute only when user selects a state.
         clearSelectCities();
         var count = 0;
         let select = document.getElementById('InstitutionStateFilter');
@@ -157,7 +161,7 @@
             document.getElementById("displayStatus").innerHTML = "Found " + count + " Cities for " + stateName;
         }
      }
-    function populateDegrees(){
+    function populateDegrees(){         //This function is called from getPrograms().
             let element = document.getElementById('DegreeListFilter');
             var id = [];
             var names = [];
@@ -180,7 +184,7 @@
                     element.appendChild( option );             
             }
     }
-    function populateDesignations(){
+    function populateDesignations(){        // This function is called from getPrograms().
         var id = [];
         var names = [];
         var uniquesID = [];
@@ -257,13 +261,15 @@
     return false;
   }
     
-    function removeProgram(){
+    /* End of Rakes Code */
+    
+    function removeProgram(){       //This function will delete the selected program from the server. 
         let select = document.getElementById('selectProgram');
         let programId = select.options[select.selectedIndex].value;
         let programName = select.options[select.selectedIndex].text;
         let xhr = new XMLHttpRequest();
         
-        if(programId == -1)
+        if(programId == -1)     //if the user has not selected any program from the list.
             {
                 document.getElementById("displayStatus").innerHTML = "Please select a Program to Remove";
                
@@ -300,12 +306,12 @@
         }
     }
         
-        function displayProgramDetails(){
+        function displayProgramDetails(){       // This function will redirect to selected program details page.
         let select = document.getElementById('selectProgram');
         let programId = select.options[select.selectedIndex].value;
         let programName = select.options[select.selectedIndex].text;
         
-        if(programId == -1)
+        if(programId == -1)     // If user has not selected any program from select.
             {
                 document.getElementById("displayStatus").innerHTML = "Please select a Program to view Details";
             }
@@ -315,49 +321,55 @@
       
         }
         
-    function instituteFilter(){
+    function instituteFilter(){     //This function will provide the list of all the programs from particular institution.
         var count = 0;
         let select = document.getElementById('InstitutionListFilter');
         let institutionId = select.options[select.selectedIndex].value;
         let institutionName = select.options[select.selectedIndex].text;
-   
-        removeAllPrograms();
         
-         for (var i = 0; i < programList.length; ++i){
-            if (programList[i].institution.name  == institutionName)   //If the institution Name from select box is same as the one in programList.
-                {
-                    let element = document.getElementById( 'selectProgram' );
-                    let option = document.createElement( 'option' );
-                      option.value = programList[i].id;
-                      option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " + programList[i].degree.title;
-                      element.appendChild( option );
-                     ++count;
-                    document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + institutionName;
+        if(institutionId != -1)     
+            {
+                  removeAllPrograms();
+                 for (var i = 0; i < programList.length; ++i){
+                    if (programList[i].institution.name  == institutionName)   //If the institution Name from select box is same as the one in programList.
+                        {
+                            let element = document.getElementById( 'selectProgram' );
+                            let option = document.createElement( 'option' );
+                              option.value = programList[i].id;
+                              option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " + programList[i].degree.title;
+                              element.appendChild( option );
+                             ++count;
+                            document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + institutionName;
+                        }
+                     else{
+                        //delete programList[i] ;
+                     }
                 }
-             else{
-                //delete programList[i] ;
-             }
+            }
+        else{   // If the user has not selected any Institution to filter.
+            document.getElementById("displayStatus").innerHTML = "Please Select an Institution to filter ";
         }
-       
-        
+      
     }
     
-   function locationFilter(){
+   function locationFilter(){       
+        //The location filter works for both state and city. If the user has not selected a city, It will show all the programs from Institution in selected state. If the user has city selected it will show the list of programs in selected city.
+       
         let selectCity = document.getElementById('InstitutionCityFilter');
         let cityId = selectCity.options[selectCity.selectedIndex].value;
         let cityName = selectCity.options[selectCity.selectedIndex].text;
        
         
-        if( cityId == -1){
+        if( cityId == -1){      // If the user has not selected any city, It will target all the Institution from selected state.
             
             let selectState = document.getElementById('InstitutionStateFilter');
             let optionValue = selectState.options[selectState.selectedIndex].value;
             let stateName = selectState.options[selectState.selectedIndex].text;
              
-            if(optionValue == -1){
+            if(optionValue == -1){  // If the user has not selected any state, it will give a warning message.
                 document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
-                document.getElementById("displayStatus").style.color = "red";
-                document.getElementById("displayStatus").style.backgroundColor = "yellow";
+                //document.getElementById("displayStatus").style.color = "red";
+                //document.getElementById("displayStatus").style.backgroundColor = "yellow";
             }
             else{
                 var count = 0;
@@ -386,8 +398,8 @@
             }
          
        
-        }
-        else{
+        }       
+        else{       // If user has selected a city.
             var count = 0;
              removeAllPrograms();
              for(var i = 0; i < programList.length; ++i){
@@ -403,11 +415,14 @@
              }
         }
     }
-    function degreeFilter(){
+    function degreeFilter(){        
         var count = 0;
         let select = document.getElementById('DegreeListFilter');
         let degreeId = select.options[select.selectedIndex].value;
         let degreeName = select.options[select.selectedIndex].text;
+        
+        if( degreeId != -1){        //  If user has selected a degree to filter.
+            
         removeAllPrograms();
         for (var i = 0; i < programList.length; ++i){
                if (programList[i].degree.title  == degreeName)   //If the Degree Name from select box is same as the one in programList.
@@ -426,6 +441,10 @@
              }
         }
         //removeAllInstitutions();
+        }
+        else{       // If user has not selected a degree to filter.
+            document.getElementById("displayStatus").innerHTML = "Please select a degree to filter";
+        }
     }
     
     //work on this
@@ -434,10 +453,12 @@
         let select = document.getElementById('DesignationsFilter');
         let designationId = select.options[select.selectedIndex].value;
         let designationName = select.options[select.selectedIndex].text;
+        
+        if(designationId != -1){    //  If user has selected a designation.
         removeAllPrograms();
         for (var i = 0; i < programList.length; ++i){
                if (programList[i].designation.title  == designationName)   //If the Designation Name from select box is same as the one in programList.
-                   {
+                {
                       
                       let element = document.getElementById( 'selectProgram' );
                       let option = document.createElement( 'option' );
@@ -447,15 +468,19 @@
                        
                         ++count;
                        document.getElementById("displayStatus").innerHTML = "Found " + count + " record for " + designationName;
-                   }
-            else{
+                }
+                else{
                 //delete programList[i] ;
-             }
+                }
+            } // End of for loop
         }
-        
-    }
+        else{       //If user has not selected a designation.
+            document.getElementById("displayStatus").innerHTML = "Please select a designation to filter";
+        }
+    }// End of function.
     
-     function removeAllPrograms(){
+     function removeAllPrograms(){      //This function will remove all the program from the program select box not from server.
+            //This function is called in different filters.
         
             let element = document.getElementById( 'selectProgram' );
            while (element.firstChild) {
