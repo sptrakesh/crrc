@@ -1,7 +1,7 @@
 <script type="text/javascript">
   let contacts = {{ contacts }};
   var institutions = [];
-  var contactsArray = [];
+  var contactList = [];
     
     function getContacts(){
         let xhr = new XMLHttpRequest();
@@ -12,7 +12,7 @@
           if ( xhr.status === 200 )
           {
             console.log( xhr.responseText );
-            contactsArray = JSON.parse( xhr.responseText );
+            contactList = JSON.parse( xhr.responseText );
             populateInstitutionsSelect();
           }
           else
@@ -76,12 +76,11 @@
         var names = [];
         var uniquesID = [];
         var uniquesName = [];
-         for (var i = 0; i < contactsArray.length; ++i){
-                    //console.log("Contact id is " + contactsArray[i].id);       <--------- working.
-                    //console.log("Contact Name is " + contactsArray[i].user.role.id); <--- not working.
-                    id[i] = contactsArray[i].institution.id;
-                    names[i] = contactsArray[i].institution.name;
-                    console.log(names[i]+" Retrieved and id is " + id[i]);
+         for (var i = 0; i < contactList.length; ++i){
+                    console.log("Contact id is " + contactList[i].id);            //  <--------- working.
+                    console.log("Contact Name is " + contactList[i].user.role.globalAdmin); // <--- not working.
+                    id[i] = contactList[i].institution.id;
+                    names[i] = contactList[i].institution.name;
          }
         $.each(names,function(i,el){
             if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
@@ -90,7 +89,7 @@
             if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
         });
          for (var i = 0; i < uniquesName.length; ++i){
-                console.log(uniquesName[i]+" Unique Retrieved and unique id is " + uniquesID[i]);
+               
                 let option = document.createElement('option');
                 option.value = uniquesID[i];
                 option.textContent = uniquesName[i];
@@ -161,13 +160,13 @@
         var iName = []; //Institute Name
         var cName = []; // Contact Name
         var cID = []; // Contact ID 
-        for (var i = 0; i < contactsArray.length; ++i){
-            iName[i] = contactsArray[i].institution.name;  
-            cName[i] = contactsArray[i].name;
-            cID[i] = contactsArray[i].id;
+        for (var i = 0; i < contactList.length; ++i){
+            iName[i] = contactList[i].institution.name;  
+            cName[i] = contactList[i].name;
+            cID[i] = contactList[i].id;
         }
         removeAllUsers();
-         for (var i = 0; i < contactsArray.length; ++i){
+         for (var i = 0; i < contactList.length; ++i){
             if (iName[i]  == institutionName)   //If the institution Name from select box is same as iName at i.
                 {
                     let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
@@ -190,22 +189,11 @@
 
 <div style="margin-left: auto; margin-right: auto;min-height: 700px ;">
     
-  <h2>Manage Contacts</h2>
   <div>
     <!--div style="display:inline-block; float: left; padding: 10px;"><a href="/contacts/create" style="float: left;">Create Contact</a></div-->
     <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
-    <div style="display:inline-block; float: right; padding: 10px;">
-      <form name="search" method="post" action="/contacts/search">
-          <input type="text" name="text" placeholder="Search by name..."/>
-          <input type="text" name="institution" placeholder="Search by institute..."/>
-          <input type="submit" value="Find"/>
-      </form>
-    </div>
     <div style="clear: both;"></div>
   </div>
-  {% if searchText %}
-  <h3>Search results for ({{ searchText }})</h3>
-  {% endif %}
   <div id="contacts">
        <div class="viewUserContainer">
             <div class="TitleHeader">
@@ -213,7 +201,9 @@
             </div> <!--End of Title Header </div-->
             <!--Start of div view Users Multiline Select -->
            <div style="margin-left: auto; margin-right: auto; width: 1000px;">
+
             <div class="viewUsersMultilineSelect">
+             <q id="displayStatus">  {% if searchText %} Search results for ({{ searchText }}) {% endif %} </q><br>
                <select multiple id="lstBoxselectUser_ViewUser" style="font-size: 16px;">
                    <option value="-1" selected style="display: none;"></option>
                    <script type="text/javascript">displayAll();</script>
@@ -221,32 +211,32 @@
                    <option value="{{ contact.id }}" {% if contact.id == object.contact.id %}selected="selected"{% endif %}>{{contact.name}} </option> {% endfor %}
                </select>
                <br><br>
-                <button onclick = "displayContactDetails()" class="selectUserButton">View User Details</button>
+                <button onclick = "displayContactDetails()" >View User Details</button>
                <a href="/contacts/create"><input type="button" name="addUser" value="Add User" id="addUserButton"></a>
-                <button class="removeUserButton" onclick="removeUser()">Remove User</button>
+                <button onclick="removeUser()">Remove User</button>
                
                <br>
             </div> <!--End of div viewUsersMultilineSelect -->
            
             <!--Start of div filterBy -->
-            <div class="filterByInViewUsers">
+            <div class="filterByInViewUsers" align="right">
                <h2 id="filterByHeader"> Filter By </h2>
                <fieldset>
                    <div>
-                       <p id="instituteLabelInFilterBy"> Institute: </p>
+                        Institute:
                       <select class="commonCmbBox2CSS" name="institute" id="institution" style="width: 300px;">
                             <option value="-1" selected>Select Institution</option>
                       </select>
                   </div>
                   
                   <br>
-                  <p id="instituteIDLabelInFilterBy"> Search Institute: </p>
+                   Search Institute: 
                   <input type="text" placeholder="This feature is currently not available" class="InstituteIdFilterTextBoxInFilterBy" disabled>
                   <br>
-                   <button class="commonBtnInViewPrograms" onclick="instituteFilter()">Apply Filter</button><br>
+                   <button class="commonBtn" onclick="instituteFilter()">Apply Filter</button><br>
                </fieldset>
                <fieldset>
-                  <p class="roleLabelInFilterBy"> Role: </p>
+                   Role:
                   <select name="role" id="role"  class="commonCmbBox2CSS"  {% if object.user %}{% else %}disabled{% endif %}>
                       <option value="-1" style="font-size: 16px;">Select Role</option>
                       {% for role in roles %}
@@ -256,13 +246,13 @@
                       </option>
                       {% endfor %}
                     </select>
-                   <button class="commonBtnInViewPrograms">Apply Filter</button>
+                   <button class="commonBtn" disabled>Apply Filter</button>
                </fieldset>
                <fieldset>
                  <form name="search" method="post" action="/contacts/search">
-                        <p id="UserIDLabelInFilterBy"> User Name: </p><input type="text" name="text" class="selectUserTextBoxInFilterBy" placeholder="Search by name..."/>
-                       <input type="submit"  class="commonBtnInViewPrograms" value="Find"/>
-                    </form>
+                        User Name: <input type="text" name="text" class="selectUserTextBoxInFilterBy" placeholder="Search by name..."/>
+                       <input type="submit" value="Find"/>
+                 </form>
                </fieldset>
             </div> <!--End of div filterBy -->
            </div>

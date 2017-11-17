@@ -507,7 +507,7 @@
 </script>
 
 <div style="min-height: 700px; margin-left: auto;margin-right: auto;">
-  <h2>Manage Programs</h2>
+  
   <!--div>
     <div style="display:inline-block; float: left; padding: 10px;"><a href="/programs/create" style="float: left;">Create Program</a></div>
     <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
@@ -531,8 +531,8 @@
                <option value="-1" style="display: none" selected></option>
                </select>
                <br>
-                <button onclick="displayProgramDetails()" class="commonBtn2InViewPrograms" >View Program Detail</button>
-                <a href="/programs/create"><button class="commonBtn2InViewPrograms" >Add Program</button> </a>
+                <button onclick="displayProgramDetails()" class="commonBtn2InViewPrograms" >View Program Details</button>
+                <a href="/programs/create"><button class="commonBtn2InViewPrograms" >Add Program</button></a>
                 <button onclick="removeProgram()" class="commonBtn2InViewPrograms" >Remove Program</button>
                <br>
               
@@ -546,14 +546,14 @@
                </fieldset>
                <fieldset>
                    Institution:
-                  <select class="commonCmbBoxCSS" id="InstitutionListFilter">
+                  <select id="InstitutionListFilter">
                      <option value="-1" style="display: none"> Select Institute </option>
                   </select>
                  <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="instituteFilter()">  
                 </fieldset>
                 <fieldset>
                   Filter By State: 
-                  <select class="commonCmbBoxCSS" id="InstitutionStateFilter" onchange="populateCity()">
+                  <select class="commonCmbBoxCSS" id="InstitutionStateFilter" onchange="populateCity()" style="margin: 0px 100px 0px 0px">
                      <option value="-1" style="display: none"> Select State </option>
                   </select><br>
                     Filter By City:
@@ -564,7 +564,7 @@
                </fieldset>
                <fieldset>
                    Degree Type:
-                  <select class="commonCmbBoxCSS" id = "DegreeListFilter">
+                  <select  id = "DegreeListFilter">
                      <option value="-1" style="display: none"> Select Degree</option>
                   </select>
                   <input type="button" value="Apply Filter" onclick="degreeFilter()" class="commonBtn3InViewPrograms"> 
@@ -572,9 +572,9 @@
                <fieldset>
                
                  CAE Designation:
-                  <select class="commonCmbBox3CSS" id ="DesignationsFilter">
+                  <select  id ="DesignationsFilter" style=" width: 280px;">
                      <option value="-1" style="display: none"> Select Designations</option>
-                   </select>
+                   </select><br>
                   <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="designationFilter()"> 
                </fieldset>
                <br>

@@ -130,7 +130,7 @@
                {% if object %}value="{{ object.name }}" {% endif %} />
         <br />
         <label class="label">Last Name:</label>
-        <input type="text" placeholder="Last Name"  class="addUserInput" size="30" width="100" required="required"
+        <input type="text" placeholder="Last Name NA"  class="addUserInput" size="30" width="100" required="required"
                >
         <br />
         <label class="label">Email (Work):</label>
@@ -143,11 +143,11 @@
                {% if object %}value="{{ object.workPhone }}" {% endif %} />
         <br />
         <label class="label">Telephone (Mobile):</label>
-        <input name="mobilePhone" id="mobilePhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
+        <input name="mobilePhone" id="mobilePhone" placeholder="Telephone Number NA" class="addUserInput" type="tel" size="30" width="100"
                {% if object %}value="{{ object.mobilePhone }}" {% endif %} />
         <br />
         <lable class="label">Link:</lable>
-        <input type="text" class="addUserInput" placeholder="URL">
+        <input type="text" class="addUserInput" placeholder="URL NA">
     </div>
     
     <div class="institute_addUser">
@@ -162,7 +162,7 @@
       {% endfor %}
     </select><br>
         <label class="label">Position:</label>
-        <input type="text" placeholder="Postion of user in Institution" class="addUserInput">
+        <input type="text" placeholder="Postion of user in Institution NA" class="addUserInput">
     <q id="institutionWarning" class="warning" style="display: none;">Contact must be associated with an institution.</q>
     <br />
     <p align="center"><strong>Login Information</strong></p>
