@@ -37,7 +37,7 @@
                 {
                     let option = document.createElement( 'option' );
                     option.value = programList[i].id;
-                    option.textContent = programList[i].title +" - "  + programList[i].institution.name + " - " + programList[i].degree.title;
+                    option.textContent = programList[i].title + " - "  + programList[i].institution.name ;
                     element.appendChild( option );
                 }
         }
@@ -168,11 +168,19 @@
             var uniquesID = [];
             var uniquesName = []; 
             for (var i = 0; i < programList.length; ++i){
+              if(programList[i].degree == undefined){
+                id[i] = programList[0].degree.id;
+                names[i] = programList[0].degree.title;  
+              }
+              else{
                id[i] = programList[i].degree.id;
-               names[i] = programList[i].degree.title ;
-             }
+               names[i] = programList[i].degree.title ; 
+             
+              }
+               
+            }
             $.each(names,function(i,el){
-                if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+            if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
             });
             $.each(id,function(i,el){
                 if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
@@ -190,8 +198,15 @@
         var uniquesID = [];
         var uniquesName = [];
         for (var i = 0; i < programList.length; ++i){
+          if(programList[i].designation == undefined){
+            id[i] = programList[0].designation.id;
+               names[i] = programList[0].designation.title ;
+          }
+          else{
                id[i] = programList[i].designation.id;
                names[i] = programList[i].designation.title ;
+          }
+            
         }
         $.each(names,function(i,el){
             if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
@@ -336,7 +351,7 @@
                             let element = document.getElementById( 'selectProgram' );
                             let option = document.createElement( 'option' );
                               option.value = programList[i].id;
-                              option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " + programList[i].degree.title;
+                              option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " {% if program.degree %} + programList[i].degree.title {% endif %};
                               element.appendChild( option );
                              ++count;
                             document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + institutionName;

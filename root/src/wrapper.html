@@ -29,8 +29,19 @@
          <ul>
             <li></li>
             <li><a href="/">Home</a></li>
+           
             <li class="dropdown" style="float:right">
-               <a href="javascript:void(0)" class="dropbtn">Global Admin Profile</a>
+
+               <a href="javascript:void(0)" class="dropbtn">user id is {{ user.id }} . role id is {{ user.role.id }} </a>
+               <div class="dropdown-content">
+                  <a href="/">View Profile</a>
+                  <a href="/logout" rel="">Logout</a>
+               </div>
+            </li>
+           
+              <li class="dropdown" style="float:right">
+
+               <a href="javascript:void(0)" class="dropbtn"> User Profile</a>
                <div class="dropdown-content">
                   <a href="/">View Profile</a>
                   <a href="/logout" rel="">Logout</a>

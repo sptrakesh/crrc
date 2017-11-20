@@ -129,9 +129,9 @@
         <input name="name" id="name" type="text" placeholder=" First Name"  class="addUserInput" size="30" width="100" required="required"
                {% if object %}value="{{ object.name }}" {% endif %} />
         <br />
-        <label class="label">Last Name:</label>
+        <label class="label" style="display: none;">Last Name:</label>
         <input type="text" placeholder="Last Name NA"  class="addUserInput" size="30" width="100" required="required"
-               >
+               style="display: none;">
         <br />
         <label class="label">Email (Work):</label>
         <input name="workEmail" id="workEmail" type="email" placeholder="email address" class="addUserInput" size="30" width="100"
@@ -143,11 +143,14 @@
                {% if object %}value="{{ object.workPhone }}" {% endif %} />
         <br />
         <label class="label">Telephone (Mobile):</label>
-        <input name="mobilePhone" id="mobilePhone" placeholder="Telephone Number NA" class="addUserInput" type="tel" size="30" width="100"
-               {% if object %}value="{{ object.mobilePhone }}" {% endif %} />
+        <input name="workPhone" id="workPhone" type="tel" size="30" width="100"
+           {% if object %}value="{{ object.workPhone }}" {% endif %} />
         <br />
-        <lable class="label">Link:</lable>
-        <input type="text" class="addUserInput" placeholder="URL NA">
+        <input name="mobilePhone" id="mobilePhone" placeholder="Telephone Number NA" class="addUserInput" type="tel" size="30" width="100"
+               {% if object %}value="{{ object.mobilePhone }}" {% endif %} / style="display: none;">
+        <br />
+        <lable class="label" style="display: none;">Link:</lable>
+        <input type="text" class="addUserInput" placeholder="URL NA" style="display: none;">
     </div>
     
     <div class="institute_addUser">
