@@ -460,7 +460,7 @@ float:left;
 
 .viewUserContainer select[id="lstBoxselectUser_ViewUser"]{
 	margin: 10px;
-	text-align: center;
+	text-align: left;
     width: 400px;
     height: 300px;
     font-size: 20pt;
@@ -578,9 +578,9 @@ float:left;
     float:left;
 }
 .viewProgramContainer select[id="selectProgram"]{
-	padding: 5px;
+	padding: 10px;
     margin: 10px;
-	text-align: center;
+	text-align: left;
     width: 530px;
     height: 300px;
     font-size: 14pt;
