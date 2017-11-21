@@ -1,122 +1,208 @@
 <script type="text/javascript">
-   var institutions = [];
-    
+    var institutions = [];
+    var programList = [];
+
     /************* Institution Functions **************/
     retrieveInstitutions();
-    
-   
-    function retrieveInstitutions() //Gets institutions from the server
-   {
-     let xhr = new XMLHttpRequest();
-         
-     xhr.open( 'POST', '/institutions' );
-     xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-     xhr.onload = function ()
-     {
-       if ( xhr.status === 200 )
-       {
-         console.log( xhr.responseText );
-         let json = JSON.parse( xhr.responseText );
-         institutions = json;
-         //populateInstitutionStateSelect();
-           
-       }
-       else
-       {
-         console.log( `Error retrieving institution list.  Server returned status: ${xhr.start}` );
-       }
-     };
-     xhr.send( '' );
-   }
-    
-    
-    function displayInstitution() //Redirects to institution information page
-     {
-         let select = document.getElementById( 'institution' );
-         let institutionId = select.options[select.selectedIndex].value;
-         window.location.href = `/institutions/id/${institutionId}/view`;
-     }
-    
-    
-    function check( form ) //Alert before deleting
-   {
-     return confirm( 'Do you wish to permanently delete the institution?' );
-   }
-     
-     
-     
-    function removeInsitution() //Delete selected institution
-     {
-         let select = document.getElementById( 'institution' );
-         let institutionId = select.options[select.selectedIndex].value;
-         let xhr = new XMLHttpRequest();
-         
-     xhr.open( 'PUT', '/institutions/remove' );
-     xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-     xhr.onload = function ()
-     {
-       if ( xhr.status === 200 )
-       {
-         console.log( xhr.responseText );
-         let json = JSON.parse( xhr.responseText );
-         if ( json.status && json.count === 1 )
-         {
-             select.remove(select.selectedIndex);
-         }
-         else
-         {
-         }
-       }
-       else
-       {
-       }
-     };
-     xhr.send( `id=${institutionId}` );
-         
-     }
-   
-    
 
-    function populateInstitutionCitySelect() //populate city filter
+    //Gets institutions from the server
+    function retrieveInstitutions() 
+    {
+        let xhr = new XMLHttpRequest();
+
+        xhr.open( 'POST', '/institutions' );
+        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        xhr.onload = function ()
+        {
+            if ( xhr.status === 200 )
+            {
+                console.log( xhr.responseText );
+                let json = JSON.parse( xhr.responseText );
+                institutions = json;
+                //populateInstitutionStateSelect();
+
+            }
+            else
+            {
+                console.log( `Error retrieving institution list.  Server returned status: ${xhr.start}` );
+            }
+        };
+        xhr.send( '' );
+    }
+
+    //Redirects to institution information page
+    function displayInstitution() 
+    {
+        let select = document.getElementById( 'institution' );
+        let institutionId = select.options[select.selectedIndex].value;
+        window.location.href = `/institutions/id/${institutionId}/view`;
+    }
+
+    //Alert before deleting
+    function check( form ) 
+    {
+        return confirm( 'Do you wish to permanently delete the institution?' );
+    }
+
+
+    //Delete selected institution
+    function removeInsitution() 
+    {
+        let select = document.getElementById( 'institution' );
+        let institutionId = select.options[select.selectedIndex].value;
+        let xhr = new XMLHttpRequest();
+
+        xhr.open( 'PUT', '/institutions/remove' );
+        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        xhr.onload = function ()
+        {
+            if ( xhr.status === 200 )
+            {
+                console.log( xhr.responseText );
+                let json = JSON.parse( xhr.responseText );
+                if ( json.status && json.count === 1 )
+                {
+                    select.remove(select.selectedIndex);
+                }
+                else
+                {
+                }
+            }
+            else
+            {
+            }
+        };
+        xhr.send( `id=${institutionId}` );
+
+    }
+
+
+    //populate city filter
+    function populateInstitutionCitySelect() 
     {
         clearSelectCities();
         let select = document.getElementById('state');
         //let stateID = select.options[select.selectedIndex].value;
         let stateName = select.options[select.selectedIndex].text;
-       
+
         let element = document.getElementById('city');
         let option = document.createElement('option');
-         option.value = -1;
+        option.value = -1;
         option.textContent = "Select City";
         element.appendChild(option);
         for(var i = 0; i< institutions.length; ++i)
+        {
+
+            if(institutions[i].state == stateName)
             {
-                
-                if(institutions[i].state == stateName)
-                    {
-                        
-                         element = document.getElementById('city');
-                         option = document.createElement('option');
-                        
-                        option.value = i;
-                        option.textContent = institutions[i].city;
-                        element.appendChild(option);
-                    }
+
+                element = document.getElementById('city');
+                option = document.createElement('option');
+
+                option.value = i;
+                option.textContent = institutions[i].city;
+                element.appendChild(option);
             }
+        }
     }
-    
-    function clearSelectCities() //clear the cities for each state selected
+
+    //clear the cities for each state selected
+    function clearSelectCities() 
     {
         let element = document.getElementById('city');
         while(element.firstChild)
-            {
-                element.removeChild(element.firstChild);
-                
-            }
+        {
+            element.removeChild(element.firstChild);
+
+        }
     }
+
+
+    getPrograms();
+    //Retrieves from the server and puts everything in the program list array
+    function getPrograms() 
+    {
+
+        let xhr = new XMLHttpRequest();
+        xhr.open( 'POST', '/programs' );
+        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        xhr.onload = function ()
+        {
+            if ( xhr.status === 200 && xhr.readyState == 4)
+            {
+                console.log( xhr.responseText );
+                programList = JSON.parse( xhr.responseText );
+                // populateDegrees();
+            }
+            else
+            {
+                console.log( `Unable to retrieve Program list.  Server returned status: ${xhr.status}` );
+            }
+        };
+        xhr.send( '' );
+    }
+
+
+    //clear institution list to prepare for population of filtered institutions
+    function clearInstitutions(){
+
+        let element = document.getElementById( 'institution' );
+        while (element.firstChild) {
+            element.removeChild(element.firstChild);
+        }
+    }
+
+    
+    //Filter by the location
+    function locationFilter(){
+        let selectCity = document.getElementById('city');
+        let cityId = selectCity.options[selectCity.selectedIndex].value;
+        let cityName = selectCity.options[selectCity.selectedIndex].text;
+        var count = 0;
+
+        if( cityId == -1){//if city not selected it will work on state
+
+            let selectState = document.getElementById('state');
+            let optionValue = selectState.options[selectState.selectedIndex].value;
+            let stateName = selectState.options[selectState.selectedIndex].text;
+
+            if(optionValue == -1){ //if state is not selected
+                alert("Please Select a State to Filter!");
+            }
+            else{
+
+                clearInstitutions();
+                for(var i = 0; i < institutions.length; ++i){
+                    if(stateName == institutions[i].state){
+                        let element = document.getElementById('institution');
+                        let option = document.createElement( 'option' );
+                        option.value = institutions[i].id;
+                        option.textContent = institutions[i].name +" ( "  + institutions[i].city + ", " + institutions[i].state + ")";
+                        element.appendChild( option );
+                    }
+                }
+            }
+
+
+        }
+        else{ //add city to filter
+            clearInstitutions();
+            for(var i = 0; i < institutions.length; ++i){
+                if(cityName == institutions[i].city){
+                    let element = document.getElementById('institution');
+                    let option = document.createElement( 'option' );
+                    option.value = institutions[i].id;
+                    option.textContent = institutions[i].name +" ( "  + institutions[i].city + ", " + institutions[i].state + ")";
+                    element.appendChild( option );
+                }
+            }
+        } 
+    }
+
+
     
     /************* Institution Type ********************/
-     /*function populateInstitutionType()
+    /*function populateInstitutionType()
      {
          let element = document.getElementById( 'InstitutionType' );
          let types = [];
@@ -127,7 +213,7 @@
                          if (!types.contains(institution.type) ) types.append(institution.type); 
                      }
              }
-         
+
          for (let type in types)
              {
                  let option = document.createElement( 'option' );
@@ -136,17 +222,17 @@
                  element.appendChild( element );
              }
      }*/
-     
-     /*function filterByType(type)
+
+    /*function filterByType(type)
      {
          let select = document.getElementById('institution');
          var length = select.options.length;
-   
+
          for (i = 0; i < length; i++) 
             {
                 select.options[i] = null;
             }
-         
+
          for (let institution in institutions)
              {
                  if (institution.type != null && type == institution.type)
@@ -159,115 +245,7 @@
              }
      }*/
 
-    /****************** Degree Type ********************/
-    
-    var programList = [];
-    
-    getPrograms();
-     function getPrograms() //Retrieves from the server and puts everything in the program list array
-        {
-           
-            let xhr = new XMLHttpRequest();
-            xhr.open( 'POST', '/programs' );
-            xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-            xhr.onload = function ()
-            {
-              if ( xhr.status === 200 && xhr.readyState == 4)
-              {
-                console.log( xhr.responseText );
-                programList = JSON.parse( xhr.responseText );
-                 // populateDegrees();
-              }
-              else
-              {
-                console.log( `Unable to retrieve Program list.  Server returned status: ${xhr.status}` );
-              }
-            };
-            xhr.send( '' );
-        }
- 
-    
-  /*  function populateDegrees(){
-        
-            let element = document.getElementById('DegreeType');
-            //var id = [];
-           // var names = [];
-            //var uniquesID = [];
-            //var uniquesName = []; 
-            
-          let optionDegree = document.createElement( 'option' );
-               optionDegree.value = 1;
-                optionDegree.textContent = "Kevin";
-            element.appendChild(optionDegree);  // This does not work
-        
-            for (var i = 0; i < programList.length; ++i){
-                    let optionDegree = document.createElement( 'option' );
-                    optionDegree.value = i;
-                    optionDegree.textContent = programList[i].degree.title;
-                    console.log(programList[i].degree.title + " added at name = " + optionDegree.textContent + " " + optionDegree.value);    
-                    //element.appendChild( optionDegree );           
-            }
-    }*/
-      
-  
-    function clearInstitutions(){
-        
-            let element = document.getElementById( 'institution' );
-           while (element.firstChild) {
-                element.removeChild(element.firstChild);
-            }
-        }
-    
 
-    /*********************************************************/
-    
-    function locationFilter(){
-        let selectCity = document.getElementById('city');
-        let cityId = selectCity.options[selectCity.selectedIndex].value;
-        let cityName = selectCity.options[selectCity.selectedIndex].text;
-        var count = 0;
-        
-        if( cityId == -1){//if city not selected it will work on state
-            
-            let selectState = document.getElementById('state');
-            let optionValue = selectState.options[selectState.selectedIndex].value;
-            let stateName = selectState.options[selectState.selectedIndex].text;
-             
-            if(optionValue == -1){ //if state is not selected
-                    alert("Please Select a State to Filter!");
-            }
-            else{
-              
-                 clearInstitutions();
-                for(var i = 0; i < institutions.length; ++i){
-                    if(stateName == institutions[i].state){
-                           let element = document.getElementById('institution');
-                            let option = document.createElement( 'option' );
-                             option.value = institutions[i].id;
-                            option.textContent = institutions[i].name +" ( "  + institutions[i].city + ", " + institutions[i].state + ")";
-                            element.appendChild( option );
-                    }
-                }
-            }
-         
-       
-        }
-        else{ //add city to filter
-             clearInstitutions();
-             for(var i = 0; i < institutions.length; ++i){
-                  if(cityName == institutions[i].city){
-                       let element = document.getElementById('institution');
-                       let option = document.createElement( 'option' );
-                       option.value = institutions[i].id;
-                        option.textContent = institutions[i].name +" ( "  + institutions[i].city + ", " + institutions[i].state + ")";
-                       element.appendChild( option );
-                  }
-             }
-        } 
-    }
-    
-     
-   
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
@@ -278,266 +256,257 @@
 <div id="InstitutionsContainer" class="InstitutionsContainer" align="center" style="">
 
     <div id="PageTitle">
-   <h2 align="center">View Institutions</h2>
-        </div>
-   {% if searchText %}
-   <h3>Search results for ({{ searchText }})</h3>
-   {% endif %}
-   <div style="min-height: 600px; width: 1400px">
-    <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 280px; height: 450px; width:450px">
-      <!-- multiline select -->
-      <table>
-          <tr><h4>Select An Institution</h4></tr>
-         <tr>
-            <td><select name="institution" id="institution" size="10" style="width:400px; height:250px">
-               {% for institution in institutions %}
-               <option value="{{ institution.id }}"
-               {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
-               {{ institution.name}} {% if institution.city %}({{ institution.city}},{{institution.state}}){% endif %}
-               </option>
-               {% endfor %}
-               </select>
-            </td>
-         </tr>
-          
-          <!-- **************************************************** 
-          <tr>
-            <td><select name="institution" id="institution" size="10" style="width:400px; height:250px">
-               {% for institution in institutions %}
-               <option value="{{ institution.id }}"
-               {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
-               {% if institution.state %}({{ institution.state}}){% endif %}
-               </option>
-               {% endfor %}
-               </select>
-            </td>
-         </tr>
-          
-           **************************************************** -->
-          
-         <tr align="center">
-            <td>
-               <table align=center>
-                  <!-- table holding the buttons for selecting, adding and removing an institution -->
-                  <tr>
-                     <td>
-                        <!--
-                           <input type="submit" name="selectInstitution" value="Select Institution" onclick="displayInstitution()" id="selectInstitutionButton">
-                           -->
-                        <button onclick="displayInstitution()">Select Institution</button>
-                     </td>
-                     <td>
-                        <form action = "/institutions/create"
-                        {% if globalAdminRole == user.role.id %}Create Institution{% endif %}>
-                        <input type="submit" name="addInstitution" value="Add Institution" onclick="" id="addInstitutionButton">
-                        </form>
-                     </td>
-                     <td>
-                        <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton">
-                     </td>
-                  </tr>
-               </table>
-            </td>
-         </tr>
-      </table>
-   </div>
-   
-    <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 280px 0px 0px; width:350px; height: 450px">
-      <h4>Search By Institution Name</h4>
-      <script>
-         //this script is used to toggle the new prereq info
-         $(document).ready(function()
-           {
-         $("#AdvancedSearchButton").click(function()
-            {
-         $("#AdvancedOptionTable").toggle();
-         })
-         
-         
-         })                                   
-      </script>
-      <form name="search" method="post" action="/institutions/search">
-         <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
-      </form>
-      <br>
-      <a href="#" id="AdvancedSearchButton">Advanced Search Options</a><br><br>
-      <table id="AdvancedOptionTable" style="display:none">
-         <tr>
-            <th colspan=2 style="align: center"><u>User ID:</u></th>
-         </tr>
-         <tr>
-            <td>
-               User Name:
-            </td>
-            <td>
-               <input type="text" name="userNameInput" placeholder="User Name">
-            </td>
-         </tr>
-         <tr>
-            <td></td>
-            <td>
-               <input type="submit" value="Search" name="searchUserButton" id="searchUserButton">
-            </td>
-         </tr>
-         <tr>
-            <th colspan=2 style="align: center"><u>Location</u></th>
-         </tr>
-         <tr>
-            <td>
-               State:
-            </td>
-            <td>
-               <!--
-                <option selected></option>
-               {% for institution in institutions %}
-               <option value="{{ institution.id }}"
-               {% if institution.id == object.institution.id %}
-                       selected="selected"
-                       {% endif %}>
-               {% if institution.state %}
-                   {{ institution.state}}
-                   {% endif %}
-               </option>
-               {% endfor %}
+        <h2 align="center">View Institutions</h2>
+    </div>
 
-                <option selected></option>
-               {% for institution in institutions %}
-               <option value="{{ institution.id }}"
-               {% if institution.id == object.institution.id %}
-                       selected="selected"
-                       {% endif %}>
-               {% if institution.state %}
-                   {{ institution.state}}
-                   {% endif %}
-               </option>
-               {% endfor %}
-                 -->
-                   <select name="state" id="state" style="width:100%" onchange="populateInstitutionCitySelect()">
-                       <option selected value="-1">Select State</option>
-               </select>
-                
-                <script>
-                    populateInstitutionStateSelect();
-                    var repeatDept = {};
-                    $("select[name='state'] > option").each(function () {
-                        if(repeatDept[this.text]) 
-                            {
-                                $(this).remove();
-                            }
-                        else 
-                            {
-                                repeatDept[this.text] = this.value;
-                            }
+    <!-- search results for search by name -->
+    {% if searchText %}
+    <h3>Search results for ({{ searchText }})</h3>
+    {% endif %}
+
+    <div style="min-height: 600px; width: 1400px">
+        <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 280px; height: 450px; width:450px">
+
+
+            <table>
+                <tr><h4>Select An Institution</h4></tr>
+                <tr>
+                    <!-- The list of institutions -->
+                    <td><select name="institution" id="institution" size="10" style="width:400px; height:250px">
+                        {% for institution in institutions %}
+                        <option value="{{ institution.id }}"
+                                {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
+                            {{ institution.name}} {% if institution.city %}({{ institution.city}},{{institution.state}}){% endif %}
+                        </option>
+                        {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+
+                <tr align="center">
+                    <td>
+                        <!-- table holding the buttons for selecting, adding and removing an institution -->
+                        <table align=center>
+                            <tr>
+                                <td>
+                                    <button onclick="displayInstitution()">Select Institution</button>
+                                </td>
+                                <td>
+                                    <form action = "/institutions/create"
+                                          {% if globalAdminRole == user.role.id %}Create Institution{% endif %}>
+                                        <input type="submit" name="addInstitution" value="Add Institution" onclick="" id="addInstitutionButton">
+                                    </form>
+                                </td>
+                                <td>
+                                    <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton">
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- The Search Filters -->
+        <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 280px 0px 0px; width:350px; height: 450px">
+            <h4>Search By Institution Name</h4>
+            <script>
+                //this script is used to toggle the new prereq info
+                $(document).ready(function()
+                                  {
+                    $("#AdvancedSearchButton").click(function()
+                                                     {
+                        $("#AdvancedOptionTable").toggle();
+                    })
+
+
+                })                                   
+            </script>
+            <form name="search" method="post" action="/institutions/search">
+                <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
+            </form>
+            <br>
+            <!-- Advanced Search Options -->
+            <a href="#" id="AdvancedSearchButton">Advanced Search Options</a><br><br>
+            <table id="AdvancedOptionTable" style="display:none">
+                <tr>
+                    <th colspan=2 style="align: center"><u>User ID:</u></th>
+                </tr>
+                <tr>
+                    <td>
+                        <!-- Search By User Name -->
+                        User Name:
+                    </td>
+                    <td>
+                        <input type="text" name="userNameInput" placeholder="User Name">
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="submit" value="Search" name="searchUserButton" id="searchUserButton">
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan=2 style="align: center"><u>Location</u></th>
+                </tr>
+                <tr>
+                    <td>
+                        <!-- Search by state -->
+                        State:
+                    </td>
+                    <td>
+                        <select name="state" id="state" style="width:100%" onchange="populateInstitutionCitySelect()">
+                            <option selected value="-1">Select State</option>
+                        </select>
+
+                        <!-- populate state list -->
+                        <script>
+                            populateInstitutionStateSelect();
+                            var repeatDept = {};
+                            $("select[name='state'] > option").each(function () {
+                                if(repeatDept[this.text]) 
+                                {
+                                    $(this).remove();
+                                }
+                                else 
+                                {
+                                    repeatDept[this.text] = this.value;
+                                }
                             });
 
 
-                     function populateInstitutionStateSelect()
-                        {
-                           let element = document.getElementById('state');
+                            function populateInstitutionStateSelect()
+                            {
+                                let element = document.getElementById('state');
 
 
-                            for(var i=0; i< institutions.length; ++i)
+                                for(var i=0; i< institutions.length; ++i)
                                 {
                                     let option = document.createElement ('option');
 
                                     option.value = institutions[i].id;
                                     option.textContent = institutions[i].state;
-                                   element.appendChild(option);
+                                    element.appendChild(option);
 
                                 }
 
-                           // populateInstitutionCitySelect();
+                                // populateInstitutionCitySelect();
 
-                        }
-    
-                </script>
-                
-                <!-- --> 
-                
-            </td>
-         </tr>
-          
-          
-          <!--   -->
-         <tr>
-            <td>
-               City (Optional):
-            </td>
-            <td>
-                <script>
+                            }
 
-                    
-                    
-                </script>
-                
-               <select id="city" name="city" style="width: 100%">
-                   <option selected value="-1">Select City</option>
-               </select>
-            </td>
-         </tr>
+                        </script>
+                    </td>
+                </tr>
 
-         <tr>
-            <td></td>
-            <td><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()"></td>
-         </tr>
-         <tr>
-            <th colspan=2 style="align: center"><u>Program Type</u></th>
-         </tr>
-         <tr>
-            <td>
-               Degree (Program) Type:
-            </td>
-            <td>
-               <select id="DegreeType" style="width:100%">
-               </select>
-                
-                <script>
-                populateDegrees();
-                        function populateDegrees(){
-        
+                <tr>
+                    <td>
+                        City (Optional):
+                    </td>
+                    <td>
+
+                        <select id="city" name="city" style="width: 100%">
+                            <option selected value="-1">Select City</option>
+                        </select>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td></td>
+                    <td><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()"></td>
+                </tr>
+                <tr>
+                    <th colspan=2 style="align: center"><u>Program Type</u></th>
+                </tr>
+                <tr>
+                    <td>
+                        Degree (Program) Type:
+                    </td>
+                    <td>
+                        <select id="DegreeType" style="width:100%">
+                        </select>
+                        <!-- populate the degree list -->     
+                        <script>
+                            populateDegrees();
+                            function populateDegrees(){
+
                                 let element = document.getElementById('DegreeType');
 
-                              let optionDegree = document.createElement( 'option' );
-                                   optionDegree.value = -1;
-                                    optionDegree.textContent = "Select Degree";
+                                let optionDegree = document.createElement( 'option' );
+                                optionDegree.value = -1;
+                                optionDegree.textContent = "Select Degree";
                                 element.appendChild(optionDegree); 
 
                                 for (var i = 0; i < programList.length; ++i){
-                                        let optionDegree = document.createElement( 'option' );
-                                        optionDegree.value = i;
-                                        optionDegree.textContent = programList[i].degree.title;  
-                                        element.appendChild( optionDegree );           
+                                    let optionDegree = document.createElement( 'option' );
+                                    optionDegree.value = i;
+                                    optionDegree.textContent = programList[i].degree.title;  
+                                    element.appendChild( optionDegree );           
                                 }
-                        }
+                            }
 
 
-                </script>
-            </td>
-         </tr>
-         <tr>
-            <td></td>
-            <td>
-               <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton">
-            </td>
-         </tr>
-         <tr>
-            <th colspan=2 style="align: center"><u>Institution Type</u></th>
-         </tr>
-          <tr>
-            <td>Institution Type:</td>
-            <td>
-               <select id="InstitutionType" style="width:100%">
-               </select>
-            </td>
-         </tr>
-         <tr>
-            <td></td>
-            <td><input type="submit" value="Apply Filter" name="searchButton"></td>
-         </tr>
-      </table>
-   </div><!-- end div id="SearchOptions" -->
+                        </script>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton">
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan=2 style="align: center"><u>Institution Type</u></th>
+                </tr>
+                <tr>
+                    <td>Institution Type:</td>
+                    <td>
+                        <select id="InstitutionType" style="width:100%">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="submit" value="Apply Filter" name="searchButton"></td>
+                </tr>
+            </table>
+        </div><!-- end div id="SearchOptions" -->
     </div>
 </div> <!-- div id="InstitutionsContainer" -->
 <div id="clear"></div>
 
 <!-- end institutions container -->
+
+
+<script>
+     //Filter by the location
+    function programFilter(){
+        //let selectProgram = document.getElementById('DegreeType');
+        //let programID = selectProgram.options[selectProgram.selectedIndex].value;
+        //let programName = selectProgram.options[selectProgram.selectedIndex].text;
+        var count = 0;
+
+            let selectProgram = document.getElementById('DegreeType');
+            let optionValue = selectProgram.options[selectProgram.selectedIndex].value;
+            let programName = selectProgram.options[selectProgram.selectedIndex].text;
+
+            if(optionValue == -1){ //if program is not selected
+                alert("Please Select a Program to Filter!");
+            }
+            else{
+
+                clearInstitutions();
+                for(var i = 0; i < institutions.length; ++i){
+                    if(programName == institutions[i].state){
+                        let element = document.getElementById('institution');
+                        let option = document.createElement( 'option' );
+                        option.value = institutions[i].id;
+                        option.textContent = institutions[i].name +" ( "  + institutions[i].city + ", " + institutions[i].state + ")";
+                        element.appendChild( option );
+                    }
+                }
+            }
+
+
+    }
+</script>
