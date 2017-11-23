@@ -274,11 +274,11 @@
     Click <a href="/agreements/id/{{ object.id }}/display">{{ object.filename }}</a>
     to view/download the articulation agreement.<br />
   </div>
-  <div>
-    <form id="details" method="post" action="/agreements/id/{{ object.id }}/update" style="display: inline-block; float: left;">
+  <div><br>
+    <form id="details" method="post" action="/agreements/id/{{ object.id }}/update" style="display: inline-block;">
       <input type="submit" value="Edit" />
     </form>
-    <form action="/agreements/remove" method="post" style="display: inline-block; float: right;">
+    <form action="/agreements/remove" method="post" style="display: inline-block;">
       <input type="hidden" name="id" value="{{ object.id }}" />
       <input type="hidden" name="response" value="html" />
       <input type="submit" value="Delete" />
