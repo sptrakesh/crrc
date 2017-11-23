@@ -11,10 +11,11 @@
         {
           if ( xhr.status === 200 )
           {
-            console.log( xhr.responseText );
+            //console.log( xhr.responseText );
             contactList = JSON.parse( xhr.responseText );
             populateInstitutionsSelect();
             populateRoles();
+            display();
           }
           else
           {
@@ -27,7 +28,7 @@
     getContacts();
 
 
-  function sortContacts()
+  /*function sortContacts()
   {
     function compareInstitution( i1, i2 )
     {
@@ -46,23 +47,28 @@
       return 0;
     }
     contacts.sort( compareContact );
-  }
+  }*/
 
-  function display( contact )
+
+  function display()
   {
       let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
-      let option = document.createElement( 'option' );
-      option.value = contact.id;
-      option.textContent = contact.name + " - " + contact.institution.name;
-      element.appendChild( option );
-      console.log(contact.name + "Retrieved");
+      for(var i=0;i<contactList.length;++i){
+        let option = document.createElement( 'option' );
+        option.value = contactList[i].id;
+        option.textContent = contactList[i].name + " - " + contactList[i].institution.name;
+        element.appendChild( option );
+        
+      }
+      
   }
 
-  function displayAll()
+  /*function displayAll()
   {
     sortContacts();
     contacts.forEach( display );
   }
+  */
   function deletePerson( form )
   {
       /*
@@ -81,7 +87,7 @@
          {
            if ( xhr.status === 200 )
            {
-             console.log( xhr.responseText );
+             //console.log( xhr.responseText );
              institutionList = JSON.parse( xhr.responseText );
              populateInstitutionStateSelect();          //  This function is calling to populate list for location filter.
            }
@@ -103,8 +109,6 @@
         var uniquesID = [];
         var uniquesName = [];
          for (var i = 0; i < contactList.length; ++i){
-                    console.log("Contact id is " + contactList[i].id);            //  <--------- working.
-                    console.log("Contact Name is " + contactList[i].user.role.role); // <--- not working.
                     id[i] = contactList[i].institution.id;
                     names[i] = contactList[i].institution.name;
          }
@@ -136,7 +140,7 @@
             for (var i = 0; i < institutionList.length; ++i){
                id[i] = institutionList[i].id;
                names[i] =  institutionList[i].state ;
-             }
+            }
             $.each(names,function(i,el){
                 if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
             });
@@ -162,7 +166,6 @@
         optionCity.textContent = "Select City";
         elementCity.appendChild(optionCity);
            
-  
         var names = [];
         
         var uniquesName = []; 
@@ -197,8 +200,6 @@
         var uniquesID = [];
         var uniquesName = [];
          for (var i = 0; i < contactList.length; ++i){
-                    console.log("Contact id is " + contactList[i].id);            //  <--------- working.
-                    console.log("Contact Name is " + contactList[i].user.role.role); // <--- not working.
                     id[i] = contactList[i].id;
                     names[i] = contactList[i].user.role.role;
          }
@@ -209,8 +210,7 @@
             if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
         });
          for (var i = 0; i < uniquesName.length; ++i){
-               
-                let option = document.createElement('option');
+               let option = document.createElement('option');
                 option.value = uniquesID[i];
                 option.textContent = uniquesName[i];
                 element.appendChild( option );  
@@ -258,6 +258,7 @@
        
       
     }
+   
     function displayContactDetails()
     {
         let select = document.getElementById('lstBoxselectUser_ViewUser');
@@ -274,25 +275,38 @@
         let select = document.getElementById('institution');
         let institutionId = select.options[select.selectedIndex].value;
         let institutionName = select.options[select.selectedIndex].text;
-   
-        var iName = []; //Institute Name
-        var cName = []; // Contact Name
-        var cID = []; // Contact ID 
-        for (var i = 0; i < contactList.length; ++i){
-            iName[i] = contactList[i].institution.name;  
-            cName[i] = contactList[i].name;
-            cID[i] = contactList[i].id;
+        var count = 0;
+
+        if(institutionId != -1){
+          var iName = []; //Institute Name
+          var cName = []; // Contact Name
+          var cID = []; // Contact ID 
+          for (var i = 0; i < contactList.length; ++i){
+              iName[i] = contactList[i].institution.name;  
+              cName[i] = contactList[i].name;
+              cID[i] = contactList[i].id;
+          }
+
+          
+          $("#InstitutionStateFilter").val("-1");
+          $("#InstitutionCityFilter").val("-1");
+          $("#role").val("-1");
+          removeAllUsers();
+           for (var i = 0; i < contactList.length; ++i){
+              if (iName[i]  == institutionName)   //If the institution Name from select box is same as iName at i.
+                  {
+                      let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
+                      let option = document.createElement( 'option' );
+                        option.value = cID[i];
+                        option.textContent = cName[i] +" - " + iName[i];
+                        element.appendChild( option );
+                        ++count;
+                          document.getElementById("displayStatus").innerHTML = "Found " + count + " User for " + institutionName;
+                  }
+          }
         }
-        removeAllUsers();
-         for (var i = 0; i < contactList.length; ++i){
-            if (iName[i]  == institutionName)   //If the institution Name from select box is same as iName at i.
-                {
-                    let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
-                    let option = document.createElement( 'option' );
-                      option.value = cID[i];
-                      option.textContent = cName[i] +" - " + iName[i];
-                      element.appendChild( option );
-                }
+        else{
+            document.getElementById("displayStatus").innerHTML = "Please Select an Institution to Filter! ";
         }
     }
 
@@ -325,6 +339,9 @@
                         }
                     }
                 }
+                $("#institution").val("-1");
+                $("#InstitutionCityFilter").val("-1");
+                $("#role").val("-1");
                 removeAllUsers();
                 for(var i = 0; i < contactList.length; ++i){
                     if(stateName == contactList[i].institution.state){
@@ -332,7 +349,6 @@
                             let option = document.createElement( 'option' );
                              option.value = contactList[i].id;
                             option.textContent = contactList[i].name +" - "  + contactList[i].institution.name;
-                            console.log("Id is " + contactList[i].id + ". Name is " + contactList[i].name + contactList[i].institution.name);
                             element.appendChild( option );
                             ++count;
                           document.getElementById("displayStatus").innerHTML = "Found " + count + " User for " + stateName;
@@ -344,6 +360,8 @@
         }       
         else{       // If user has selected a city.
             var count = 0;
+            $("#institution").val("-1");
+            $("#role").val("-1");
              removeAllUsers();
              for(var i = 0; i < contactList.length; ++i){
                   if(cityName == contactList[i].institution.city){
@@ -364,7 +382,12 @@
         let select = document.getElementById('role');
         let roleId = select.options[select.selectedIndex].value;
         let role = select.options[select.selectedIndex].text;
-   
+
+        if(roleId != -1){
+          $("#institution").val("-1");
+          $("#InstitutionStateFilter").val("-1");
+          $("#InstitutionCityFilter").val("-1");
+          
         removeAllUsers();
          for (var i = 0; i < contactList.length; ++i){
             if (contactList[i].user.role.role  == role)   //If the institution Name from select box is same as iName at i.
@@ -381,6 +404,10 @@
                       document.getElementById("displayStatus").innerHTML = "Found " + count + " Users for " + role;   
                 }
         }
+      }
+      else{
+        document.getElementById("displayStatus").innerHTML = "Please Select a role to Filter! "; 
+      }
     }
     function clearSelectCities()
     {
@@ -399,7 +426,15 @@
                 element.removeChild(element.firstChild);
             }
         }
-    
+    function removeAllFilters(){
+      removeAllUsers();
+      display();
+      $("#institution").val("-1");
+      $("#InstitutionStateFilter").val("-1");
+      $("#InstitutionCityFilter").val("-1");
+      $("#role").val("-1");
+      document.getElementById("displayStatus").innerHTML = ""; 
+    }
 </script>
 
 <div style="margin-left: auto; margin-right: auto;min-height: 700px ;">
@@ -421,7 +456,7 @@
              <q id="displayStatus">  {% if searchText %} Search results for ({{ searchText }}) {% endif %} </q><br>
                <select multiple id="lstBoxselectUser_ViewUser" style="font-size: 16px;">
                    <option value="-1" selected style="display: none;"></option>
-                   <script type="text/javascript">displayAll();</script>
+                   <script type="text/javascript">//displayAll();</script>
                    {% for contact in contacts %}
                    <option value="{{ contact.id }}" {% if contact.id == object.contact.id %}selected="selected"{% endif %}>{{contact.name}} </option> {% endfor %}
                </select>
@@ -429,13 +464,13 @@
                 <button onclick = "displayContactDetails()" >View User Details</button>
                <a href="/contacts/create"><input type="button" name="addUser" value="Add User" id="addUserButton"></a>
                 <button onclick="removeUser()">Remove User</button>
-               
                <br>
             </div> <!--End of div viewUsersMultilineSelect -->
            
             <!--Start of div filterBy -->
             <div class="filterByInViewUsers" align="right">
-               <h2 id="filterByHeader"> Filter By </h2>
+               <h2 style="margin: 0px;width: 350px; float: left;" align="center"> Filter By</h2> <button  onclick="removeAllFilters()">No Filters</button>
+
                <fieldset>
                   
                         Institute:

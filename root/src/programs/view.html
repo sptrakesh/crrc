@@ -1,9 +1,8 @@
 <script type="text/javascript">
-   function deleteProgram( programId )
+  function deleteProgram( programId )
   {
     function displayWarning()
     {
-      
       let warning = document.getElementById( `pw_${programId}` );
       warning.style.display = 'inline';
       warning.innerText = 'Unable to delete program.  Please try again later.'
@@ -84,7 +83,10 @@
         {% endif %}
     </table>
     <button onclick="window.location.href='/programs/id/{{ object.id }}/update'"> Edit</button>
-    <button onclick="deleteProgram( {{ program.id }} )">Delete</button>
-    
+    <form action="/programs/remove" method="post" style="display: inline-block;" onsubmit="return deleteProgram( this );">
+      <input type="hidden" name="id" value="{{ object.id }}" />
+      <input type="hidden" name="name" value="{{ program.name }}"/>
+      <input type="submit" value="Delete" />
+    </form>
 </div>
 

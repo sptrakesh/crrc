@@ -344,14 +344,18 @@
         
         if(institutionId != -1)     
             {
-                  removeAllPrograms();
+                  $("#InstitutionStateFilter").val("-1");
+                  $("#InstitutionCityFilter").val("-1");
+                  $("#DegreeListFilter").val("-1");
+                  $("#DesignationsFilter").val("-1");
+                 removeAllPrograms();
                  for (var i = 0; i < programList.length; ++i){
                     if (programList[i].institution.name  == institutionName)   //If the institution Name from select box is same as the one in programList.
                         {
                             let element = document.getElementById( 'selectProgram' );
                             let option = document.createElement( 'option' );
                               option.value = programList[i].id;
-                              option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " {% if program.degree %} + programList[i].degree.title {% endif %};
+                              option.textContent = programList[i].title +" - " + programList[i].institution.name;
                               element.appendChild( option );
                              ++count;
                             document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + institutionName;
@@ -383,8 +387,6 @@
              
             if(optionValue == -1){  // If the user has not selected any state, it will give a warning message.
                 document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
-                //document.getElementById("displayStatus").style.color = "red";
-                //document.getElementById("displayStatus").style.backgroundColor = "yellow";
             }
             else{
                 var count = 0;
@@ -398,13 +400,18 @@
                         }
                     }
                 }
+
+                  $("#InstitutionListFilter").val("-1");
+                  $("#InstitutionCityFilter").val("-1");
+                  $("#DegreeListFilter").val("-1");
+                  $("#DesignationsFilter").val("-1");
                  removeAllPrograms();
                 for(var i = 0; i < programList.length; ++i){
                     if(stateName == programList[i].institution.state){
                            let element = document.getElementById('selectProgram');
                             let option = document.createElement( 'option' );
                              option.value = programList[i].id;
-                            option.textContent = programList[i].title +" - "  + programList[i].institution.name + " - " + programList[i].degree.title;
+                            option.textContent = programList[i].title +" - "  + programList[i].institution.name ;
                             element.appendChild( option );
                             ++count;
                           document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + stateName;
@@ -416,13 +423,16 @@
         }       
         else{       // If user has selected a city.
             var count = 0;
+            $("#InstitutionListFilter").val("-1");
+            $("#DegreeListFilter").val("-1");
+            $("#DesignationsFilter").val("-1");
              removeAllPrograms();
              for(var i = 0; i < programList.length; ++i){
                   if(cityName == programList[i].institution.city){
                        let element = document.getElementById('selectProgram');
                        let option = document.createElement( 'option' );
                        option.value = programList[i].id;
-                       option.textContent = programList[i].title +" - "  + programList[i].institution.name + " - " + programList[i].degree.title;
+                       option.textContent = programList[i].title +" - "  + programList[i].institution.name;
                        element.appendChild( option );
                        ++count;
                        document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + cityName;
@@ -437,24 +447,36 @@
         let degreeName = select.options[select.selectedIndex].text;
         
         if( degreeId != -1){        //  If user has selected a degree to filter.
-            
+        
+        $("#InstitutionListFilter").val("-1");
+        $("#InstitutionStateFilter").val("-1");
+        $("#InstitutionCityFilter").val("-1");
+        $("#DesignationsFilter").val("-1");
         removeAllPrograms();
         for (var i = 0; i < programList.length; ++i){
-               if (programList[i].degree.title  == degreeName)   //If the Degree Name from select box is same as the one in programList.
+              if(programList[i].degree == undefined){
+                  console.log(programList[i].degree + " is not defined. User error");
+              }
+              else{
+                  if (programList[i].degree.title  == degreeName)   //If the Degree Name from select box is same as the one in programList.
                    {
                       let element = document.getElementById( 'selectProgram' );
                       let option = document.createElement( 'option' );
                       option.value = programList[i].id;
-                      option.textContent = programList[i].title +" - " + programList[i].institution.name + " - " + programList[i].degree.title;
+                      option.textContent = programList[i].title +" - " + programList[i].institution.name ;
                       element.appendChild( option );
                        
                         ++count;
                        document.getElementById("displayStatus").innerHTML = "Found " + count + " record for " + degreeName;
                    }
-            else{
+                  else {
+                document.getElementById("displayStatus").innerHTML = "Found " + count + " record for " + degreeName;
                 //delete programList[i] ;
-             }
-        }
+                  }
+            }
+          }
+               
+        
         //removeAllInstitutions();
         }
         else{       // If user has not selected a degree to filter.
@@ -470,9 +492,16 @@
         let designationName = select.options[select.selectedIndex].text;
         
         if(designationId != -1){    //  If user has selected a designation.
+        $("#InstitutionListFilter").val("-1");
+        $("#InstitutionStateFilter").val("-1");
+        $("#InstitutionCityFilter").val("-1");
+        $("#DegreeListFilter").val("-1");
         removeAllPrograms();
         for (var i = 0; i < programList.length; ++i){
-               if (programList[i].designation.title  == designationName)   //If the Designation Name from select box is same as the one in programList.
+               if(programList[i].designation == undefined){
+                  console.log(programList[i].title + " has no designation selected");
+               }
+               else if (programList[i].designation.title  == designationName)   //If the Designation Name from select box is same as the one in programList.
                 {
                       
                       let element = document.getElementById( 'selectProgram' );
@@ -519,6 +548,16 @@
                 
             }
     }
+    function removeAllFilters(){
+      removeAllPrograms();
+      populateProgramSelect();
+      $("#InstitutionListFilter").val("-1");
+      $("#InstitutionStateFilter").val("-1");
+      $("#InstitutionCityFilter").val("-1");
+      $("#DegreeListFilter").val("-1");
+      $("#DesignationsFilter").val("-1");
+      document.getElementById("displayStatus").innerHTML = ""; 
+    }
 </script>
 
 <div style="min-height: 700px; margin-left: auto;margin-right: auto;">
@@ -553,7 +592,7 @@
               
             </div> <!--End of div viewProgramsMultilineSelect -->
             <div class="filterByInViewPrograms" align="right">
-               <h2 id="filterByHeader"> Filter By </h2>
+               <h2 style="width: 350px;float: left;margin: 0px;" align="center"> Filter By </h2> <button  onclick="removeAllFilters()" class="commonBtn2InViewPrograms">No Filters</button>
                <fieldset>
                  <form name="search" method="post" action="/programs/search">
                   Program Name: <input type="text" name="text" class="commonTxtBoxCSS" placeholder="Search by name..."/><input class="commonBtn3InViewPrograms" type="submit" value="Find"/>
@@ -592,6 +631,7 @@
                    </select><br>
                   <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="designationFilter()"> 
                </fieldset>
+
                <br>
                
             </div><!--End of div filterBy -->
