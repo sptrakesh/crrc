@@ -244,7 +244,49 @@
                      }
              }
      }*/
-
+    
+    /****************************************************/
+    
+    function filterDegrees()
+    {
+        let select = document.getElementById('DegreeType');
+        let degreeId = select.options[select.selectedIndex].value;
+        let degreeName = select.options[select.selectedIndex].text;
+        let degreeDisplayName = "";
+        
+        for (var i=0; i<programList.length; i++)
+            {
+                if(programList[i].degree.title == degreeName)
+                    {
+                        for(var j=0; j<institutions.length; j++)
+                            {
+                                if(institutions[j].id == programList[i].institution.id)
+                                    {
+                                        console.log("id is "+ programList[i].degree.id);
+                                        console.log("title is "+ programList[i].degree.title);
+                                        //institutions[j].degree.id = programList[i].degree.id;
+                                        degreeDisplayName = programList[i].degree.title + " in " + programList[i].title;
+                                        institutions[j].degree = programList[i].degree.title;
+                                        console.log(institutions[j].degree);
+                                    }
+                            }
+                    }
+            }
+        clearInstitutions();
+        for(var i=0; i<institutions.length; i++)
+            {
+                if( degreeName == institutions[i].degree)
+                    {
+                        let element = document.getElementById('institution');
+                        let option = document.createElement('option');
+                        option.value = i;
+                        option.textContent = institutions[i].name + " - " + degreeDisplayName;
+                        element.appendChild(option);
+                    }
+            }
+    }
+    
+    /****************************************************/
 
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
@@ -416,11 +458,11 @@
                     <td><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()"></td>
                 </tr>
                 <tr>
-                    <th colspan=2 style="align: center"><u>Program Type</u></th>
+                    <th colspan=2 style="align: center"><u>Degree Type</u></th>
                 </tr>
                 <tr>
                     <td>
-                        Degree (Program) Type:
+                        Degree Type:
                     </td>
                     <td>
                         <select id="DegreeType" style="width:100%">
@@ -452,7 +494,7 @@
                 <tr>
                     <td></td>
                     <td>
-                        <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton">
+                        <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton" onclick="filterDegrees()">
                     </td>
                 </tr>
                 <tr>
