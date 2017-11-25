@@ -526,13 +526,6 @@ float:left;
     
 }
 
-.viewUserContainer h2[id="filterByHeader"]{
-	margin: 5px;
-	text-align: center;
-	padding: 0px;
-}
-
-
 .viewUserContainer select[class="commonCmbBox2CSS"]{
     margin: 0px 0px 0px 5px;
 	padding: 0px;
@@ -596,12 +589,6 @@ float:left;
     height: 25px;
     margin: 4px;
 }
-.viewProgramContainer h2[id="filterByHeader"]{
-	margin: 5px;
-	text-align: center;
-	padding: 0px;
-}
-
 
 /* end of div multiLine select in view Programs */ 
 
@@ -738,7 +725,7 @@ div[class="addUserContainer"]{
 }
 
 .addUserContainer select[class="commonCmbBox4CSS"]{
-    margin: 0px 0px 0px 35px;
+    margin:  5px 10px 5px 0px;
 	padding: 0px;
     text-align: center;
     width: 230px;
@@ -746,12 +733,20 @@ div[class="addUserContainer"]{
     font-size: 14pt;
     border-width: 1px; 
 }
-/*.addUserContainer button[class="addUserButton"]{
-	font-size: 20px;
-	border-style: 1px solid black;
-	border-radius: 5px;
+.addUserContainer button[class="addUser"]{
+	font-size: 15px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: black;
+    border-radius: 5px;
+    width: 150px;
+    height: 30px;
+    margin: 5px;
+    margin-left: auto;
+    margin-right: auto;
 }
-*/
+}
+
 .addUserContainer input[class="btnCancel"]{
 	font-size: 20px;
    /* margin: 0px 10px 0px 20px;*/

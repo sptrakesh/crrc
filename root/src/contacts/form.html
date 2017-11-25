@@ -62,7 +62,7 @@
     return true;
   }
 
-  function enableRole(form)
+  function enableRole()
   {
     let username = document.getElementById( 'username' );
     if ( !isEmpty( username ) )
@@ -116,76 +116,70 @@
 </script>
 <div class="addUserContainer" style="margin-left: auto;margin-right: auto;">
 <!--div style="display: flex; margin: auto; width: 90%; padding: 10px;"-->
-
-<form id="edit" method="post" action="/contacts/edit" onsubmit="return false;" align="right" >
+  <form id="edit" method="post" action="/contacts/edit" onsubmit="return false;">
     {% if object %}
-    <h2 align="center">Edit Contact</h2>
+    <h2>Edit Contact</h2>
     {% else %}
-    <h2 align="center">Create Contact</h2>
+    <h2>Create Contact</h2>
     {% endif %}
     <div style="margin-left: auto; margin-right: auto; width: 1000px; min-height: 500px;">
-    <div class="addUserForm">  
-        <label class="label">First Name:</label>
-        <input name="name" id="name" type="text" placeholder=" First Name"  class="addUserInput" size="30" width="100" required="required"
-               {% if object %}value="{{ object.name }}" {% endif %} />
-        <br />
-        <label class="label" style="display: none;">Last Name:</label>
-        <input type="text" placeholder="Last Name NA"  class="addUserInput" size="30" width="100" required="required"
-               style="display: none;">
-        <br />
-        <label class="label">Email (Work):</label>
-        <input name="workEmail" id="workEmail" type="email" placeholder="email address" class="addUserInput" size="30" width="100"
-               {% if object %}value="{{ object.workEmail }}" {% endif %} />
-        <br />
-       
-        <label class="label">Telephone (Work):</label>
-        <input name="workPhone" id="workPhone" placeholder="Telephone Number" class="addUserInput" type="tel" size="30" width="100"
-               {% if object %}value="{{ object.workPhone }}" {% endif %} />
-        <br />
-        <label class="label">Telephone (Mobile):</label>
-        <input name="workPhone" id="workPhone" type="tel" size="30" width="100"
+    <div class="addUserForm" align="right"> 
+    <label class="label">Full Name:</label>
+    <input name="name" class="addUserInput" id="name" type="text" size="30" width="100" required="required"
+           {% if object %}value="{{ object.name }}" {% endif %} />
+    <br />
+    <label class="label">Email (Work):</label>
+    <input name="workEmail" class="addUserInput" id="workEmail" type="email" size="30" width="100"
+           {% if object %}value="{{ object.workEmail }}" {% endif %} />
+    <br />
+    <label class="label">Telephone (Work):</label>
+    <input name="workPhone" class="addUserInput" id="workPhone" type="tel" size="30" width="100"
            {% if object %}value="{{ object.workPhone }}" {% endif %} />
-        <br />
-        <input name="mobilePhone" id="mobilePhone" placeholder="Telephone Number NA" class="addUserInput" type="tel" size="30" width="100"
-               {% if object %}value="{{ object.mobilePhone }}" {% endif %} / style="display: none;">
-        <br />
-        <lable class="label" style="display: none;">Link:</lable>
-        <input type="text" class="addUserInput" placeholder="URL NA" style="display: none;">
+    <br />
+    <label class="label">Telephone (Other):</label>
+    <input name="otherPhone" class="addUserInput" id="otherPhone" type="tel" size="30" width="100"
+           {% if object %}value="{{ object.otherPhone }}" {% endif %} />
+    <br />
+    <label class="label">Link: </label>
+    <input name="otherEmail"  class="addUserInput" id="otherEmail" type="email" size="30" width="100" placeholder="Optional" 
+           {% if object %}value="{{ object.otherEmail }}" {% endif %} />
+    <br />
     </div>
-    
-    <div class="institute_addUser">
+    <div class="institute_addUser" align="right">
     <label class="label">Institution:</label>
-    <select name="institution" id="institution" class="commonCmbBox3CSS" style="margin: 10px 10px 10px 0px;width: 300px;">
-      <option value="-1" selected>Select Institution</option>
+    <select name="institution" id="institution" class="commonCmbBox4CSS">
+      <option value="-1">Select Institution</option>
       {% for institution in institutions %}
-      <option value="{{ institution.id }}" style="font-size: 14px;"
-              {% if institution.id == object.institution.id %}selected{% endif %}>
+      <option value="{{ institution.id }}"
+              {% if institution.id == object.institution.id %}selected{% endif %} style="font-size: 14px">
         {{ institution.name }}
       </option>
       {% endfor %}
     </select><br>
-        <label class="label">Position:</label>
-        <input type="text" placeholder="Postion of user in Institution NA" class="addUserInput">
+    <label class="label">Position:</label>
+    <input name="homeEmail" class="addUserInput" id="otherEmail" type="text" size="30" width="100" placeholder="Optional" 
+           {% if object %}value="{{ object.homeEmail }}" {% endif %} />
+    
     <q id="institutionWarning" class="warning" style="display: none;">Contact must be associated with an institution.</q>
     <br />
     <p align="center"><strong>Login Information</strong></p>
     <label class="label">Username:</label>
-    <input name="username" id="username" class="addUserInput" placeholder="Enter Username" type="text" size="30" width="100"
+    <input name="username" class="addUserInput" id="username" type="text" size="30" width="100"
            {% if object.user.username %}value="{{ object.user.username }}" readonly="readonly" {% endif %}
            onchange="enableRole()" />
     <q id="userNameWarning" class="warning" style="display: none;">Username not available.  Please try another username.</q>
     <br />
     {% if object.user %}{% else %}
     <label class="label">Password:</label>
-    <input name="password" id="password" type="password" class="addUserInput" placeholder="Enter User Password" size="30" width="100" />
+    <input name="password" class="addUserInput" id="password" type="password" size="30" width="100" />
     <q id="passwordWarning" class="warning" style="display: none;">Password should contain minimum 8 characters, combination of upper and lower case letters, numbers and special characters.</q>
     {% endif %}
     <br />
     <label class="label">Role:</label>
-    <select name="role" id="role" class="commonCmbBox4CSS" {% if object.user %}{% else %}disabled{% endif %} >
-      <option value="-1" style="font-size: 16px;">Select Role</option>
+    <select name="role" class="commonCmbBox4CSS" id="role" {% if object.user %}{% else %}disabled{% endif %}>
+      <option value="-1">Select Role</option>
       {% for role in roles %}
-      <option value="{{ role.id }}" style="font-size: 16px;"
+      <option value="{{ role.id }}"
               {% ifequal role.id object.user.role.id %}selected="selected" {% endifequal %}>
         {{ role.role }}
       </option>
@@ -195,10 +189,8 @@
     <input type="hidden" name="_role" value="{{ object.user.role.id }}" />
     <input type="hidden" name="id" value="{{ object.id }}" />
     {% endif %}
-        <br>
-    <button onclick="validate()" style="font-size: 20px;
-	border: 1px solid black;
-	border-radius: 5px;">Save</button>
+    <br>
+    <button onclick="validate()" class="addUser">Save</button>
     </div>
     </div>
   </form>
