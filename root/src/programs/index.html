@@ -257,7 +257,7 @@
     {
       if ( xhr.status === 200 )
       {
-        console.log( xhr.responseText );
+        //console.log( xhr.responseText );
         let json = JSON.parse( xhr.responseText );
         if ( json.status )
         {
@@ -298,7 +298,7 @@
                 {
                     if (xhr.status === 200 )
                         {
-                            console.log(xhr.responseText );
+                            //console.log(xhr.responseText );
                             let json = JSON.parse( xhr.responseText );
                             if(json.status && json.count === 1 )
                                 {
@@ -455,7 +455,7 @@
         removeAllPrograms();
         for (var i = 0; i < programList.length; ++i){
               if(programList[i].degree == undefined){
-                  console.log(programList[i].degree + " is not defined. User error");
+                  //console.log(programList[i].degree + " is not defined. User error");
               }
               else{
                   if (programList[i].degree.title  == degreeName)   //If the Degree Name from select box is same as the one in programList.

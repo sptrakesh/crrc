@@ -11,7 +11,7 @@
         {
           if ( xhr.status === 200 )
           {
-            //console.log( xhr.responseText );
+            console.log( xhr.responseText );
             contactList = JSON.parse( xhr.responseText );
             populateInstitutionsSelect();
             populateRoles();
@@ -200,8 +200,16 @@
         var uniquesID = [];
         var uniquesName = [];
          for (var i = 0; i < contactList.length; ++i){
-                    id[i] = contactList[i].id;
-                    names[i] = contactList[i].user.role.role;
+              if(contactList[i].user.role != undefined){
+                 id[i] = contactList[i].id;
+                 names[i] = contactList[i].user.role.role;
+              }
+              else{
+                 id[i] = contactList[0].id;
+                 names[i] = contactList[0].user.role.role;
+              }
+                  
+                 
          }
         $.each(names,function(i,el){
             if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
