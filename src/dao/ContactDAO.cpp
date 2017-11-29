@@ -57,6 +57,7 @@ namespace crrc
 
         contactsLoaded = true;
       }
+      else qWarning( CONTACT_DAO ) << query.lastError().text();
     }
 
     void bindContact( Cutelyst::Context* c, QSqlQuery& query )
@@ -129,7 +130,7 @@ QVariantList ContactDAO::retrieveByInstitution( uint32_t id ) const
 
   for ( const auto& iter : contacts )
   {
-    if ( id == iter.second->getInstitutionId() ) list << iter.second->getInstitution();
+    if ( id == iter.second->getInstitutionId() ) list << asVariant( iter.second.get() );
   }
 
   return list;
@@ -150,6 +151,7 @@ values
 
   if ( !query.exec() )
   {
+    qWarning( CONTACT_DAO ) << query.lastError().text();
     context->stash()["error_msg"] = query.lastError().text();
     return 0;
   }
@@ -193,7 +195,11 @@ where contact_id=:id
 
     context->stash()["count"] = query.numRowsAffected();
   }
-  else context->stash()["error_msg"] = query.lastError().text();
+  else
+  {
+    qWarning( CONTACT_DAO ) << query.lastError().text();
+    context->stash()["error_msg"] = query.lastError().text();
+  }
 }
 
 QVariantList ContactDAO::search( Cutelyst::Context* context ) const

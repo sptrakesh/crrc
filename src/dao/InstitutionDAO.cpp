@@ -54,6 +54,12 @@ namespace crrc
 
         institutionsLoaded = true;
       }
+      else
+      {
+        qWarning( INSTITUTION_DAO ) << 
+          "Database error while loading institutions: " << 
+          query.lastError().text();
+      }
     }
 
     void bindInstitution( Cutelyst::Context* c, QSqlQuery& query )
@@ -78,6 +84,36 @@ QVariantList InstitutionDAO::retrieveAll() const
   return fromInstitutions();
 }
 
+QVariantList InstitutionDAO::byDegree( const uint32_t degreeId ) const
+{
+  loadInstitutions();
+  QSqlQuery query = CPreparedSqlQueryThreadForDB(
+    R"(
+select i.institution_id
+from institutions i
+inner join programs p on (p.degree_id = :degree and p.institution_id = i.institution_id)
+order by i.name
+)", crrc::DATABASE_NAME );
+  query.bindValue( ":degree", degreeId );
+
+  QVariantList list;
+
+  if ( query.exec() )
+  {
+    while ( query.next() )
+    {
+      const auto institution = retrieve( query.value( 0 ).toUInt() );
+      list << institution;
+    }
+  }
+  else
+  {
+    qWarning( INSTITUTION_DAO ) << "Database error: " << query.lastError().text();
+  }
+
+  return list;
+}
+
 QVariant InstitutionDAO::retrieve( uint32_t id ) const
 {
   loadInstitutions();
@@ -90,7 +126,12 @@ uint32_t InstitutionDAO::insert( Cutelyst::Context* context ) const
 {
   loadInstitutions();
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
-    "insert into institutions (name, address, city, state, postal_code, country, website, logo_id) values (:name, :address, :city, :state, :postalCode, :country, :website, :logo)",
+R"(
+insert into institutions
+(name, address, city, state, postal_code, country, website, logo_id)
+values
+(:name, :address, :city, :state, :postalCode, :country, :website, :logo)
+)",
     crrc::DATABASE_NAME );
   bindInstitution( context, query );
 

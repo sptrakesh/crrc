@@ -39,6 +39,7 @@ bool Root::Auto( Cutelyst::Context* c )
 
     c->stash({
       { "user", u },
+      { "contact", contact },
       { "userInstitution", institution },
       { "globalAdminRole", 1u },
       { "institutionAdminRole", 2u }

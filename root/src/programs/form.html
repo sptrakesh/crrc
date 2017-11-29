@@ -29,7 +29,7 @@
             <tr>
                <td align="right">Program Title:</td>
                <td>
-                  <input name="title" id="title" placeholder="Program Title"   class="commonTxtBoxCSS" type="text" size="35" width="50" required="required"
+                  <input name="title" id="title" placeholder="Program Title"   class="TxtBox" type="text" size="35" width="50" required="required"
                   {% if object %}value="{{ object.title }}"{% endif %} /> 
                </td>
                <td align="right">Institution:</td>
@@ -48,7 +48,7 @@
             <tr>
                <td align="right">Total Credit Hours:</td>
                <td>
-                  <input name="credits" id="credits" class="commonTxtBoxCSS" type="text" size="35" width="250" placeholder="Total Credit Hours"
+                  <input name="credits" id="credits" class="TxtBox" type="text" size="35" width="250" placeholder="Total Credit Hours"
                   {% if object %}value="{{ object.credits }}"{% endif %} />
                </td>
                <td> CAE Designation:</td>
@@ -67,7 +67,7 @@
             <tr>
                <td align="right">Curriculam Code:</td>
                <td>
-                  <input name="curriculumCode" id="curriculumCode" type="text" size="35" width="250" class="commonTxtBoxCSS" placeholder="Enter Program Code"
+                  <input name="curriculumCode" id="curriculumCode" type="text" size="35" width="250" class="TxtBox" placeholder="Enter Program Code"
                   {% if object %}value="{{ object.curriculumCode }}"{% endif %} />
                </td>
                <td align="right">Degree:</td>
@@ -90,7 +90,7 @@
             </tr>
             <tr>
                <td colspan="5">
-                  <input name="url" id="url" type="text" placeholder="Program URL" class="commonTxtBox3CSS" size="35" width="250"  {% if object %}value="{{ object.url }}"{% endif %} />
+                  <input name="url" id="url" type="text" placeholder="Program URL" class="TxtBox3" size="35" width="250"  {% if object %}value="{{ object.url }}"{% endif %} />
                </td>
             </tr>
          </table>
@@ -116,13 +116,11 @@
          <div id="CareerCourseSubDiv" style="display: none">
             <select class="commonCmbBox3CSS">
                <option>Department:</option>
-               <option></option>
-               <option></option>
+           
             </select>
             <select class="commonCmbBox3CSS">
                <option>Courses:</option>
-               <option></option>
-               <option></option>
+             
             </select>
             <br>
             <!--form  id="frmAddCourseSelectProgram" -->
@@ -138,9 +136,6 @@
       <div id="generalEduInSelectProgram" style="display: none">
          <h4 class="genEdReqHeader">General Education Requirements:</h4>
          <select class="selectProgramDropDown1" multiple>
-            <option></option>
-            <option></option>
-            <option></option>
             <option></option>
          </select>
          <textarea class="textarea1InAddProgram" placeholder="Course Details"></textarea>
@@ -182,7 +177,7 @@
       {% if object %}
       <input type="hidden" name="id" value="{{ object.id }}" />
       {% endif %}
-      <p align="center"><input type="submit" value="Save"  class="commonBtn2InViewPrograms"/>
+      <p align="center"><input type="submit" value="Save"  class="btnSave"/>
       </p>
       <br/>
       <q id="warning" class="warning" style="display: none;"></q>

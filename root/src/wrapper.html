@@ -27,13 +27,16 @@
       <h2 align="center" style="margin: 0px"><img src="/static/rw_common/themes/business/images/crrc-logo.png"  class="CRRClogo"></h2>
        <div id="DDNavBar">
          <ul>
-            <li></li>
+            
             <li><a href="/">Home</a></li>
         
             <li class="dropdown" style="float:right">
            
                <a href="javascript:void(0)" class="dropbtn"> {{ user.role.role }} </a>
                <div class="dropdown-content">
+                  <p> {{ contact.institution.name }}  aa</p>
+                  <p> {{ contact.name }} bb </p>
+                  <p> {{ userInstitution.name }} cc </p>
                   <a href="/">View Profile</a>
                   <a href="/logout" rel="">Logout</a>
                </div>

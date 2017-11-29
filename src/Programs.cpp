@@ -83,6 +83,11 @@ void Programs::create( Cutelyst::Context* c ) const
   } );
 }
 
+void Programs::view( Cutelyst::Context* c ) const
+{
+  c->setStash( "template", "programs/view.html" );
+}
+
 void Programs::data( Cutelyst::Context* c ) const
 {
   const auto& var = c->stash( "object" );

@@ -19,8 +19,8 @@
         {% endif %}
         {% if object.homeEmail %}
         <tr>
-            <td><label class="label">Home Email:</label></td>
-            <td> <a href="mailto:{{ object.homeEmail }}">{{ object.homeEmail }}</a></td>
+            <td><label class="label">Position :</label></td>
+            <td> {{ object.homeEmail }}</td>
         </tr>
         {% endif %}
         {% if object.otherEmail %}
@@ -35,12 +35,12 @@
             <td>{{ object.workPhone }}</td>
         </tr> 
         {% endif %}
-        {% if object.home_phone %}
+        {% if object.otherPhone %}
         <tr>
             <td> <label class="label">Home Number:</label></td>
-            <td> {{ object.home_phone }}</td>
+            <td> {{ object.otherPhone }}</td>
         </tr> 
-        {% endif %}
+       {% endif %}
         
         {% if object.mobilePhone %}
         <tr>

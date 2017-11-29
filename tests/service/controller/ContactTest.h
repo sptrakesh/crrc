@@ -12,8 +12,10 @@ namespace crrc
         username{ "unittestuser" }, password{ "Unit5@stUser" },
       title{ "Unit Test Title" } {}
 
-  private slots:
+    private slots :
+    void initTestCase();
     void create();
+    void retrieveAll();
     void retrieve();
     void invalid();
     void checkUsername();
@@ -22,8 +24,11 @@ namespace crrc
     void loginBeforeEdit();
     void update();
     void loginAfterEdit();
+    void byInstitution();
+    void search();
     void remove();
     void readDeleted();
+    void cleanupTestCase();
 
   private:
     const QString name;

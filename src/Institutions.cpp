@@ -33,21 +33,8 @@ using crrc::Institutions;
 
 void Institutions::index( Cutelyst::Context* c ) const
 {
-  const dao::InstitutionDAO dao{};
-  auto list = dao.retrieveAll();
-  qSort( list.begin(), list.end(), util::institutionComparator );
-
-  if ( "POST" == c->request()->method() )
-  {
-    const auto& arr = util::institutionsToArray( list );
-    dao::sendJson( c, arr );
-    return;
-  }
-
-  c->stash( {
-    { "institutions", list },
-    { "template", "institutions/index.html" }
-  } );
+  auto list = dao::InstitutionDAO{}.retrieveAll();
+  institutionList( c, list );
 }
 
 void Institutions::base( Cutelyst::Context* c ) const
@@ -145,28 +132,13 @@ void Institutions::data( Cutelyst::Context* c ) const
 
 void Institutions::search( Cutelyst::Context* c ) const
 {
-  const auto text = c->request()->param( "text", "" );
-  if ( text.isEmpty() )
-  {
-    c->response()->redirect( "/institutions" );
-    return;
-  }
+  const auto degree = c->request()->param( "degree" );
+  if ( !degree.isEmpty() ) return byDegree( c, degree );
 
-  const dao::InstitutionDAO dao{};
-  const auto& list = dao.search( c );
-
-  if ( "PUT" == c->request()->method() )
-  {
-    const auto& arr = util::institutionsToArray( list );
-    dao::sendJson( c, arr );
-    return;
-  }
-
-  c->stash( {
-    { "institutions", list },
-    { "searchText", text },
-    { "template", "institutions/index.html" }
-  } );
+  const auto text = c->request()->param( "text" );
+  auto list = text.isEmpty() ? QVariantList{} : dao::InstitutionDAO().search( c );
+  c->setStash( "searchText", text );
+  institutionList( c, list, "PUT" );
 }
 
 void Institutions::remove( Cutelyst::Context* c )
@@ -210,6 +182,22 @@ void Institutions::checkUnique( Cutelyst::Context* c )
   c->response()->setBody( string );
 }
 
+void Institutions::byDegree( Cutelyst::Context* c, const QString& id ) const
+{
+  if ( id.isEmpty() )
+  {
+    if ( "POST" == c->request()->method() )
+    {
+      dao::sendJson( c, QJsonArray{} );
+      return;
+    }
+    return;
+  }
+
+  auto list = dao::InstitutionDAO().byDegree( id.toUInt() );
+  institutionList( c, list, "PUT" );
+}
+
 bool Institutions::canEdit( Cutelyst::Context* c ) const
 {
   auto id = c->request()->param( "id", "" );
@@ -217,4 +205,22 @@ bool Institutions::canEdit( Cutelyst::Context* c ) const
   const auto flag = ( dao::isGlobalAdmin( c ) ||
       ( ! id.isEmpty() && dao::institutionId( c ) == id.toUInt() ) );
   return flag;
+}
+
+void Institutions::institutionList( Cutelyst::Context* c, QVariantList& list,
+  const QString& method ) const
+{
+  qSort( list.begin(), list.end(), util::institutionComparator );
+
+  if ( method == c->request()->method() )
+  {
+    const auto& arr = util::institutionsToArray( list );
+    dao::sendJson( c, arr );
+    return;
+  }
+
+  c->stash( {
+    { "institutions", list },
+    { "template", "institutions/index.html" }
+  } );
 }

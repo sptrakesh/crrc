@@ -1,7 +1,6 @@
 #pragma once
 #include <Cutelyst/Controller>
 
-
 namespace crrc
 {
   class Institutions : public Cutelyst::Controller
@@ -45,6 +44,9 @@ namespace crrc
     void checkUnique( Cutelyst::Context* c );
 
   private:
+    void byDegree( Cutelyst::Context* c, const QString& id ) const;
     bool canEdit( Cutelyst::Context* c ) const;
+    void institutionList( Cutelyst::Context* c, QVariantList& list,
+      const QString& method = "POST" ) const;
   };
 }
