@@ -307,23 +307,29 @@
     {% endif %}
 
     <div style="min-height: 600px; width: 1400px">
-        <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 280px; height: 450px; width:450px">
+        <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 200px; height: 450px; width:450px">
 
 
             <table>
-                <tr><h4>Select An Institution</h4></tr>
+                <tr><h3>Select An Institution</h3></tr>
                 <tr>
                     <!-- The list of institutions -->
-                    <td><select name="institution" id="institution" size="10" style="width:400px; height:250px">
+                    <td><select name="institution" id="institution" class="institution" size="10" style="width:500px; height:300px">
+                        <optgroup style="font-size:16px">
                         {% for institution in institutions %}
                         <option value="{{ institution.id }}"
                                 {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
                             {{ institution.name}} {% if institution.city %}({{ institution.city}},{{institution.state}}){% endif %}
                         </option>
                         {% endfor %}
+                            </optgroup>
                         </select>
                     </td>
                 </tr>
+                
+                <!-- -->
+                
+                <!-- -->
 
                 <tr align="center">
                     <td>
@@ -350,8 +356,8 @@
         </div>
 
         <!-- The Search Filters -->
-        <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 280px 0px 0px; width:350px; height: 450px">
-            <h4>Search By Institution Name</h4>
+        <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 200px 0px 0px; width:350px; height: 450px">
+            <h3>Search By Institution Name</h3>
             <script>
                 //this script is used to toggle the new prereq info
                 $(document).ready(function()
