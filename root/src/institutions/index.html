@@ -170,7 +170,9 @@
                 alert("Please Select a State to Filter!");
             }
             else{
-
+                
+                document.getElementById("StateF").innerHTML = "State: " + stateName;
+                
                 clearInstitutions();
                 for(var i = 0; i < institutions.length; ++i){
                     if(stateName == institutions[i].state){
@@ -186,6 +188,7 @@
 
         }
         else{ //add city to filter
+            document.getElementById("CityF").innerHTML = "City: " + cityName;
             clearInstitutions();
             for(var i = 0; i < institutions.length; ++i){
                 if(cityName == institutions[i].city){
@@ -353,6 +356,13 @@
                     </td>
                 </tr>
             </table>
+            <h4><u>Filters Applied</u></h4>
+            <ul id="InstitutionFiltersApplied">
+                <li id="StateF"></li>
+                <li id="CityF"></li>
+                <li id="DegreeF"></li>
+                <li id="InstitutionF"></li>
+            </ul>
         </div>
 
         <!-- The Search Filters -->
