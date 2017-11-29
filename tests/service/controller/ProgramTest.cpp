@@ -12,6 +12,8 @@ namespace crrc
     static QString institutionName{ "Unit Test Institution" };
     static QString institutionCity{ "Unit Test City" };
     static uint32_t institutionId = 0;
+    static QString degreeTitle{ "Unit Test Degree" };
+    static uint32_t degreeId = 0;
   }
 }
 
@@ -19,26 +21,8 @@ using crrc::ProgramTest;
 
 void ProgramTest::initTestCase()
 {
-  QEventLoop eventLoop;
-  QNetworkAccessManager mgr;
-  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
-      SLOT( quit() ) );
-  QNetworkRequest req;
-  login( &mgr, &eventLoop, &req );
-
-  const auto url = QString{ "http://localhost:3000/institutions/edit" };
-  const auto data = QString( "name=%1&city=%2" ).
-      arg( programtest::institutionName ).arg( programtest::institutionCity );
-  auto reply = put( url, data, &mgr, &eventLoop, &req );
-
-  QVERIFY2( reply->error() == QNetworkReply::NoError, "Error creating new institution" );
-  const auto doc = QJsonDocument::fromJson( reply->readAll() );
-  const auto obj = doc.object();
-  QVERIFY2( !obj.isEmpty(), "Empty JSON response for create institution" );
-  QVERIFY2( obj["id"].toInt(), "Create institution returned invalid id" );
-  programtest::institutionId = obj["id"].toInt();
-
-  logout( &mgr, &eventLoop, &req );
+  createInstitution();
+  createDegree();
 }
 
 void ProgramTest::create()
@@ -152,8 +136,9 @@ void ProgramTest::update()
   login( &mgr, &eventLoop, &req );
 
   const auto url = QString{ "http://localhost:3000/programs/edit" };
-  const auto data = QString{ "id=%1&title=%2&credits=%3&institution=%4" }.
-      arg( programtest::id ).arg( title ).arg( credits ).arg( programtest::institutionId );
+  const auto data = QString{ "id=%1&title=%2&credits=%3&institution=%4&degree=%5" }.
+      arg( programtest::id ).arg( title ).arg( credits ).
+      arg( programtest::institutionId ).arg( programtest::degreeId );
   const auto reply = put( url, data, &mgr, &eventLoop, &req );
 
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error updating program" );
@@ -186,6 +171,49 @@ void ProgramTest::retrieveModified()
   QVERIFY2( programtest::institutionId == obj["institution"].toObject()["id"].toInt(), "Json response returned invalid institution" );
   QVERIFY2( title == obj["title"].toString(), "Json response returned invalid title" );
   QVERIFY2( credits == obj["credits"].toString(), "Json response returned invalid credits" );
+  QVERIFY2( programtest::degreeId == obj["degree"].toObject()["id"].toInt(), "Json response returned invalid degree" );
+
+  logout( &mgr, &eventLoop, &req );
+}
+
+void ProgramTest::searchInstitutions()
+{
+  QEventLoop eventLoop;
+  QNetworkAccessManager mgr;
+  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
+      SLOT( quit() ) );
+  QNetworkRequest req;
+  login( &mgr, &eventLoop, &req );
+
+  const auto url = QString{ "http://localhost:3000/institutions/search" };
+  const auto data = QString{ "degree=%1" }.arg( programtest::degreeId );
+  const auto reply = put( url, data, &mgr, &eventLoop, &req );
+
+  QVERIFY2( reply->error() == QNetworkReply::NoError, "Error retrieving institution list by degree" );
+  const auto doc = QJsonDocument::fromJson( reply->readAll() );
+  const auto array = doc.array();
+  QVERIFY2( !array.isEmpty(), "Empty json response for institution list by degree" );
+
+  logout( &mgr, &eventLoop, &req );
+}
+
+void ProgramTest::search()
+{
+  QEventLoop eventLoop;
+  QNetworkAccessManager mgr;
+  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
+      SLOT( quit() ) );
+  QNetworkRequest req;
+  login( &mgr, &eventLoop, &req );
+
+  const auto url = QString{ "http://localhost:3000/institutions/search" };
+  const auto data = QString{ "text=%1" }.arg( "Unit" );
+  const auto reply = put( url, data, &mgr, &eventLoop, &req );
+
+  QVERIFY2( reply->error() == QNetworkReply::NoError, "Error searching programs" );
+  const auto doc = QJsonDocument::fromJson( reply->readAll() );
+  const auto array = doc.array();
+  QVERIFY2( !array.isEmpty(), "Empty json response for program search" );
 
   logout( &mgr, &eventLoop, &req );
 }
@@ -233,7 +261,55 @@ void ProgramTest::retrieveAfterDelete()
   logout( &mgr, &eventLoop, &req );
 }
 
-void ProgramTest::cleanupTestCase()
+void ProgramTest::createInstitution()
+{
+  QEventLoop eventLoop;
+  QNetworkAccessManager mgr;
+  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
+      SLOT( quit() ) );
+  QNetworkRequest req;
+  login( &mgr, &eventLoop, &req );
+
+  const auto url = QString{ "http://localhost:3000/institutions/edit" };
+  const auto data = QString( "name=%1&city=%2" ).
+      arg( programtest::institutionName ).arg( programtest::institutionCity );
+  auto reply = put( url, data, &mgr, &eventLoop, &req );
+
+  QVERIFY2( reply->error() == QNetworkReply::NoError, "Error creating new institution" );
+  const auto doc = QJsonDocument::fromJson( reply->readAll() );
+  const auto obj = doc.object();
+  QVERIFY2( !obj.isEmpty(), "Empty JSON response for create institution" );
+  QVERIFY2( obj["id"].toInt(), "Create institution returned invalid id" );
+  programtest::institutionId = obj["id"].toInt();
+
+  logout( &mgr, &eventLoop, &req );
+}
+
+void ProgramTest::createDegree()
+{
+  QEventLoop eventLoop;
+  QNetworkAccessManager mgr;
+  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
+      SLOT( quit() ) );
+  QNetworkRequest req;
+  login( &mgr, &eventLoop, &req );
+
+  const auto url = QString{ "http://localhost:3000/degrees/create" };
+  const auto data = QString{ "title=%1" }.arg( programtest::degreeTitle );
+  auto reply = post( url, data, &mgr, &eventLoop, &req );
+
+  QVERIFY2( reply->error() == QNetworkReply::NoError, "Error creating new degree" );
+  const auto doc = QJsonDocument::fromJson( reply->readAll() );
+  const auto obj = doc.object();
+  QVERIFY2( !obj.isEmpty(), "Empty JSON response for create degree" );
+  QVERIFY2( obj["status"].toBool(), "Create degree returned false status" );
+  QVERIFY2( obj["id"].toInt(), "Create degree returned invalid id" );
+  programtest::degreeId = obj["id"].toInt();
+
+  logout( &mgr, &eventLoop, &req );
+}
+
+void ProgramTest::removeInstitution()
 {
   QEventLoop eventLoop;
   QNetworkAccessManager mgr;
@@ -254,4 +330,33 @@ void ProgramTest::cleanupTestCase()
   QVERIFY2( obj["count"].toInt(), "Remove institution returned invalid count" );
 
   logout( &mgr, &eventLoop, &req );
+}
+
+void ProgramTest::removeDegree()
+{
+  QEventLoop eventLoop;
+  QNetworkAccessManager mgr;
+  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
+      SLOT( quit() ) );
+  QNetworkRequest req;
+  login( &mgr, &eventLoop, &req );
+
+  const auto url = QString{ "http://localhost:3000/degrees/remove" };
+  const auto data = QString( "id=%1" ).arg( programtest::degreeId );
+  const auto reply = post( url, data, &mgr, &eventLoop, &req );
+
+  QVERIFY2( reply->error() == QNetworkReply::NoError, "Error deleting degree" );
+  const auto doc = QJsonDocument::fromJson( reply->readAll() );
+  const auto obj = doc.object();
+  QVERIFY2( !obj.isEmpty(), "Empty JSON response for create degree" );
+  QVERIFY2( obj["status"].toBool(), "Remove degree returned false status" );
+  QVERIFY2( obj["count"].toInt(), "Remove degree returned invalid count" );
+
+  logout( &mgr, &eventLoop, &req );
+}
+
+void ProgramTest::cleanupTestCase()
+{
+  removeInstitution();
+  removeDegree();
 }

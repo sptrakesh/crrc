@@ -9,6 +9,7 @@ namespace crrc
     struct InstitutionDAO
     {
       QVariantList retrieveAll() const;
+      QVariantList byDegree( const uint32_t degreeId ) const;
       QVariant retrieve( uint32_t id ) const;
       uint32_t insert( Cutelyst::Context* context ) const;
       void update( Cutelyst::Context* context ) const;
