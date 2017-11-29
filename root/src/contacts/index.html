@@ -482,7 +482,7 @@
                <fieldset>
                   
                         Institute:
-                      <select class="commonCmbBox2CSS" name="institute" id="institution" style="width: 300px;">
+                      <select class="CmbBox" name="institute" id="institution" style="width: 300px;">
                             <option value="-1" selected>Select Institution</option>
                       </select>
                   
@@ -490,27 +490,28 @@
                </fieldset>
                <fieldset>
                  Filter By State: 
-                  <select class="commonCmbBox2CSS" id="InstitutionStateFilter" onchange="populateCity()">
+                  <select class="CmbBox" id="InstitutionStateFilter" onchange="populateCity()">
                      <option value="-1" style="display: none"> Select State </option>
                   </select><br>
                     Filter By City:
-                  <select class="commonCmbBox2CSS" id="InstitutionCityFilter">
+                  <select class="CmbBox" id="InstitutionCityFilter">
                      <option value="-1" style="display: none"> Select City </option>
                   </select>
                   <button class="commonBtn" onclick="locationFilter()"> Apply Filter </button> 
                </fieldset>
                <fieldset>
                    Role:
-                  <select id="role"  class="commonCmbBox2CSS"  {% if object.user %}{% else %}{% endif %}>
+                  <select id="role"  class="CmbBox"  {% if object.user %}{% else %}{% endif %}>
                       <option value="-1" style="font-size: 16px;">Select Role</option>
                       
-                    </select>
+                    </select><br>
                    <button class="commonBtn" onclick="roleFilter()">Apply Filter</button>
                </fieldset>
                <fieldset>
                  <form name="search" method="post" action="/contacts/search">
-                        User Name: <input type="text" name="text" class="selectUserTextBoxInFilterBy" placeholder="Search by name..."/>
-                       <input type="submit" value="Find"/>
+                        User Name: <input type="text" name="text" class="findUser" placeholder="Search by name..."/><br>
+
+                       <input type="submit" class="commonBtn"  value="Find"/>
                  </form>
                </fieldset>
             </div> <!--End of div filterBy -->

@@ -273,212 +273,38 @@ float:right;
 /*##########################################################################################################################*/
 /*CSS from Kevin's files*/
 
-/*---------------------------------    Start of Selected User --------------------------------------------------*/
-
-/*  start div addUserForm left in viewUser_SelectUser */
-
-.selectedUserContainer .selectUserForm{
-	align-content:  right;
-	width: 450px;
-    height: 280px;
-	background-color: #858fa0;
-	padding: 10px;
-	float: left;
-	margin:20px 20px 0px 100px;
-	border-style: solid;
-	border-color: black;
-	border-width: 1px;
-	border-radius: 10px;
-}
-
-/*  start div addUserForm right in viewUser_SelectUser */
-
-.selectedUserContainer .institute_selectUser{
-	background-color: #858fa0;
-	width: 400px;
-	height: 280px;
-	padding: 12px 20px;
-	float: right;
-	border-color:black;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 10px;
-	margin: 20px 150px 0px 10px;
-
-}
-.selectedUserContainer div[class="chooseInstituteBox"]{
-	width: 410px;
-	height: 200px;
-}
-
-.selectedUserContainer p[id="instituteLabelInviewUser_selectUser"]{
-    width:70px;
-    height: 15px;
-    float:left;
-    margin: 8px 25px 8px 10px;
-    font-size: 20px;
-}
-.selectedUserContainer select[class="selectInstituteDropDownInviewUser_selectUser"]
-{
-	text-align: center;
-	float:left;
-width: 300px;
-border-radius: 5px;
-    border-width: 2px;
-    border-color: black;
-font-size: 20pt;
-}
-
-.selectedUserContainer p[id="positionLabelInInstitutionBox"]{
-	text-align: center;
-	font-size: 20px;
-	padding: 0px;
-	border: 0px;
-	width: 70px;
-	float:left;
-	margin: 25px 0px 0px 30px; 
-}
-.selectedUserContainer input[id="addUserPosition"]{
-	display: inline-block;
-		font-size: 10pt;
-	padding: 6px 10px;
-	border-width: 2px;
-	border-style: solid;
-	border-color: black;
-	border-radius: 4px;
-	box-sizing: border-box;
-	margin: 2px;
-	width: 300px;
-	height: 43px;
-	margin: 15px 2px 2px 5px;
-}
-
-.selectedUserContainer p[id="linkLabelInInstitutionBox"]{
-	text-align: center;
-	font-size: 20px;
-	padding: 0px;
-	border: 0px;
-	width: 50px;
-	float:left;
-	margin: 30px 10px 0px 45px;
-}
-
-.selectedUserContainer input[id="addUserInfoLink"]{
-	display: inline-block;
-		font-size: 10pt;
-	padding: 6px 10px;
-	border-width: 2px;
-	border-style: solid;
-	border-color: black;
-	border-radius: 4px;
-	box-sizing: border-box;
-	margin: 2px;
-	width: 300px;
-	height: 43px;
-	margin: 15px 2px 2px 0px;
-}
-
-/*  end div addUserForm right in viewUser_SelectUser */
-
-.selectedUserContainer input[id="addUserInput"]{
-    display: inline-block;
-    font-size: 10pt;
-	padding: 3px 10px;
-	border-width: 2px;
-	border-style: solid;
-	border-color: black;
-	border-radius: 4px;
-	box-sizing: border-box;
-	margin: 10px;
-	width: 200px;
-	height: 43px;
-}
-.selectedUserContainer select[id="cmbselectAdminTypeInSelectUser"]{
-    margin: 0px 5px 0px 5px;
-	padding: 0px;
-    text-align: center;
-    width: 200px;
-    height: 40px;
-    border-color: black;
-    border-radius: 5px;
-    font-size: 20pt;
-    border-width:2px;
-}
-.selectedUserContainer div[id="saveOrCancelButtons"]{
-	width: 1200px;
-	height: 50px;
-	float: right;
-}
-.selectedUserContainer form[id="saveChangesToUserName"]{
-	text-align: center;
-	width: 150px;
-	margin: 0px 60px 0px 400px; 
-	float: left;
-}
-.selectedUserContainer input[class="btnSaveChanges"]{
-     font-size: 15px;
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
-	border-radius: 10px;
-    width: 150px;
-    height: 30px;
-    margin: 5px;
-}
-.selectedUserContainer form[id="cancelChangesToUserName"]{
-	text-align: center;
-	width: 160px;
-	float: left;
-	margin: 0px 300px 0px 10px; 
-    
-}
-.selectedUserContainer input[class="btnCancelChanges"]{
-     font-size: 15px;
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
-	border-radius: 10px;
-    width: 150px;
-    height: 30px;
-    margin: 5px;
-}
-
-/*---------------------------------    End of Selected User --------------------------------------------------*/
-
 /*---------------------------------    Start of View User --------------------------------------------------*/
 /* This is div viewUserMultiLineSelect for viewUsers page */
 .viewUserContainer .viewUsersMultilineSelect{
     background-color: #858fa0;
-border-style: solid;
-border-width: 1px;
-border-radius: 10px;
-width: 450px;
-height: 400px;
- margin: 20px 20px 20px 20px;
-float:left;
+	border: 1px solid black;
+	border-radius: 10px;
+	width: 450px;
+	height: 400px;
+ 	margin: 20px ;
+	float:left;
 }
 
 .viewUserContainer select[id="lstBoxselectUser_ViewUser"]{
+	padding: 5px;
 	margin: 10px;
 	text-align: left;
     width: 400px;
     height: 300px;
     font-size: 20pt;
-    border-width: 1px;
-    border-style: solid;
+    border: 1px solid black;
     border-radius: 5px;
-    border-color: black;
 }
 
 
 .viewUserContainer button{
-	font-size: 20px;
+	font-size: 18px;
 	border: 1px solid black;
 	border-radius: 5px;
 }
 
 .viewUserContainer input[id="addUserButton"]{
-	font-size: 20px;
+	font-size: 18px;
 	border: 1px black solid;
 	border-radius: 5px;
 }
@@ -491,8 +317,7 @@ float:left;
 
 .viewUserContainer div[class="filterByInViewUsers"]{
     background-color: #858fa0; 
-	border-style: solid;
-    border-width: 1px;
+    border: 1px solid black;
     border-radius: 10px;
     width: 450px;
     height: 400px;
@@ -500,57 +325,41 @@ float:left;
     float:right;
 }
 
-.viewUserContainer input[class="InstituteIdFilterTextBoxInFilterBy"]{
-	width: 250px;
-	height: 35px;
-    border-width: 1px;
-	border-style: solid;
-	border-color: black;
-	border-radius: 4px;
-	box-sizing: border-box;
-	margin: 5px 5px 5px 5px;
-    padding: 5px 7px;
-}
 
 
-.viewUserContainer input[class="selectUserTextBoxInFilterBy"]{
+.viewUserContainer input[class="findUser"]{
    	width: 250px;
 	height: 35px;
-    border-width: 1px;
-	border-style: solid;
-	border-color: black;
+    border: 1px black solid;
 	border-radius: 4px;
 	box-sizing: border-box;
-	margin: 5px 5px 5px 5px;
+	margin: 5px ;
     padding: 5px 7px;
     
 }
 
-.viewUserContainer select[class="commonCmbBox2CSS"]{
+.viewUserContainer select[class="CmbBox"]{
     margin: 0px 0px 0px 5px;
 	padding: 0px;
     text-align: center;
     width: 250px;
     border-radius: 5px;
     font-size: 14pt;
-    border-width:1px; 
+    border:1px solid black; 
 }
 
-.viewUserContainer option{}
+.viewUserContainer option{
     font-size: 12pt;
 }
 
-.viewUserContainer input{
-  
-    
-}
-.viewUserContainer button[class="commonBtn"]{
-     font-size: 15px;
-	border: 1px black solid;
+.viewUserContainer input[type="submit"], button[class="commonBtn"]{
+
+    font-size: 15px;
+	border: 1px solid black;
 	border-radius: 5px;
     width: 120px;
     height: 30px;
-    margin: 5px;
+    margin: 3px;
 }
 /* This is end of div filterBy in view User*/
 /*---------------------------------    End of View User --------------------------------------------------*/
@@ -669,19 +478,15 @@ div[class="addUserContainer"]{
 	padding: 10px;
 	float: left;
 	margin: 20px 20px 19px 20px;
-	border-style: solid;
-	border-color: black;
-	border-width: 1px;
+	border: 1px solid black;
 	border-radius: 10px;
 }
 
 .addUserContainer input[class="addUserInput"]{
     display: inline-block;
-	font-size: 10pt;
+	font-size: 12pt;
 	padding: 3px 10px;
-	border-width: 2px;
-	border-style: solid;
-	border-color: black;
+	border: 2px solid black;
 	border-radius: 4px;
 	box-sizing: border-box;
 	margin: 5px;
@@ -696,42 +501,20 @@ div[class="addUserContainer"]{
 	height: 325px;
 	padding: 12px 20px;
 	float: right;
-	border-color:black;
-	border-style: solid;
-	border-width: 1px;
+	border: 1px solid black;
 	border-radius: 10px;
 	margin: 20px 20px 20px 20px;
 
 }
-.addUserContainer input[class="commonTxtBox2CSS"]{
-    display: block;
-		font-size: 10pt;
-	padding: 3px 10px;
-	border-width: 2px;
-	border-style: solid;
-	border-color: black;
-	border-radius: 4px;
-	box-sizing: border-box;
-	margin: auto;
-	width: 300px;
-	height: 43px;
-}
-.addUserContainer select[class="commonCmbBox3CSS"]{
-    text-align: center;
-    width: 200px;
-    border-radius: 5px;
-    font-size: 14pt;
-    border-width: 1px;  
-}
 
-.addUserContainer select[class="commonCmbBox4CSS"]{
+.addUserContainer select[class="CmbBox"]{
     margin:  5px 10px 5px 0px;
 	padding: 0px;
     text-align: center;
     width: 230px;
     border-radius: 5px;
     font-size: 14pt;
-    border-width: 1px; 
+    border: 1px solid black; 
 }
 .addUserContainer button[class="addUser"]{
 	font-size: 15px;
@@ -756,22 +539,6 @@ div[class="addUserContainer"]{
 	border-radius: 5px;
 }
 /* End of institution box*/
-
-/*User Name and Password*/
-
-div[class="userNameAndPwd"]{
-    text-align: center;
-    background-color: #858fa0;
-    width: 500px;
-    height: 150px;
-    margin: 0px 0px 0px 400px;
-    float: left;
-    border: 1px solid black;
-    border-radius: 10px;
-}
-
-/* end of user name and password in add user*/
-
 
 /*---------------------------------    End of Add User---- ----------------------------------------------------*/
 
@@ -799,7 +566,7 @@ div[class="addProgramContainer"]{
     margin:0px;
     text-align: center;
 }
-.addProgramContainer input[class="commonTxtBoxCSS"]{
+.addProgramContainer input[class="TxtBox"]{
     display: inline-block;
     font-size: 10pt;
 	padding: 3px 10px;
@@ -811,7 +578,7 @@ div[class="addProgramContainer"]{
 	height: 43px;
 }
 
-.addProgramContainer input[class="commonTxtBox3CSS"]{
+.addProgramContainer input[class="TxtBox3"]{
     display: block;
     font-size: 10pt;
 	padding: 3px 10px;
@@ -825,7 +592,7 @@ div[class="addProgramContainer"]{
 
  /* End of Program Information */
 
-/* Start Career Course Div */
+/* Start Career Course Div 
 .addProgramContainer div[id="CareerCoursesDiv"]{
     width: 450px;
     height: 420px;
@@ -874,8 +641,9 @@ div[class="addProgramContainer"]{
     margin: 25px 5px 10px 5px;
     width: 400px;
     height: 110px;
-}
+}*/
 
+/* For all drop down box in add program container to  select Institution, CAE designation and Degree*/
 .addProgramContainer select{
     margin: 0px 0px 0px 5px;
 	padding: 5px;
@@ -892,6 +660,7 @@ div[class="addProgramContainer"]{
 
 
 /*Start of General Education div*/
+/*
 .addProgramContainer div[id="generalEduInSelectProgram"]{
      align-content:  right;
 	width: 420px;
@@ -900,9 +669,7 @@ div[class="addProgramContainer"]{
 	padding: 10px;
 	float: right;
 	margin: 20px 20px 20px 5px;
-	border-style: solid;
-	border-color: black;
-	border-width: 1px;
+	border: 1px solid black;
 	border-radius: 10px;
 }
 .addProgramContainer select[class="selectProgramDropDown1"]{
@@ -911,17 +678,18 @@ div[class="addProgramContainer"]{
     border:1px solid black;
     border-radius: 5px;
 }
-
+*/
 /*End of General Education div*/
 
-
+/*
 .addProgramContainer h4[class="genEdReqHeader"]{
     text-align: center;
     margin: 0px;
 }
 
-
+*/
 /*  Start Save and cancel buttons */
+/*
 .addProgramContainer div[id="saveOrCancelButtons"]{
 	width:1200px;
 	height: 50px;
@@ -938,13 +706,11 @@ div[class="addProgramContainer"]{
 	width: 160px;
 	margin: 0px 400px 0px 0px; 
 	float: right;
-}
+}*/
 
-.addProgramContainer input[class="commonBtn2InViewPrograms"]{
-     font-size: 15px;
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
+.addProgramContainer input[class="btnSave"]{
+    font-size: 15px;
+	border: 1px black solid;
 	border-radius: 5px;
     width: 150px;
     height: 30px;
