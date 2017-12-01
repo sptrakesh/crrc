@@ -11,7 +11,7 @@
         {
           if ( xhr.status === 200 )
           {
-            console.log( xhr.responseText );
+           // console.log( xhr.responseText );
             contactList = JSON.parse( xhr.responseText );
             populateInstitutionsSelect();
             populateRoles();
@@ -200,13 +200,17 @@
         var uniquesID = [];
         var uniquesName = [];
          for (var i = 0; i < contactList.length; ++i){
-              if(contactList[i].user.role != undefined){
+               if(contactList[i].user == undefined){
+                   id[i] = -1;
+                 names[i] = "undefined";
+              }
+              else if(contactList[i].user.role != undefined){
                  id[i] = contactList[i].id;
                  names[i] = contactList[i].user.role.role;
               }
               else{
-                 id[i] = contactList[0].id;
-                 names[i] = contactList[0].user.role.role;
+                 id[i] = -1;
+                 names[i] = "undefined";
               }
                   
                  
@@ -361,6 +365,9 @@
                             ++count;
                           document.getElementById("displayStatus").innerHTML = "Found " + count + " User for " + stateName;
                     }
+                    else{
+                          document.getElementById("displayStatus").innerHTML = "Found " + count + " User for " + stateName;
+                    }
                 }
             }
          
@@ -381,6 +388,9 @@
                        ++count;
                        document.getElementById("displayStatus").innerHTML = "Found " + count + " Users for " + cityName;
                   }
+                  else{
+                       document.getElementById("displayStatus").innerHTML = "Found " + count + " Users for " + cityName;
+                  }
              }
         }
     }
@@ -398,7 +408,13 @@
           
         removeAllUsers();
          for (var i = 0; i < contactList.length; ++i){
-            if (contactList[i].user.role.role  == role)   //If the institution Name from select box is same as iName at i.
+            if(contactList[i].user == undefined){
+                console.log("Contact information is insufficeint at id = " + contactList[i].id + " for " + contactList[i].name);
+            }
+            else if(contactList[i].user.role == undefined){
+                console.log("Contact information is insufficeint at id = " + contactList[i].id + " for " + contactList[i].name); 
+            }
+            else if (contactList[i].user.role.role  == role)   //If the institution Name from select box is same as iName at i.
                 {
                     let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
                     let option = document.createElement( 'option' );
