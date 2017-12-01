@@ -742,6 +742,11 @@ div[class="addProgramContainer"]{
     overflow: scroll;
 }
 
+.WhatFilter
+{
+    background-color: white;
+}
+
 
 
 /*---------------------------------  End Clark CSS ----------------------------------------------------------------*/

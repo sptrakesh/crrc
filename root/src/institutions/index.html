@@ -4,6 +4,9 @@
 
     /************* Institution Functions **************/
     retrieveInstitutions();
+    
+
+  
 
     //Gets institutions from the server
     function retrieveInstitutions() 
@@ -20,6 +23,7 @@
                 let json = JSON.parse( xhr.responseText );
                 institutions = json;
                 //populateInstitutionStateSelect();
+                populateInstitutionSelect();
 
             }
             else
@@ -29,6 +33,19 @@
         };
         xhr.send( '' );
     }
+
+      //populate institutions
+    function populateInstitutionSelect()        //This function is called from getPrograms function.
+        {
+           let element = document.getElementById('institution');
+           for (var i = 0; i < institutions.length; ++i)
+                {
+                    let option = document.createElement( 'option' );
+                    option.value = institutions[i].id;
+                    option.textContent = institutions[i].name + " ("  + institutions[i].city + " , " + institutions[i].state + ")" ;
+                    element.appendChild( option );
+                }
+        }
 
     //Redirects to institution information page
     function displayInstitution() 
@@ -158,19 +175,22 @@
         let selectCity = document.getElementById('city');
         let cityId = selectCity.options[selectCity.selectedIndex].value;
         let cityName = selectCity.options[selectCity.selectedIndex].text;
+        let stateName = "";
         var count = 0;
 
         if( cityId == -1){//if city not selected it will work on state
 
             let selectState = document.getElementById('state');
             let optionValue = selectState.options[selectState.selectedIndex].value;
-            let stateName = selectState.options[selectState.selectedIndex].text;
+             stateName = selectState.options[selectState.selectedIndex].text;
 
             if(optionValue == -1){ //if state is not selected
                 alert("Please Select a State to Filter!");
             }
             else{
-
+                
+                document.getElementById("StateF").innerHTML = "State: " + stateName;
+                
                 clearInstitutions();
                 for(var i = 0; i < institutions.length; ++i){
                     if(stateName == institutions[i].state){
@@ -186,6 +206,12 @@
 
         }
         else{ //add city to filter
+            let selectState = document.getElementById('state');
+            let optionValue = selectState.options[selectState.selectedIndex].value;
+            stateName = selectState.options[selectState.selectedIndex].text;
+            
+            document.getElementById("StateF").innerHTML = "State: " + stateName;
+            document.getElementById("CityF").innerHTML = "City: " + cityName;
             clearInstitutions();
             for(var i = 0; i < institutions.length; ++i){
                 if(cityName == institutions[i].city){
@@ -273,6 +299,7 @@
                     }
             }
         clearInstitutions();
+        document.getElementById("DegreeF").innerHTML = "Degree Type: " + degreeName;
         for(var i=0; i<institutions.length; i++)
             {
                 if( degreeName == institutions[i].degree)
@@ -284,6 +311,16 @@
                         element.appendChild(option);
                     }
             }
+    }
+
+    function removeAllFilters(){
+      clearInstitutions();
+      populateInstitutionSelect();
+      $("#state").val("-1");
+      $("#city").val("-1");
+      $("#DegreeType").val("-1");
+      $("#InstitutionType").val("-1");
+      //document.getElementById("displayStatus").innerHTML = ""; 
     }
     
     /****************************************************/
@@ -316,12 +353,6 @@
                     <!-- The list of institutions -->
                     <td><select name="institution" id="institution" class="institution" size="10" style="width:500px; height:300px">
                         <optgroup style="font-size:16px">
-                        {% for institution in institutions %}
-                        <option value="{{ institution.id }}"
-                                {% if institution.id == object.institution.id %}selected="selected"{% endif %}>
-                            {{ institution.name}} {% if institution.city %}({{ institution.city}},{{institution.state}}){% endif %}
-                        </option>
-                        {% endfor %}
                             </optgroup>
                         </select>
                     </td>
@@ -348,11 +379,27 @@
                                 <td>
                                     <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton">
                                 </td>
+                                <td>
+                                    <input type="button" id="unapplyFilter" value="Remove Filters" onclick="removeAllFilters()">
+                                </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
+            <h4><u>Filters Applied</u></h4>
+            <ul class="WhatFilter" style="background-color: white">
+                <li id="StateF"></li>
+            </ul>
+            <ul class="WhatFilter" style="background-color: white">
+                <li id="CityF"></li>
+            </ul>
+            <ul class="WhatFilter" style="background-color: white">
+                <li id="DegreeF"></li>
+            </ul>
+            <ul class="WhatFilter" style="background-color: white">
+                <li id="InstitutionF"></li>
+            </ul>
         </div>
 
         <!-- The Search Filters -->
@@ -375,8 +422,8 @@
             </form>
             <br>
             <!-- Advanced Search Options -->
-            <a href="#" id="AdvancedSearchButton">Advanced Search Options</a><br><br>
-            <table id="AdvancedOptionTable" style="display:none">
+            <h3>Advanced Search Options</h3>
+            <table id="AdvancedOptionTable">
                 <tr>
                     <th colspan=2 style="align: center"><u>User ID:</u></th>
                 </tr>
