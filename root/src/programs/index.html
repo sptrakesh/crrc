@@ -13,10 +13,10 @@
             {
               if ( xhr.status === 200 )
               {
-                console.log( xhr.responseText );
+               // console.log( xhr.responseText );
                 let json = JSON.parse( xhr.responseText );
                 programList = json;             
-                populateProgramSelect();        //This function will populate the multiline select with list of programs.
+                populateProgramSelect();        //This function will populate the multiline select with list of all programs.
                 populateInstituteSelect();      //This function will populate the list of institution to filter from.
                 populateDegrees();              //This function will populate the list of degrees to filter from.
                 populateDesignations();         //This function will populate the list of program designation to filter from.
@@ -51,7 +51,7 @@
          {
            if ( xhr.status === 200 )
            {
-             console.log( xhr.responseText );
+             //console.log( xhr.responseText );
              institutionList = JSON.parse( xhr.responseText );
              populateInstitutionStateSelect();          //  This function is calling to populate list for location filter.
            }
