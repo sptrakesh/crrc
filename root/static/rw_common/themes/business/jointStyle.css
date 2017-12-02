@@ -295,6 +295,7 @@ float:right;
     font-size: 20pt;
     border: 1px solid black;
     border-radius: 5px;
+    overflow: scroll;
 }
 
 
