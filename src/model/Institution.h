@@ -21,6 +21,7 @@ namespace crrc
       Q_PROPERTY( QString country READ getCountry )
       Q_PROPERTY( QString website READ getWebsite )
       Q_PROPERTY( QVariant logo READ getLogo )
+      Q_PROPERTY( QVariant institutionType READ getInstitutionType )
 
     public:
       using Ptr = std::unique_ptr<Institution>;
@@ -55,6 +56,9 @@ namespace crrc
       uint32_t getLogoId() const { return logoId; }
       QVariant getLogo() const;
 
+      uint32_t getInstitutionTypeId() const { return institutionTypeId; }
+      QVariant getInstitutionType() const;
+
     private:
       uint32_t id = 0;
       QString name;
@@ -65,6 +69,7 @@ namespace crrc
       QString country;
       QString website;
       uint32_t logoId = 0;
+      uint32_t institutionTypeId = 0;
     };
 
     inline QVariant asVariant( const Institution* degree )

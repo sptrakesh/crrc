@@ -22,6 +22,7 @@
 #include "InstitutionDepartments.h"
 #include "Programs.h"
 #include "Agreements.h"
+#include "InstitutionTypes.h"
 #include "InstitutionAgreements.h"
 #include "Logout.h"
 
@@ -43,6 +44,7 @@ bool AdminApplication::init()
   new InstitutionDepartments( this );
   new Programs( this );
   new Agreements( this );
+  new InstitutionTypes( this );
   new InstitutionAgreements( this );
   new Cutelyst::StaticSimple( this );
   new Logout( this );

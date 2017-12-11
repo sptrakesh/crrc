@@ -18,10 +18,10 @@ init()
 compile()
 {
   (cd build/crrc; \
-    cmake -DCMAKE_PREFIX_PATH=$QTDIR:/opt/local:$CUTELYST_DIR ../..; \
+    CutelystQt5_DIR=$CUTELYST_DIR/lib/cmake/cutelystqt5 cmake -DCMAKE_PREFIX_PATH=$QTDIR:/opt/local:$CUTELYST_DIR ../..; \
     cmake --build . --target crrc -- -j8)
   (cd build/test; \
-    cmake -DCMAKE_PREFIX_PATH=$QTDIR:/opt/local:$CUTELYST_DIR ../..; \
+     CutelystQt5_DIR=$CUTELYST_DIR/lib/cmake/cutelystqt5 cmake -DCMAKE_PREFIX_PATH=$QTDIR:/opt/local:$CUTELYST_DIR ../..; \
     cmake --build . --target crrcTest -- -j8)
 }
 
@@ -36,6 +36,7 @@ moveDatabase()
   sqlite3 var/crrc.db < docker/scripts/sqlite/crrc1.sql
   sqlite3 var/crrc.db < docker/scripts/sqlite/crrc2.sql
   sqlite3 var/crrc.db < docker/scripts/sqlite/crrc3.sql
+  sqlite3 var/crrc.db < docker/scripts/sqlite/crrc4.sql
 }
 
 restoreDatabase()
