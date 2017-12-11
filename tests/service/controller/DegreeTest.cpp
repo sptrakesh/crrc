@@ -24,7 +24,7 @@ void DegreeTest::create()
   login( &mgr, &eventLoop, &req );
 
   const auto url = QString{ "http://localhost:3000/degrees/create" };
-  const auto data = QString( "title=%1&duration=%2" ).arg( title ).arg( duration );
+  const auto data = QString{ "title=%1&duration=%2" }.arg( title ).arg( duration );
   auto reply = post( url, data, &mgr, &eventLoop, &req );
 
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error creating new degree" );

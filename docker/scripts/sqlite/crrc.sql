@@ -1,3 +1,4 @@
+-- Version: 1 --
 pragma foreign_keys = on;
 drop table if exists contacts;
 drop table if exists contact_info;

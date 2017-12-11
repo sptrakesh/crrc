@@ -24,6 +24,7 @@ namespace crrc
   private:
     QString name;
     QString city;
+    uint32_t institutionTypeId = 1;
   };
 }
 

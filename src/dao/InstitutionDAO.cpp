@@ -42,7 +42,12 @@ namespace crrc
       }
 
       auto query = CPreparedSqlQueryThreadForDB(
-        "select institution_id, name, address, city, state, postal_code, country, website, logo_id from institutions order by name", DATABASE_NAME );
+        R"(
+select institution_id, name, address, city, state, postal_code, country,
+  website, logo_id, institution_type_id
+from institutions
+order by name
+)", crrc::DATABASE_NAME );
 
       if ( query.exec() )
       {
@@ -72,6 +77,7 @@ namespace crrc
       query.bindValue( ":country", c->request()->param( "country", "USA" ) );
       query.bindValue( ":website", c->request()->param( "website" ) );
       query.bindValue( ":logo", c->request()->param( "logoId" ) );
+      query.bindValue( ":instType", c->request()->param( "institutionTypeId" ) );
     }
   }
 }
@@ -128,11 +134,10 @@ uint32_t InstitutionDAO::insert( Cutelyst::Context* context ) const
   QSqlQuery query = CPreparedSqlQueryThreadForDB(
 R"(
 insert into institutions
-(name, address, city, state, postal_code, country, website, logo_id)
+(name, address, city, state, postal_code, country, website, logo_id, institution_type_id)
 values
-(:name, :address, :city, :state, :postalCode, :country, :website, :logo)
-)",
-    crrc::DATABASE_NAME );
+(:name, :address, :city, :state, :postalCode, :country, :website, :logo, :instType)
+)", crrc::DATABASE_NAME );
   bindInstitution( context, query );
 
   if ( !query.exec() )
@@ -155,8 +160,12 @@ void InstitutionDAO::update( Cutelyst::Context* context ) const
   loadInstitutions();
   auto id = context->request()->param( "id" );
   auto query = CPreparedSqlQueryThreadForDB(
-    "update institutions set name=:name, address=:address, city=:city, state=:state, postal_code=:postalCode, country=:country, website=:website, logo_id=:logo where institution_id=:id",
-    crrc::DATABASE_NAME );
+    R"(
+update institutions set name=:name, address=:address, city=:city, state=:state,
+  postal_code=:postalCode, country=:country, website=:website,
+  logo_id=:logo, institution_type_id = :instType
+where institution_id=:id
+)", crrc::DATABASE_NAME );
   bindInstitution( context, query );
   query.bindValue( ":id", id.toInt() );
 

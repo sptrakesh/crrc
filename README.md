@@ -5,6 +5,7 @@ Application for managing articulation agreements between educational institution
 * [Technology Stack](#techStack)
 * [Managing Entities](#entities)
   * [Authentication and Authorisation](#auth)
+  * [InstitutionTypes](#institutionTypes)
   * [Institutions](#institutions)
   * [Contacts](#contacts)
   * [Departments](#departments)
@@ -73,6 +74,19 @@ supported by the server.
    the session and respond with a `JSON` response that indicates the status of
    the logout operation.  Note that unless there are server issues, a `logout`
    should always return a success message.
+
+### <a name="institutionTypes"></a>Institution Types
+Institution types are a static list of types used to categorise institutions.
+These are referenced from institution entities.  No management features are
+provided at present for **CRUD** operations on institution types.  No templates
+exist for displaying the types either.  The following **REST** like services
+are provided:
+
+*  Retrieve all - Clients may retrieve the current list of institution types
+   as a JSON array by making a POST request to the `/institutionTypes` endpoint.
+*  Retrieve - Clients may retrieve a `JSON` object representing an institution
+   type by its unique `id` value by making a `GET` request to the
+   `/institutionTypes/id/<id of type>/data` endpoint.
 
 ### <a name="institutions"></a>Institutions
 Institutions are the logical starting point for managing entities within the

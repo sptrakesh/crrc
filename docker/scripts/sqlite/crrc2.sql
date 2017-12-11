@@ -1,3 +1,4 @@
+-- Version: 3 --
 create table courses
 (
   course_id integer primary key,
