@@ -172,6 +172,12 @@
     
     //Filter by the location
     function locationFilter(){
+        document.getElementById("StateF").innerHTML = "";
+        document.getElementById("CityF").innerHTML = "";
+        document.getElementById("DegreeF").innerHTML = "";
+        document.getElementById("InstitutionF").innerHTML = "";
+
+
         let selectCity = document.getElementById('city');
         let cityId = selectCity.options[selectCity.selectedIndex].value;
         let cityName = selectCity.options[selectCity.selectedIndex].text;
@@ -228,7 +234,7 @@
 
     
     /************* Institution Type ********************/
-    /*function populateInstitutionType()
+    function populateInstitutionType()
      {
          let element = document.getElementById( 'InstitutionType' );
          let types = [];
@@ -247,10 +253,19 @@
                  option.textContent = type;
                  element.appendChild( element );
              }
-     }*/
+     }
 
-    /*function filterByType(type)
+    function filterByInstitutionType(type)
      {
+        document.getElementById("StateF").innerHTML = "";
+        document.getElementById("CityF").innerHTML = "";
+        document.getElementById("DegreeF").innerHTML = "";
+        let select = document.getElementById("InstitutionType");
+         let typeId = select.options[select.selectedIndex].value;
+         let typeName = select.options[select.selectedIndex].text;
+         document.getElementById("InstitutionF").innerHTML = "Instiution Type: " + typeName;
+         
+         
          let select = document.getElementById('institution');
          var length = select.options.length;
 
@@ -269,12 +284,16 @@
                          select.appendChild( option );
                      }
              }
-     }*/
+     }
     
     /****************************************************/
     
     function filterDegrees()
     {
+        document.getElementById("StateF").innerHTML = "";
+        document.getElementById("CityF").innerHTML = "";
+        document.getElementById("DegreeF").innerHTML = "";
+        document.getElementById("InstitutionF").innerHTML = "";
         let select = document.getElementById('DegreeType');
         let degreeId = select.options[select.selectedIndex].value;
         let degreeName = select.options[select.selectedIndex].text;
@@ -320,6 +339,10 @@
       $("#city").val("-1");
       $("#DegreeType").val("-1");
       $("#InstitutionType").val("-1");
+      document.getElementById("StateF").innerHTML = "";
+      document.getElementById("CityF").innerHTML = "";
+      document.getElementById("DegreeF").innerHTML = "";
+        document.getElementById("InstitutionF").innerHTML = "";
       //document.getElementById("displayStatus").innerHTML = ""; 
     }
     
@@ -387,23 +410,25 @@
                     </td>
                 </tr>
             </table>
-            <!--
+           
+            <h4 align="center"><u>Filters Applied</u></h4>
             
-            <h4><u>Filters Applied</u></h4>
-            <ul class="WhatFilter" style="background-color: white">
+            <ul class="WhatFilter" style="background-color: white; list-style-type:none">
                 <li id="StateF"></li>
             </ul>
-            <ul class="WhatFilter" style="background-color: white">
+            <ul class="WhatFilter" style="background-color: white; list-style-type:none">
                 <li id="CityF"></li>
             </ul>
-            <ul class="WhatFilter" style="background-color: white">
+            <ul class="WhatFilter" style="background-color: white; list-style-type:none">
                 <li id="DegreeF"></li>
             </ul>
-            <ul class="WhatFilter" style="background-color: white">
+            <ul class="WhatFilter" style="background-color: white; list-style-type:none">
                 <li id="InstitutionF"></li>
             </ul>
 
--->
+
+
+
         </div>
 
         <!-- The Search Filters -->
@@ -425,7 +450,8 @@
                 <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
             </form>
             <br>
-            <!-- Advanced Search Options 
+            
+            <!-- Advanced Search Options -->
             <h3>Advanced Search Options</h3>
             <table id="AdvancedOptionTable">
                 <tr>
@@ -433,7 +459,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <!-- Search By User Name 
+                        <!-- Search By User Name --> 
                         User Name:
                     </td>
                     <td>
@@ -443,7 +469,7 @@
                 <tr>
                     <td></td>
                     <td>
-                        <input type="submit" value="Search" name="searchUserButton" id="searchUserButton">
+                        <input type="submit" value="Search" name="searchUserButton" id="searchUserButton"><br><br>
                     </td>
                 </tr>
                 <tr>
@@ -451,7 +477,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <!-- Search by state 
+                        <!-- Search by state -->
                         State:
                     </td>
                     <td>
@@ -459,18 +485,19 @@
                             <option selected value="-1">Select State</option>
                         </select>
 
-                        <!-- populate state list 
+                        <!-- populate state list -->
                         <script>
                             populateInstitutionStateSelect();
-                            var repeatDept = {};
+                            var repeatState = {};
+                            
                             $("select[name='state'] > option").each(function () {
-                                if(repeatDept[this.text]) 
+                                if(repeatState[this.text]) 
                                 {
                                     $(this).remove();
                                 }
                                 else 
                                 {
-                                    repeatDept[this.text] = this.value;
+                                    repeatState[this.text] = this.value;
                                 }
                             });
 
@@ -507,12 +534,27 @@
                         <select id="city" name="city" style="width: 100%">
                             <option selected value="-1">Select City</option>
                         </select>
+                        
+                        <script>
+                        var repeatCity = {};
+                            
+                            $("select[name='city'] > option").each(function () {
+                                if(repeatCity[this.text]) 
+                                {
+                                    $(this).remove();
+                                }
+                                else 
+                                {
+                                    repeatCity[this.text] = this.value;
+                                }
+                            });
+                        </script>
                     </td>
                 </tr>
 
                 <tr>
                     <td></td>
-                    <td><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()"></td>
+                    <td><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()"><br><br></td>
                 </tr>
                 <tr>
                     <th colspan=2 style="align: center"><u>Degree Type</u></th>
@@ -522,11 +564,23 @@
                         Degree Type:
                     </td>
                     <td>
-                        <select id="DegreeType" style="width:100%">
+                        <select name="DegreeType" id="DegreeType" style="width:100%">
                         </select>
                         <!-- populate the degree list -->     
                         <script>
                             populateDegrees();
+                            var repeatDegree = {};
+                            
+                            $("select[name='DegreeType'] > option").each(function () {
+                                if(repeatDegree[this.text]) 
+                                {
+                                    $(this).remove();
+                                }
+                                else 
+                                {
+                                    repeatDegree[this.text] = this.value;
+                                }
+                            });
                             function populateDegrees(){
 
                                 let element = document.getElementById('DegreeType');
@@ -543,17 +597,14 @@
                                     element.appendChild( optionDegree );           
                                 }
                             }
-
-
                         </script>
-            
-            <!--
+        
                     </td>
                 </tr>
                 <tr>
                     <td></td>
                     <td>
-                        <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton" onclick="filterDegrees()">
+                        <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton" onclick="filterDegrees()"><br><br>
                     </td>
                 </tr>
                 <tr>
@@ -562,13 +613,20 @@
                 <tr>
                     <td>Institution Type:</td>
                     <td>
-                        <select id="InstitutionType" style="width:100%">
+                        <select id="InstitutionType" name="InstitutionType" style="width:100%" onclick="filterByInstitutionType()">
+                            <option selected>Select Institution Type</option>
+                            <option>Two Year Degree Granting Institution</option>
+                            <option>Two and Four Years Degree Granting Institutions</option>
+                            <option>Under Graduate Four Years Degree Granting College</option>
+                            <option>Under Graduate Four Year Degree Granting University</option>
+                            <option>Graduate Degree Granting College</option>
+                            <option>Graduate Degree Granting University</option>
                         </select>
                     </td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td><input type="submit" value="Apply Filter" name="searchButton"></td>
+                    <td><input type="submit" value="Apply Filter" name="InstitutionTypeButton"></td>
                 </tr>
             </table>
 
@@ -593,7 +651,6 @@
             let optionValue = selectProgram.options[selectProgram.selectedIndex].value;
             let programName = selectProgram.options[selectProgram.selectedIndex].text;
 
-            if(optionValue == -1){ //if program is not selected
                 alert("Please Select a Program to Filter!");
             }
             else{
