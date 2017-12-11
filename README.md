@@ -83,7 +83,7 @@ exist for displaying the types either.  The following **REST** like services
 are provided:
 
 *  Retrieve all - Clients may retrieve the current list of institution types
-   as a JSON array by making a POST request to the `/institutionTypes` endpoint.
+   as a JSON array by making a `GET` request to the `/institutionTypes` endpoint.
 *  Retrieve - Clients may retrieve a `JSON` object representing an institution
    type by its unique `id` value by making a `GET` request to the
    `/institutionTypes/id/<id of type>/data` endpoint.

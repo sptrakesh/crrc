@@ -16,8 +16,7 @@ void InstitutionTypeTest::index()
   login( &mgr, &eventLoop, &req );
 
   const auto url = QString{ "http://localhost:3000/institutionTypes/" };
-  const auto data = QString{};
-  const auto reply = post( url, data, &mgr, &eventLoop, &req );
+  const auto reply = get( url, &mgr, &eventLoop, &req );
 
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error retrieving standard institution types" );
   const auto doc = QJsonDocument::fromJson( reply->readAll() );

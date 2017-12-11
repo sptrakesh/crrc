@@ -27,18 +27,9 @@ void InstitutionTypes::index( Cutelyst::Context* c ) const
   auto list = dao::InstitutionTypeDAO().retrieveAll();
   qSort( list.begin(), list.end(), util::instTypeComparator );
 
-  if ( "POST" == c->request()->method() )
-  {
-    QJsonArray arr;
-    for ( const auto& instType : list ) arr << toJson( *model::InstitutionType::from( instType ) );
-    dao::sendJson( c, arr );
-    return;
-  }
-
-  c->stash( {
-    { "institutionTypes", list },
-    { "template", "institutionTypes/index.html" }
-  } );
+  QJsonArray arr;
+  for ( const auto& instType : list ) arr << toJson( *model::InstitutionType::from( instType ) );
+  dao::sendJson( c, arr );
 }
 
 void InstitutionTypes::base( Cutelyst::Context* c ) const
