@@ -1,3 +1,4 @@
+-- Version: 2 --
 alter table contacts add column user_id integer references users on delete set null deferrable;
 create index idx_contacts_user on contacts (user_id);
 insert into roles (role_id,role) values (1,'Global Administrator');

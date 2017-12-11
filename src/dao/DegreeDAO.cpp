@@ -1,5 +1,4 @@
 #include "DegreeDAO.h"
-#include "model/Degree.h"
 #include "constants.h"
 
 #include <mutex>

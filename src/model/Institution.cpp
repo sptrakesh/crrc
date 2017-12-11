@@ -1,6 +1,8 @@
 ﻿#include "Institution.h"
 #include "Logo.h"
+#include "InstitutionType.h"
 #include "dao/LogoDAO.h"
+#include "dao/InstitutionTypeDAO.h"
 
 using crrc::model::Institution;
 
@@ -16,6 +18,7 @@ Institution::Ptr Institution::create( QSqlQuery& query )
   ptr->country = query.value( 6 ).toString();
   ptr->website = query.value( 7 ).toString();
   ptr->logoId = query.value( 8 ).toUInt();
+  ptr->institutionTypeId = query.value( 9 ).toUInt();
   return ptr;
 }
 
@@ -34,6 +37,7 @@ Institution::Ptr Institution::create( Cutelyst::Context* context )
   ptr->country = context->request()->param( "country" );
   ptr->website = context->request()->param( "website" );
   ptr->logoId = context->request()->param( "logoId" ).toUInt();
+  ptr->institutionTypeId = context->request()->param( "institutionTypeId" ).toUInt();
 
   return ptr;
 }
@@ -41,6 +45,11 @@ Institution::Ptr Institution::create( Cutelyst::Context* context )
 QVariant Institution::getLogo() const
 {
   return dao::LogoDAO().retrieve( logoId );
+}
+
+QVariant Institution::getInstitutionType() const
+{
+  return dao::InstitutionTypeDAO().retrieve( institutionTypeId );
 }
 
 QJsonObject crrc::model::toJson( const Institution& institution, bool compact )
@@ -61,6 +70,12 @@ QJsonObject crrc::model::toJson( const Institution& institution, bool compact )
   {
     const auto ptr = Logo::from( institution.getLogo() );
     obj.insert( "logo", ptr ? toJson( *ptr ) : QJsonObject{} );
+  }
+
+  if ( institution.getInstitutionTypeId() )
+  {
+    const auto ptr = InstitutionType::from( institution.getInstitutionType() );
+    obj.insert( "institutionType", ptr ? toJson( *ptr ) : QJsonObject{} );
   }
 
   return obj;

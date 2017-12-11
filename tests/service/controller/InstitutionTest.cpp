@@ -24,7 +24,7 @@ void InstitutionTest::create()
   login( &mgr, &eventLoop, &req );
 
   const auto url = QString{ "http://localhost:3000/institutions/edit" };
-  const auto data = QString( "name=%1&city=%2" ).arg( name ).arg( city );
+  const auto data = QString{ "name=%1&city=%2" }.arg( name ).arg( city );
   auto reply = put( url, data, &mgr, &eventLoop, &req );
 
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error creating new institution" );
@@ -46,7 +46,7 @@ void InstitutionTest::retrieve()
   QNetworkRequest req;
   login( &mgr, &eventLoop, &req );
 
-  const auto url = QString( "http://localhost:3000/institutions/id/%1/data" ).arg( institutiontest::id );
+  const auto url = QString{ "http://localhost:3000/institutions/id/%1/data" }.arg( institutiontest::id );
   const auto reply = get( url, &mgr, &eventLoop, &req );
 
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error retrieving institution" );
@@ -165,8 +165,8 @@ void InstitutionTest::update()
 
   const auto url = QString{ "http://localhost:3000/institutions/edit" };
   const auto address = QString{ "1 Main St" };
-  const auto data = QString( "id=%1&name=%2&city=%3&address=%4" )
-      .arg( institutiontest::id ).arg( name ).arg( city ).arg( address );
+  const auto data = QString{ "id=%1&name=%2&city=%3&address=%4&institutionTypeId=%5" }
+      .arg( institutiontest::id ).arg( name ).arg( city ).arg( address ).arg( institutionTypeId );
   const auto reply = put( url, data, &mgr, &eventLoop, &req );
 
   QVERIFY2( reply->error() == QNetworkReply::NoError, "Error updating institution" );
@@ -175,6 +175,8 @@ void InstitutionTest::update()
   QVERIFY2( !obj.isEmpty(), "Empty JSON response for create institution" );
   QVERIFY2( institutiontest::id == obj["id"].toInt(), "Json response returned invalid id" );
   QVERIFY2( address == obj["address"].toString(), "Json response returned invalid address" );
+  const auto instType = obj["institutionType"].toObject();
+  QVERIFY2( static_cast<int>( institutionTypeId ) == instType["id"].toInt(), "Json response returned invalid institution type" );
 
   logout( &mgr, &eventLoop, &req );
 }

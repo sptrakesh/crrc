@@ -2,7 +2,6 @@
 
 #include <Cutelyst/Controller>
 
-
 namespace crrc
 {
   class Degrees : public Cutelyst::Controller
