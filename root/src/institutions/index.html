@@ -81,12 +81,7 @@
                 {
                     select.remove(select.selectedIndex);
                 }
-                else
-                {
-                }
-            }
-            else
-            {
+
             }
         };
         xhr.send( `id=${institutionId}` );
@@ -454,12 +449,14 @@
             <!-- Advanced Search Options -->
             <h3>Advanced Search Options</h3>
             <table id="AdvancedOptionTable">
+                
+                <!--
                 <tr>
                     <th colspan=2 style="align: center"><u>User ID:</u></th>
                 </tr>
                 <tr>
                     <td>
-                        <!-- Search By User Name --> 
+                         
                         User Name:
                     </td>
                     <td>
@@ -473,6 +470,8 @@
                     </td>
                 </tr>
                 <tr>
+                    -->
+                    
                     <th colspan=2 style="align: center"><u>Location</u></th>
                 </tr>
                 <tr>
@@ -482,7 +481,7 @@
                     </td>
                     <td>
                         <select name="state" id="state" style="width:100%" onchange="populateInstitutionCitySelect()">
-                            <option selected value="-1">Select State</option>
+                             <!-- <option selected value="-1">Select State</option> -->
                         </select>
 
                         <!-- populate state list -->
@@ -491,7 +490,7 @@
                             var repeatState = {};
                             
                             $("select[name='state'] > option").each(function () {
-                                if(repeatState[this.text]) 
+                                if(repeatState[this.text] /*|| this.text == ""*/) 
                                 {
                                     $(this).remove();
                                 }
@@ -518,6 +517,27 @@
                                 }
 
                                 // populateInstitutionCitySelect();
+                                
+                                //alphabetically sort states
+                                function sortStateList() 
+                                {
+                                    var lb = document.getElementById('state');
+                                    arrTexts = new Array();
+
+                                    for(i=0; i<lb.length; i++)  
+                                        {
+                                            arrTexts[i] = lb.options[i].text;
+                                        }
+                                        arrTexts.sort();
+
+                                    for(i=0; i<lb.length; i++)  
+                                        {
+                                            lb.options[i].text = arrTexts[i];
+                                            lb.options[i].value = arrTexts[i];
+                                        }
+                                }
+                                
+                                sortStateList();
 
                             }
 
@@ -532,7 +552,7 @@
                     <td>
 
                         <select id="city" name="city" style="width: 100%">
-                            <option selected value="-1">Select City</option>
+                            <!-- <option selected value="-1">Select City</option> -->
                         </select>
                         
                         <script>
@@ -651,6 +671,7 @@
             let optionValue = selectProgram.options[selectProgram.selectedIndex].value;
             let programName = selectProgram.options[selectProgram.selectedIndex].text;
 
+        if(optionValue == -1){ //if state is not selected
                 alert("Please Select a Program to Filter!");
             }
             else{
