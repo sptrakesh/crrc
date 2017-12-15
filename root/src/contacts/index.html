@@ -11,7 +11,7 @@
         {
           if ( xhr.status === 200 )
           {
-           // console.log( xhr.responseText );
+            console.log( xhr.responseText );
             contactList = JSON.parse( xhr.responseText );
             populateInstitutionsSelect();
             populateRoles();
@@ -87,7 +87,7 @@
          {
            if ( xhr.status === 200 )
            {
-             //console.log( xhr.responseText );
+             console.log( xhr.responseText );
              institutionList = JSON.parse( xhr.responseText );
              populateInstitutionStateSelect();          //  This function is calling to populate list for location filter.
            }

@@ -24,7 +24,6 @@
                 institutions = json;
                 //populateInstitutionStateSelect();
                 populateInstitutionSelect();
-
             }
             else
             {
@@ -37,9 +36,12 @@
       //populate institutions
     function populateInstitutionSelect()        //This function is called from getPrograms function.
         {
+            
            let element = document.getElementById('institution');
+           console.log(institutions.length);
            for (var i = 0; i < institutions.length; ++i)
                 {
+                    
                     let option = document.createElement( 'option' );
                     option.value = institutions[i].id;
                     option.textContent = institutions[i].name + " ("  + institutions[i].city + " , " + institutions[i].state + ")" ;
