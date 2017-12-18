@@ -28,7 +28,7 @@ check(form) - confirm before deleting
                 console.log( xhr.responseText );
                 let json = JSON.parse( xhr.responseText );
                 institutions = json;
-                populateInstitutionStateSelect();
+                //populateInstitutionStateSelect();
                 populateInstitutionSelect();
 
             }
@@ -167,7 +167,7 @@ check(form) - confirm before deleting
             {
                 console.log( xhr.responseText );
                 programList = JSON.parse( xhr.responseText );
-                 populateDegrees();
+                 //populateDegrees();
             }
             else
             {
@@ -599,7 +599,7 @@ check(form) - confirm before deleting
                         </select>
                         <!-- populate the degree list -->     
                         <script>
-                            populateDegrees();
+                            //populateDegrees();
                             var repeatDegree = {};
                             
                             $("select[name='DegreeType'] > option").each(function () {
