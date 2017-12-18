@@ -25,7 +25,7 @@ check(form) - confirm before deleting
         {
             if ( xhr.status === 200 )
             {
-                console.log( xhr.responseText );
+                //console.log( xhr.responseText );
                 let json = JSON.parse( xhr.responseText );
                 institutions = json;
                 //populateInstitutionStateSelect();
@@ -45,7 +45,7 @@ check(form) - confirm before deleting
         {
             
            let element = document.getElementById('institution');
-           console.log(institutions.length);
+           //console.log(institutions.length);
            for (var i = 0; i < institutions.length; ++i)
                 {
                     
@@ -84,7 +84,7 @@ check(form) - confirm before deleting
         {
             if ( xhr.status === 200 )
             {
-                console.log( xhr.responseText );
+                //console.log( xhr.responseText );
                 let json = JSON.parse( xhr.responseText );
                 if ( json.status && json.count === 1 )
                 {
@@ -165,7 +165,7 @@ check(form) - confirm before deleting
         {
             if ( xhr.status === 200 && xhr.readyState == 4)
             {
-                console.log( xhr.responseText );
+                //console.log( xhr.responseText );
                 programList = JSON.parse( xhr.responseText );
                  //populateDegrees();
             }
@@ -599,7 +599,7 @@ check(form) - confirm before deleting
                         </select>
                         <!-- populate the degree list -->     
                         <script>
-                            //populateDegrees();
+                            populateDegrees();
                             var repeatDegree = {};
                             
                             $("select[name='DegreeType'] > option").each(function () {
