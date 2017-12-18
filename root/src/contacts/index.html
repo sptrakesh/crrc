@@ -11,10 +11,10 @@
         {
           if ( xhr.status === 200 )
           {
-            console.log( xhr.responseText );
+            //console.log( xhr.responseText );
             contactList = JSON.parse( xhr.responseText );
-            populateInstitutionsSelect();
-            populateRoles();
+            //populateInstitutionsSelect();
+            //populateRoles();
             display();
           }
           else
@@ -56,9 +56,9 @@
       for(var i=0;i<contactList.length;++i){
         let option = document.createElement( 'option' );
         option.value = contactList[i].id;
-        option.textContent = contactList[i].name + " - " + contactList[i].institution.name;
+        option.textContent = contactList[i].name + " - " ;//+ contactList[i].institution.name;
         element.appendChild( option );
-        
+                
       }
       
   }
@@ -87,7 +87,7 @@
          {
            if ( xhr.status === 200 )
            {
-             console.log( xhr.responseText );
+             //console.log( xhr.responseText );
              institutionList = JSON.parse( xhr.responseText );
              populateInstitutionStateSelect();          //  This function is calling to populate list for location filter.
            }
@@ -356,6 +356,10 @@
                 $("#role").val("-1");
                 removeAllUsers();
                 for(var i = 0; i < contactList.length; ++i){
+                    if(contactList[i].institution == undefined){
+                      document.getElementById("displayStatus").innerHTML = "insufficeint data. exiting the loop.";
+                      break;
+                  }
                     if(stateName == contactList[i].institution.state){
                            let element = document.getElementById('lstBoxselectUser_ViewUser');
                             let option = document.createElement( 'option' );
@@ -379,6 +383,11 @@
             $("#role").val("-1");
              removeAllUsers();
              for(var i = 0; i < contactList.length; ++i){
+                  
+                  if(contactList[i].institution == undefined){
+                      document.getElementById("displayStatus").innerHTML = "insufficeint data. exiting the loop.";
+                      break;
+                  }
                   if(cityName == contactList[i].institution.city){
                        let element = document.getElementById('lstBoxselectUser_ViewUser');
                        let option = document.createElement( 'option' );

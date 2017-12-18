@@ -28,7 +28,7 @@ check(form) - confirm before deleting
                 console.log( xhr.responseText );
                 let json = JSON.parse( xhr.responseText );
                 institutions = json;
-                //populateInstitutionStateSelect();
+                populateInstitutionStateSelect();
                 populateInstitutionSelect();
 
             }
@@ -167,7 +167,7 @@ check(form) - confirm before deleting
             {
                 console.log( xhr.responseText );
                 programList = JSON.parse( xhr.responseText );
-                // populateDegrees();
+                 populateDegrees();
             }
             else
             {
@@ -325,8 +325,6 @@ check(form) - confirm before deleting
                             {
                                 if(institutions[j].id == programList[i].institution.id)
                                     {
-                                        console.log("id is "+ programList[i].degree.id);
-                                        console.log("title is "+ programList[i].degree.title);
                                         //institutions[j].degree.id = programList[i].degree.id;
                                         degreeDisplayName = programList[i].degree.title + " in " + programList[i].title;
                                         institutions[j].degree = programList[i].degree.title;
