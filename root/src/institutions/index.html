@@ -1,3 +1,12 @@
+<!--
+retrieveInstitutions() - Pull all of the institutions from the server
+populateInstitutionSelect() - Called from getPrograms() function. Add name, city, and state to the institution list
+displayInstitution() - Redirects to the selected institution page
+check(form) - confirm before deleting
+
+
+-->
+
 <script type="text/javascript">
     var institutions = [];
     var programList = [];
@@ -5,9 +14,6 @@
     /************* Institution Functions **************/
     retrieveInstitutions();
     
-
-  
-
     //Gets institutions from the server
     function retrieveInstitutions() 
     {
@@ -24,6 +30,13 @@
                 institutions = json;
                 populateInstitutionStateSelect();
                 populateInstitutionSelect();
+<<<<<<< HEAD
+                console.log(json);
+                console.log(institutions);
+                console.log(institutions.length);
+
+=======
+>>>>>>> 1ed14f19fe23d1a66000dae6b504fa041d0b56d9
             }
             else
             {
@@ -88,6 +101,20 @@
         };
         xhr.send( `id=${institutionId}` );
 
+    }
+    
+    function removeAllFilters(){
+      clearInstitutions();
+      populateInstitutionSelect();
+      $("#state").val("-1");
+      $("#city").val("-1");
+      $("#DegreeType").val("-1");
+      $("#InstitutionType").val("-1");
+      document.getElementById("StateF").innerHTML = "";
+      document.getElementById("CityF").innerHTML = "";
+      document.getElementById("DegreeF").innerHTML = "";
+      document.getElementById("InstitutionF").innerHTML = "";
+      //document.getElementById("displayStatus").innerHTML = ""; 
     }
 
 
@@ -327,19 +354,6 @@
             }
     }
 
-    function removeAllFilters(){
-      clearInstitutions();
-      populateInstitutionSelect();
-      $("#state").val("-1");
-      $("#city").val("-1");
-      $("#DegreeType").val("-1");
-      $("#InstitutionType").val("-1");
-      document.getElementById("StateF").innerHTML = "";
-      document.getElementById("CityF").innerHTML = "";
-      document.getElementById("DegreeF").innerHTML = "";
-        document.getElementById("InstitutionF").innerHTML = "";
-      //document.getElementById("displayStatus").innerHTML = ""; 
-    }
     
     /****************************************************/
 
@@ -487,24 +501,10 @@
                         <!-- populate state list -->
                         <script>
                             populateInstitutionStateSelect();
-                            var repeatState = {};
-                            
-                            $("select[name='state'] > option").each(function () {
-                                if(repeatState[this.text] /*|| this.text == ""*/) 
-                                {
-                                    $(this).remove();
-                                }
-                                else 
-                                {
-                                    repeatState[this.text] = this.value;
-                                }
-                            });
-
 
                             function populateInstitutionStateSelect()
                             {
                                 let element = document.getElementById('state');
-
 
                                 for(var i=0; i< institutions.length; ++i)
                                 {
@@ -515,12 +515,30 @@
                                     element.appendChild(option);
 
                                 }
+                            }
 
-                                // populateInstitutionCitySelect();
+                                //populateInstitutionCitySelect();
                                 
                                 //alphabetically sort states
                                 function sortStateList() 
                                 {
+                                    //this part will remove duplicates
+                                    var repeatState = {};
+                            
+                                    $("select[name='state'] > option").each(function () 
+                                    {
+                                        if(repeatState[this.text] || this.text == "")//removed code will remove blank options in the select 
+                                            {
+                                                $(this).remove();
+                                            }
+                                        else 
+                                            {
+                                                repeatState[this.text] = this.value;
+                                            }
+                                    });
+                                    
+                                    //This will do the sorting
+                                    
                                     var lb = document.getElementById('state');
                                     arrTexts = new Array();
 
@@ -535,11 +553,10 @@
                                             lb.options[i].text = arrTexts[i];
                                             lb.options[i].value = arrTexts[i];
                                         }
+                                    //lb.options[0].text = "Select State";
                                 }
                                 
                                 sortStateList();
-
-                            }
 
                         </script>
                     </td>
