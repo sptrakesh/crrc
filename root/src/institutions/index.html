@@ -30,10 +30,13 @@ check(form) - confirm before deleting
                 institutions = json;
                 //populateInstitutionStateSelect();
                 populateInstitutionSelect();
+<<<<<<< HEAD
                 console.log(json);
                 console.log(institutions);
                 console.log(institutions.length);
 
+=======
+>>>>>>> 1ed14f19fe23d1a66000dae6b504fa041d0b56d9
             }
             else
             {
@@ -46,9 +49,12 @@ check(form) - confirm before deleting
       //populate institutions
     function populateInstitutionSelect()        //This function is called from getPrograms function.
         {
+            
            let element = document.getElementById('institution');
+           console.log(institutions.length);
            for (var i = 0; i < institutions.length; ++i)
                 {
+                    
                     let option = document.createElement( 'option' );
                     option.value = institutions[i].id;
                     option.textContent = institutions[i].name + " ("  + institutions[i].city + " , " + institutions[i].state + ")" ;
