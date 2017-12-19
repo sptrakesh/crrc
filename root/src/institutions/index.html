@@ -1,9 +1,14 @@
 <!--
 retrieveInstitutions() - Pull all of the institutions from the server
 populateInstitutionSelect() - Called from getPrograms() function. Add name, city, and state to the institution list
-displayInstitution() - Redirects to the selected institution page
+displayInstitutionsPage() - Redirects to the selected institution page
 check(form) - confirm before deleting
-
+removeInstitution() - Remove an institution from the list
+removeAllFilters() - Remove the applied filters
+populateInstitutionStateSelect() - Populate the state dropdown
+sortStateList() - remove duplicates and sort the states
+populateDegrees() - populate the degree dropdowns
+programFilter() - Filter by program type
 
 -->
 
@@ -58,7 +63,7 @@ check(form) - confirm before deleting
         }
 
     //Redirects to institution information page
-    function displayInstitution() 
+    function displayInstitutionsPage() 
     {
         let select = document.getElementById( 'institution' );
         let institutionId = select.options[select.selectedIndex].value;
@@ -395,7 +400,7 @@ check(form) - confirm before deleting
                         <table align=center>
                             <tr>
                                 <td>
-                                    <button onclick="displayInstitution()">Select Institution</button>
+                                    <button onclick="displayInstitutionsPage()">Select Institution</button>
                                 </td>
                                 <td>
                                     <form action = "/institutions/create"
@@ -510,19 +515,13 @@ check(form) - confirm before deleting
                                     element.appendChild(option);
 
                                 }
-                            }
-
-                                //populateInstitutionCitySelect();
                                 
-                                //alphabetically sort states
-                                function sortStateList() 
-                                {
-                                    //this part will remove duplicates
+                                //this part will remove duplicates
                                     var repeatState = {};
                             
                                     $("select[name='state'] > option").each(function () 
                                     {
-                                        if(repeatState[this.text] || this.text == "")//removed code will remove blank options in the select 
+                                        if(repeatState[this.text] /*|| this.text == ""*/)//removed code will remove blank options in the select 
                                             {
                                                 $(this).remove();
                                             }
@@ -549,9 +548,10 @@ check(form) - confirm before deleting
                                             lb.options[i].value = arrTexts[i];
                                         }
                                     //lb.options[0].text = "Select State";
-                                }
                                 
-                                sortStateList();
+                                
+                            }
+
 
                         </script>
                     </td>
@@ -619,7 +619,7 @@ check(form) - confirm before deleting
 
                                 let optionDegree = document.createElement( 'option' );
                                 optionDegree.value = -1;
-                                optionDegree.textContent = "Select Degree";
+                                //optionDegree.textContent = "Select Degree";
                                 element.appendChild(optionDegree); 
 
                                 for (var i = 0; i < programList.length; ++i){
@@ -646,7 +646,7 @@ check(form) - confirm before deleting
                     <td>Institution Type:</td>
                     <td>
                         <select id="InstitutionType" name="InstitutionType" style="width:100%" onclick="filterByInstitutionType()">
-                            <option selected>Select Institution Type</option>
+                            <!-- <option selected>Select Institution Type</option> -->
                             <option>Two Year Degree Granting Institution</option>
                             <option>Two and Four Years Degree Granting Institutions</option>
                             <option>Under Graduate Four Years Degree Granting College</option>
