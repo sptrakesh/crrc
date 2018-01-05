@@ -13,8 +13,8 @@
           {
             //console.log( xhr.responseText );
             contactList = JSON.parse( xhr.responseText );
-            //populateInstitutionsSelect();
-            //populateRoles();
+            populateInstitutionsSelect();
+            populateRoles();
             display();
           }
           else
@@ -56,7 +56,14 @@
       for(var i=0;i<contactList.length;++i){
         let option = document.createElement( 'option' );
         option.value = contactList[i].id;
-        option.textContent = contactList[i].name + " - " ;//+ contactList[i].institution.name;
+        
+        if(contactList[i].institution == null){
+            option.textContent = contactList[i].name + " - " ;
+        }
+        else if(contactList[i].institution != null){
+            option.textContent = contactList[i].name + " - " + contactList[i].institution.name;
+        }
+        
         element.appendChild( option );
                 
       }
@@ -108,9 +115,22 @@
         var names = [];
         var uniquesID = [];
         var uniquesName = [];
+
          for (var i = 0; i < contactList.length; ++i){
-                    id[i] = contactList[i].institution.id;
-                    names[i] = contactList[i].institution.name;
+                    if(contactList[i].institution == null)
+                    {
+                      id[i] = -1;
+                        names[i] = "undefined";
+                       console.log("No Institution Record found for " + contactList[i].name + " !");
+                    }
+                    else if(contactList[i].institution != null){
+                        id[i] = contactList[i].institution.id;
+                        names[i] = contactList[i].institution.name;
+                    }
+                    else{
+                        id[i] = -1;
+                        names[i] = "undefined";
+                    }
          }
         $.each(names,function(i,el){
             if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
@@ -200,11 +220,11 @@
         var uniquesID = [];
         var uniquesName = [];
          for (var i = 0; i < contactList.length; ++i){
-               if(contactList[i].user == undefined){
-                   id[i] = -1;
+              if(contactList[i].user == null){
+                  id[i] = -1;
                  names[i] = "undefined";
               }
-              else if(contactList[i].user.role != undefined){
+              else if(contactList[i].user.role != null){
                  id[i] = contactList[i].id;
                  names[i] = contactList[i].user.role.role;
               }
@@ -294,9 +314,20 @@
           var cName = []; // Contact Name
           var cID = []; // Contact ID 
           for (var i = 0; i < contactList.length; ++i){
-              iName[i] = contactList[i].institution.name;  
-              cName[i] = contactList[i].name;
-              cID[i] = contactList[i].id;
+              if(contactList[i].institution == null)
+              {
+                  iName[i] = -1;  
+                  cName[i] = "undefined";
+                  cID[i] = -1;
+              }
+              else if(contactList[i].institution != null){
+                iName[i] = contactList[i].institution.name;  
+                cName[i] = contactList[i].name;
+                cID[i] = contactList[i].id;
+              }
+              else{
+                console.log("Do something");
+              }
           }
 
           
