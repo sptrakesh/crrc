@@ -30,7 +30,7 @@ programFilter() - Filter by program type
         {
             if ( xhr.status === 200 )
             {
-                //console.log( xhr.responseText );
+                console.log( xhr.responseText );
                 let json = JSON.parse( xhr.responseText );
                 institutions = json;
                 //populateInstitutionStateSelect();
@@ -90,7 +90,7 @@ programFilter() - Filter by program type
         {
             if ( xhr.status === 200 )
             {
-                //console.log( xhr.responseText );
+                console.log( xhr.responseText );
                 let json = JSON.parse( xhr.responseText );
                 if ( json.status && json.count === 1 )
                 {
@@ -129,7 +129,7 @@ programFilter() - Filter by program type
         let element = document.getElementById('city');
         let option = document.createElement('option');
         option.value = -1;
-        option.textContent = "Select City";
+        //option.textContent = "Select City";
         element.appendChild(option);
         for(var i = 0; i< institutions.length; ++i)
         {
@@ -171,7 +171,7 @@ programFilter() - Filter by program type
         {
             if ( xhr.status === 200 && xhr.readyState == 4)
             {
-                //console.log( xhr.responseText );
+                console.log( xhr.responseText );
                 programList = JSON.parse( xhr.responseText );
                  //populateDegrees();
             }
@@ -356,6 +356,14 @@ programFilter() - Filter by program type
 
     
     /****************************************************/
+    
+    function filterByName()
+    {
+        clearInstitutions();
+        
+    }
+    
+    /****************************************************/
 
 </script>
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
@@ -369,12 +377,7 @@ programFilter() - Filter by program type
     <div id="PageTitle">
         <h2 align="center">View Institutions</h2>
     </div>
-
-    <!-- search results for search by name -->
-    {% if searchText %}
-    <h3>Search results for ({{ searchText }})</h3>
-    {% endif %}
-
+    
     <div style="min-height: 600px; width: 1400px">
         <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 200px; height: 450px; width:450px">
 
@@ -456,7 +459,7 @@ programFilter() - Filter by program type
                 })                                   
             </script>
             <form name="search" method="post" action="/institutions/search">
-                <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
+                <input type="text" id= "schoolName" name="schoolName" placeholder="Search by name..."/><input type="submit" value="Find"/>
             </form>
             <br>
             
