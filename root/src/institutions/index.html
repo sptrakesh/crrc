@@ -35,7 +35,7 @@ programFilter() - Filter by program type
                 institutions = json;
                 //populateInstitutionStateSelect();
                 populateInstitutionSelect();
-                populateInstitutionStateSelect();
+                //populateInstitutionStateSelect();
 
             }
             else
@@ -171,7 +171,7 @@ programFilter() - Filter by program type
         {
             if ( xhr.status === 200 && xhr.readyState == 4)
             {
-                console.log( xhr.responseText );
+//                console.log( xhr.responseText );
                 programList = JSON.parse( xhr.responseText );
                  //populateDegrees();
             }
@@ -200,6 +200,7 @@ programFilter() - Filter by program type
         document.getElementById("CityF").innerHTML = "";
         document.getElementById("DegreeF").innerHTML = "";
         document.getElementById("InstitutionF").innerHTML = "";
+        document.getElementById("NameF").innerHTML = "";
 
 
         let selectCity = document.getElementById('city');
@@ -318,6 +319,7 @@ programFilter() - Filter by program type
         document.getElementById("CityF").innerHTML = "";
         document.getElementById("DegreeF").innerHTML = "";
         document.getElementById("InstitutionF").innerHTML = "";
+        document.getElementById("NameF").innerHTML = "";
         let select = document.getElementById('DegreeType');
         let degreeId = select.options[select.selectedIndex].value;
         let degreeName = select.options[select.selectedIndex].text;
@@ -334,7 +336,7 @@ programFilter() - Filter by program type
                                         //institutions[j].degree.id = programList[i].degree.id;
                                         degreeDisplayName = programList[i].degree.title + " in " + programList[i].title;
                                         institutions[j].degree = programList[i].degree.title;
-                                        console.log(institutions[j].degree);
+//                                        console.log(institutions[j].degree);
                                     }
                             }
                     }
@@ -359,7 +361,46 @@ programFilter() - Filter by program type
     
     function filterByName()
     {
+        document.getElementById("StateF").innerHTML = "";
+        document.getElementById("CityF").innerHTML = "";
+        document.getElementById("DegreeF").innerHTML = "";
+        document.getElementById("InstitutionF").innerHTML = "";
+        document.getElementById("NameF").innerHTML = "";
+        
+        let select = document.getElementById('schoolName');
+        console.log(select);
+        document.getElementById("NameF").innerHTML = "Institution Name: " + select.value;
+        let nameInput = select.value.toUpperCase();
+        //nameInput = nameInput.toUpperCase();
+        console.log(nameInput);
+        let institutionDisplayName = "";
+        let newID = null;
+        
+        //get the institutions information
+                        for(var i=0; i<institutions.length; i++)
+                            {
+                                //let temp = institutions[i].name;
+                                if(institutions[i].name.toUpperCase() == nameInput)
+                                    {
+                                        institutionDisplayName = institutions[i].name + " ( " + institutions[i].city + " , " + institutions[i].state + " )";
+                                        console.log(institutions[i].id);
+                                        newID = institutions[i].id;
+                                    }
+                            }
+
         clearInstitutions();
+        //document.getElementById("NameF").innerHTML = "Institution Name: " + nameInput;
+        for(var i=0; i<institutions.length; i++)
+            {
+                if( nameInput == institutions[i].name.toUpperCase())
+                    {
+                        let element = document.getElementById('institution');
+                        let option = document.createElement('option');
+                        option.value = newID;
+                        option.textContent = institutionDisplayName;
+                        element.appendChild(option);
+                    }
+            }
         
     }
     
@@ -437,7 +478,9 @@ programFilter() - Filter by program type
             <ul class="WhatFilter" style="background-color: white; list-style-type:none">
                 <li id="InstitutionF"></li>
             </ul>
-
+            <ul class="WhatFilter" style="background-color: white; list-style-type:none">
+                <li id="NameF"></li>
+            </ul>
 
 
 
@@ -459,7 +502,7 @@ programFilter() - Filter by program type
                 })                                   
             </script>
             <form name="search" method="post" action="/institutions/search">
-                <input type="text" id= "schoolName" name="schoolName" placeholder="Search by name..."/><input type="submit" value="Find"/>
+                <input type="text" id= "schoolName" name="schoolName" placeholder="Search by name..."/><input type="button" value="Find" onclick="filterByName()"/>
             </form>
             <br>
             
