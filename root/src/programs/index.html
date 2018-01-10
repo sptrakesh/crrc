@@ -337,7 +337,61 @@
             }
       
         }
-        
+
+    function filterByName()
+    {
+       $("#InstitutionStateFilter").val("-1");
+       $("#InstitutionCityFilter").val("-1");
+       $("#DegreeListFilter").val("-1");
+       $("#DesignationsFilter").val("-1");
+      
+      
+       let select = document.getElementById('programName');//the name searched
+       console.log(select.value);
+       if(select.value != ""){
+      
+       document.getElementById("displayStatus").innerHTML = "results for " + select.value;//tell the user what filter was applied
+       //document.getElementById("NameF").innerHTML = "Institution Name: " + select.value;//tell the user what filter was applied
+       let nameInput = select.value.toUpperCase(); //put the name in all caps to ignore case sensitivity
+       //nameInput = nameInput.toUpperCase();
+       console.log(nameInput);
+       //let institutionDisplayName = "";//how the institution name appears in the choices
+       //let newID = null;//have to update the institution id for the correct institution to be pulled when selected
+    
+   
+       removeAllPrograms();
+       //document.getElementById("NameF").innerHTML = "Institution Name: " + nameInput;
+       for(var i=0; i<programList.length; i++)
+           {
+               let temp = programList[i].title;
+               let tempUpper = temp.toUpperCase();
+               if(tempUpper.includes(nameInput))
+                   {
+                       let element = document.getElementById('selectProgram');
+                       let option = document.createElement('option');
+                       if(programList[i].institution != null){
+                           let chosen = programList[i].title + " - " + programList[i].institution.name + " , " + programList[i].institution.city;
+                           let chosenID = programList[i].id;
+                           option.value = chosenID;
+                           option.textContent = chosen;
+                       }
+                       else{
+                            let chosen = programList[i].title + " - " ;//+ contactList[i].institute.name + " , " + contactList[i].institute.city + " )";
+                           let chosenID = programList[i].id;
+                           option.value = chosenID;
+                           option.textContent = chosen;
+                       }
+                       
+                       element.appendChild(option);
+                   }
+           }
+       
+      } 
+      else{
+            document.getElementById("displayStatus").innerHTML = "Please provide a value to search" ;
+      }
+   }  
+
     function instituteFilter(){     //This function will provide the list of all the programs from particular institution.
         var count = 0;
         let select = document.getElementById('InstitutionListFilter');
@@ -596,9 +650,10 @@
             <div class="filterByInViewPrograms" align="right">
                <h2 style="width: 350px;float: left;margin: 0px;" align="center"> Filter By </h2> <button  onclick="removeAllFilters()" class="commonBtn2InViewPrograms">No Filters</button>
                <fieldset>
-                 <form name="search" method="post" action="/programs/search">
+               Program Name: <input type="text" id="programName" class="commonTxtBoxCSS" placeholder="Search by name..."/><button onclick="filterByName()" class="commonBtn" style="width: 90px;height: 30px">Find</button> 
+                 <!--form name="search" method="post" action="/programs/search">
                   Program Name: <input type="text" name="text" class="commonTxtBoxCSS" placeholder="Search by name..."/><input class="commonBtn3InViewPrograms" type="submit" value="Find"/>
-                  </form>
+                  </form-->
                </fieldset>
                <fieldset>
                    Institution:

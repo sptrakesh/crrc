@@ -338,6 +338,7 @@
           $("#InstitutionStateFilter").val("-1");
           $("#InstitutionCityFilter").val("-1");
           $("#role").val("-1");
+          $("#contactName").val("");
           removeAllUsers();
            for (var i = 0; i < contactList.length; ++i){
               if (iName[i]  == institutionName)   //If the institution Name from select box is same as iName at i.
@@ -389,6 +390,7 @@
                 $("#institution").val("-1");
                 $("#InstitutionCityFilter").val("-1");
                 $("#role").val("-1");
+                $("#contactName").val("");
                 removeAllUsers();
                 for(var i = 0; i < contactList.length; ++i){
                     if(contactList[i].institution == undefined){
@@ -416,6 +418,7 @@
             var count = 0;
             $("#institution").val("-1");
             $("#role").val("-1");
+            $("#contactName").val("");
              removeAllUsers();
              for(var i = 0; i < contactList.length; ++i){
                   
@@ -449,7 +452,7 @@
           $("#institution").val("-1");
           $("#InstitutionStateFilter").val("-1");
           $("#InstitutionCityFilter").val("-1");
-          
+          $("#contactName").val("");
         removeAllUsers();
          for (var i = 0; i < contactList.length; ++i){
             if(contactList[i].user == undefined){
@@ -501,8 +504,59 @@
       $("#InstitutionStateFilter").val("-1");
       $("#InstitutionCityFilter").val("-1");
       $("#role").val("-1");
+      $("#contactName").val(""); 
       document.getElementById("displayStatus").innerHTML = ""; 
     }
+
+    //Search by Contact Name
+
+    function filterByName()
+   {
+       $("#institution").val("-1");
+      $("#InstitutionStateFilter").val("-1");
+      $("#InstitutionCityFilter").val("-1");
+      $("#role").val("-1");
+      
+      
+       let select = document.getElementById('contactName');//the name searched
+       console.log(select.value);
+       document.getElementById("displayStatus").innerHTML = "results for " + select.value;//tell the user what filter was applied
+       //document.getElementById("NameF").innerHTML = "Institution Name: " + select.value;//tell the user what filter was applied
+       let nameInput = select.value.toUpperCase(); //put the name in all caps to ignore case sensitivity
+       //nameInput = nameInput.toUpperCase();
+       console.log(nameInput);
+       //let institutionDisplayName = "";//how the institution name appears in the choices
+       //let newID = null;//have to update the institution id for the correct institution to be pulled when selected
+    
+   
+       removeAllUsers();
+       //document.getElementById("NameF").innerHTML = "Institution Name: " + nameInput;
+       for(var i=0; i<contactList.length; i++)
+           {
+               let temp = contactList[i].name;
+               let tempUpper = temp.toUpperCase();
+               if(tempUpper.includes(nameInput))
+                   {
+                       let element = document.getElementById('lstBoxselectUser_ViewUser');
+                       let option = document.createElement('option');
+                       if(contactList[i].institution != null){
+                           let chosen = contactList[i].name + " - " + contactList[i].institution.name + " , " + contactList[i].institution.city ;
+                           let chosenID = contactList[i].id;
+                           option.value = chosenID;
+                           option.textContent = chosen;
+                       }
+                       else{
+                            let chosen = contactList[i].name + " - " ;//+ contactList[i].institute.name + " , " + contactList[i].institute.city + " )";
+                           let chosenID = contactList[i].id;
+                           option.value = chosenID;
+                           option.textContent = chosen;
+                       }
+                       
+                       element.appendChild(option);
+                   }
+           }
+       
+   }
 </script>
 
 <div style="margin-left: auto; margin-right: auto;min-height: 700px ;">
@@ -568,11 +622,16 @@
                    <button class="commonBtn" onclick="roleFilter()">Apply Filter</button>
                </fieldset>
                <fieldset>
-                 <form name="search" method="post" action="/contacts/search">
-                        User Name: <input type="text" name="text" class="findUser" placeholder="Search by name..."/><br>
+                        User Name:
+                        <input type="text" class="findUser" id="contactName" placeholder="Search by name">
+                        <br>
+                        <button class="commonBtn" onclick="filterByName()">Find user</button>
+                 <!--form name="search" method="post" action="/contacts/search"-->
+                        <!--input type="text" name="text" class="findUser" id="contactName" placeholder="Search by name..."/-->
+                        
 
-                       <input type="submit" class="commonBtn"  value="Find"/>
-                 </form>
+                       <!--input type="submit" class="commonBtn"  value="Find"/-->
+                 <!--/form-->
                </fieldset>
             </div> <!--End of div filterBy -->
            </div>
