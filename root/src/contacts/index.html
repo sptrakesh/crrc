@@ -153,7 +153,10 @@
             var names = [];
             var uniquesID = [];
             var uniquesName = []; 
-            for (var i = 0; i < contactList.length; ++i){
+
+            // TO  find populate States from Contacts Array.
+
+            /*for (var i = 0; i < contactList.length; ++i){
                if(contactList[i].institution != null){ 
                    id[i] = i;             
                    names[i] = (contactList[i].institution.city);
@@ -162,11 +165,11 @@
                    id[i] = -2;
                    names[i] = "undefined";
                 }
-            }
-           /* for (var i = 0; i < institutionList.length; ++i){
+            }*/
+            for (var i = 0; i < institutionList.length; ++i){
                id[i] = institutionList[i].id;
                names[i] =  institutionList[i].state ;
-            }*/
+            }
             $.each(names,function(i,el){
                 if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
             });
