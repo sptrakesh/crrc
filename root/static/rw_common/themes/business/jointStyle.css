@@ -277,13 +277,13 @@ float:right;
  input[class="addUserInput"]{
     display: inline-block;
     font-size: 12pt;
-    padding: 3px 10px;
+    padding: 3px 5px;
     border: 2px solid black;
     border-radius: 4px;
     box-sizing: border-box;
     margin: 5px;
-    width: 200px;
-    height: 43px;
+    width: 250px;
+    height: 30px;
 }
 select[class="CmbBox"]{
     margin: 0px 0px 0px 5px;
@@ -309,22 +309,19 @@ input[class="commonBtn"], button[class="commonBtn"]{
 /*---------------------------------    Start of View User --------------------------------------------------*/
 /* This is div viewUserMultiLineSelect for viewUsers page */
 .viewUserContainer .viewUsersMultilineSelect{
-    background-color: #858fa0;
-	border: 1px solid black;
-	border-radius: 10px;
-	width: 450px;
-	height: 400px;
- 	margin: 20px ;
-	float:left;
+    width: 550px;
+    height: 500px;
+    margin: 20px 20px 20px 20px;
+    float:left;
 }
 
 .viewUserContainer select[id="lstBoxselectUser_ViewUser"]{
-	padding: 5px;
-	margin: 10px;
-	text-align: left;
-    width: 400px;
-    height: 300px;
-    font-size: 20pt;
+	padding: 10px;
+    margin: 10px 0px;
+    text-align: left;
+    width: 550px;
+    height: 350px;
+    font-size: 14pt;
     border: 1px solid black;
     border-radius: 5px;
     overflow: scroll;
@@ -337,12 +334,11 @@ input[class="commonBtn"], button[class="commonBtn"]{
 /* This is for Div filterBy in viewUserPage*/
 
 .viewUserContainer div[class="filterByInViewUsers"]{
-    background-color: #858fa0; 
-    border: 1px solid black;
-    border-radius: 10px;
-    width: 450px;
+    /*background-color: #858fa0; */
+    /*border: 1px solid black;*/
+    width: 400px;
     height: 400px;
-    margin: 20px 20px 20px 20px;
+    margin: 20px;
     float:right;
 }
 
@@ -381,21 +377,19 @@ input[class="commonBtn"], button[class="commonBtn"]{
 
 /* Start of div multiLine select in view Programs */
 .viewProgramContainer .viewProgramsMultilineSelect{
-    background-color: #858fa0;
-    border-style: solid;
-    border-width: 1px;
-    border-radius: 10px;
+    /*background-color: #858fa0;*/
+    
     width: 550px;
-    height: 400px;
+    height: 500px;
     margin: 20px 20px 20px 20px;
     float:left;
 }
 .viewProgramContainer select[id="selectProgram"]{
 	padding: 10px;
-    margin: 10px;
+    margin: 10px 0px;
 	text-align: left;
-    width: 530px;
-    height: 300px;
+    width: 550px;
+    height: 350px;
     font-size: 14pt;
     border: 1px solid black;
     border-radius: 5px;
@@ -407,9 +401,8 @@ input[class="commonBtn"], button[class="commonBtn"]{
 /* Start of Filter by in View Programs */
 
 .viewProgramContainer div[class="filterByInViewPrograms"]{
-    background-color: #858fa0; 
-    border-style: solid;
-    border-width: 1px;
+    /*background-color: #858fa0; */
+    /*border: 1px solid black;*/
     border-radius: 10px;
     width: 450px;
     height: 400px;
@@ -422,16 +415,7 @@ input[class="commonBtn"], button[class="commonBtn"]{
     float: left;
     text-align: center;
 }
-.viewProgramContainer input[class="commonBtn"]{
-     font-size: 10px;
-	border-style: solid;
-	border-width: 1px;
-	border-color: black;
-	border-radius: 3px;
-    width: 90px;
-    height: 30px;
-    margin: 2px;
-}
+
 
 .viewProgramContainer p[id="adminTypeLabel"]{
 	margin: 5px;
@@ -448,27 +432,18 @@ input[class="commonBtn"], button[class="commonBtn"]{
 
 /* the Left side box*/
 .addUserContainer .addUserForm{
-	align-content:  right;
-	width: 450px;
-    height: 330px;
-	background-color: #858fa0;
-	padding: 10px;
-	float: left;
-	margin: 20px;
-	border: 1px solid black;
-	border-radius: 10px;
+	width: 550px;
+    height: 500px;
+    margin: 20px 20px 20px 20px;
+    float:left;
 }
 
 /* The right side box   */
 .addUserContainer .institute_addUser{
-	background-color: #858fa0;
-	width: 400px;
-	height: 325px;
-	padding: 12px 20px;
-	float: right;
-	border: 1px solid black;
-	border-radius: 10px;
-	margin: 20px ;
+	width: 350px;
+    height: 500px;
+    margin: 20px 20px 20px 20px;
+    float:right;
 
 }
 
