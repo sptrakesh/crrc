@@ -34,7 +34,7 @@
                </td>
                <td align="right">Institution:</td>
                <td>
-                  <select name="institution" id="institution">
+                  <select class="CmbBox" name="institution" id="institution">
                      <option value="0">Select Institution</option>
                      {% for institution in institutions %}
                      <option value="{{ institution.id }}"
@@ -53,7 +53,7 @@
                </td>
                <td> CAE Designation:</td>
                <td>
-                  <select name="designation" id="designation" >
+                  <select class="CmbBox" name="designation" id="designation" >
                      <option value="0" style=" font-size: 16px;">Select Designation</option>
                      {% for designation in designations %}
                      <option value="{{ designation.id }}" style="font-size: 16px;"
@@ -72,7 +72,7 @@
                </td>
                <td align="right">Degree:</td>
                <td>
-                  <select name="degree" id="degree" >
+                  <select class="CmbBox" name="degree" id="degree" >
                      <option value="0">Select Degree</option>
                      {% for degree in degrees %}
                      <option value="{{ degree.id }}"
