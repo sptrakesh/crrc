@@ -554,7 +554,7 @@
         let designationId = select.options[select.selectedIndex].value;
         let designationName = select.options[select.selectedIndex].text;
         
-        if(designationId != -1){    //  If user has selected a designation.
+        if(designationId > -1){    //  If user has selected a designation.
         $("#InstitutionListFilter").val("-1");
         $("#InstitutionStateFilter").val("-1");
         $("#InstitutionCityFilter").val("-1");
@@ -653,7 +653,7 @@
                 <button onclick="displayProgramDetails()" class="commonBtn" >View Details</button>
                 <a href="/programs/create"><button class="commonBtn" >Add Program</button></a>
                 <button onclick="removeProgram()" class="commonBtn" style="width: 150px;" >Remove Program</button>
-                <button  onclick="removeAllFilters()" class="commonBtn">No Filters</button>
+                <button  onclick="removeAllFilters()" class="commonBtn">Remove Filters</button>
                <br>
               
             </div> <!--End of div viewProgramsMultilineSelect -->
