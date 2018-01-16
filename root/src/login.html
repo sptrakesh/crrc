@@ -1,13 +1,13 @@
-<form id="login" method="post" action="/login" style="margin-left: auto; margin-right: auto">
+<form id="login" method="post" action="/login" style="margin-left: auto; margin-right: auto; width: 500px;">
   <div>
-    <div style="float: left; width: 30%;"><label class="label">Username:</label></div>
-    <div style="float: right; width: 70%;"><input type="text" name="username" id="username" size="40" required/></div>
+    <!--div style="float: left; width: 30%;"><label class="label"></label></div-->
+    <div style="float: right; width: 70%;">Username:<input type="text" name="username" id="username" size="40" class="addUserInput" required/></div>
     <div style="clear: both;"></div>
   </div>
   <div>
-    <div style="float: left; width: 30%"><label class="label">Password:</label></div>
-    <div style="float: right; width: 70%;"><input type="password" name="password" id="password" size="40" required/></div>
+    <!--div style="float: left; width: 30%"><label class="label"></label></div-->
+    <div style="float: right; width: 70%;">Password : <input type="password" name="password" id="password" size="40" class="addUserInput" required/></div>
     <div style="clear: both;"></div>
   </div>
-  <div style="width: 100%"><input id="submit" type="submit" name="submit" value="Login"/></div>
+  <div style="width: 100%"><input id="submit" class="commonBtn" type="submit" name="submit" value="Login"/></div>
 </form>
