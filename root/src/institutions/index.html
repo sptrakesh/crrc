@@ -14,6 +14,7 @@
 <script type="text/javascript">
    var institutions = [];
    var programList = [];
+    var institutionType = [];
    
    /************* Institution Functions **************/
    retrieveInstitutions();
@@ -29,7 +30,7 @@
        {
            if ( xhr.status === 200 )
            {
-               console.log( xhr.responseText );
+    //           console.log( xhr.responseText );
                let json = JSON.parse( xhr.responseText );
                institutions = json;
                //populateInstitutionStateSelect();
@@ -75,8 +76,8 @@
        return confirm( 'Do you wish to permanently delete the institution?' );
    }
    
-   
-   //Delete selected institution
+   /***************** Delete Selected Institution ***************/
+    
    function removeInsitution() 
    {
        let select = document.getElementById( 'institution' );
@@ -102,6 +103,10 @@
    
    }
    
+    
+    /************** Reset the Filters *************************/
+    
+    
    function removeAllFilters(){
      clearInstitutions();
      populateInstitutionSelect();
@@ -117,6 +122,7 @@
    }
    
    
+    /***************** Populate all of the cities ****************/
    //populate city filter
    function populateInstitutionCitySelect() 
    {
@@ -157,7 +163,7 @@
        }
    }
    
-   
+   /************ Get the programs each institution has ************/
    getPrograms();
    //Retrieves from the server and puts everything in the program list array
    function getPrograms() 
@@ -170,7 +176,7 @@
        {
            if ( xhr.status === 200 && xhr.readyState == 4)
            {
-   //                console.log( xhr.responseText );
+                   console.log( xhr.responseText );
                programList = JSON.parse( xhr.responseText );
                 //populateDegrees();
            }
@@ -181,8 +187,33 @@
        };
        xhr.send( '' );
    }
-   
-   
+    
+    /********************* Get the institution type **************************/
+    
+    getInstitutionTypes();
+    function getInstitutionTypes()
+    {
+        let xhr = new XMLHttpRequest();
+        xhr.open( 'POST', '/institutionTypes' );
+        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        xhr.onload = function ()
+            {
+                if ( xhr.status === 200 && xhr.readyState == 4)
+                    {            
+                        //console.log( xhr.responseText );
+                        institutionType = JSON.parse( xhr.responseText );
+                        //populateDegrees();
+                    }
+                else
+                    {
+                        console.log( `Unable to retrieve Institution Type list.  Server returned status: ${xhr.status}` );
+                    }
+            };
+       xhr.send( '' );
+    }
+    
+     /********************** Remove Institutions From Select ********************/
+    
    //clear institution list to prepare for population of filtered institutions
    function clearInstitutions(){
    
@@ -193,7 +224,7 @@
    }
    
    
-   //Filter by the location
+   /******************* Filter by the location *********************/
    function locationFilter(){
        document.getElementById("StateF").innerHTML = "";
        document.getElementById("CityF").innerHTML = "";
@@ -310,7 +341,7 @@
             }
     }
    
-   /****************************************************/
+   /********************* Degrees ****************************/
    
    function filterDegrees()
    {
@@ -356,7 +387,7 @@
    }
    
    
-   /****************************************************/
+   /************************ Search Name ****************************/
    
    function filterByName()
    {
@@ -381,6 +412,7 @@
        for(var i=0; i<institutions.length; i++)
            {
                let temp = institutions[i].name;
+               console.log(institutions[i].type);
                let tempUpper = temp.toUpperCase();
                if(tempUpper.includes(nameInput))
                    {
@@ -663,19 +695,20 @@
                <td>Institution Type:</td>
                <td>
                   <select id="InstitutionType" name="InstitutionType" style="width:100%" onclick="filterByInstitutionType()">
-                     <!-- <option selected>Select Institution Type</option> -->
+                     <!-- <option selected>Select Institution Type</option> 
                      <option>Two Year Degree Granting Institution</option>
                      <option>Two and Four Years Degree Granting Institutions</option>
                      <option>Under Graduate Four Years Degree Granting College</option>
                      <option>Under Graduate Four Year Degree Granting University</option>
                      <option>Graduate Degree Granting College</option>
                      <option>Graduate Degree Granting University</option>
+-->
                   </select>
                </td>
             </tr>
             <tr>
                <td></td>
-               <td><input type="submit" value="Apply Filter" name="InstitutionTypeButton"></td>
+               <td><input type="submit" value="Apply Filter" name="InstitutionTypeButton" onclick = "filterByInstitutionType()"></td>
             </tr>
          </table>
       </div>
