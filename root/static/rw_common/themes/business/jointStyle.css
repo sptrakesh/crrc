@@ -284,27 +284,59 @@ float:right;
     margin: 5px;
     width: 250px;
     height: 30px;
+    box-shadow: 0 1px #666;
 }
+
+input[class="addUserInput"]:hover{
+    box-shadow: 5px 3px 18px #888888;
+}
+
 select[class="CmbBox"]{
-    margin: 0px 0px 0px 5px;
+    margin: 5px 5px 5px 5px;
     padding: 0px;
     text-align: center;
-    width: 200px;
-    border-radius: 5px;
+    width: 250px;
+    border-radius: 2px;
     font-size: 14pt;
-    border-width:1px;
-    border-color: black;
-    margin: 2px;
+    border:1px solid black;
+    box-shadow: 0 1px #666;
+}
+
+select[class="CmbBox"]:hover{
+    box-shadow: 5px 3px 18px #888888;
 }
 
 input[class="commonBtn"], button[class="commonBtn"]{
-
+    display: inline-block;
+    padding: 5px;
     font-size: 15px;
-    border: 1px solid black;
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    outline: none;
+    color:black;
+    background-color: #eeeeee;
+    border: 0px solid black;
     border-radius: 5px;
     width: 120px;
     height: 30px;
     margin: 3px;
+    box-shadow: 0 3px #999;
+}
+
+input[class="commonBtn"]:hover, button[class="commonBtn"]:hover{
+    background-color: #f2f2f2;
+    color: black;
+    border: 1px solid gray;
+    font-weight: bold;
+}
+
+input[class="commonBtn"]:active, button[class="commonBtn"]:active{
+    background-color: ;
+    box-shadow: 0 1px #666;
+    transform: translateY(4px);
+    border: 1px solid blue;
+
 }
 /*---------------------------------    Start of View User --------------------------------------------------*/
 /* This is div viewUserMultiLineSelect for viewUsers page */
@@ -342,18 +374,6 @@ input[class="commonBtn"], button[class="commonBtn"]{
     float:right;
 }
 
-
-
-.viewUserContainer input[class="findUser"]{
-   	width: 250px;
-	height: 35px;
-    border: 1px black solid;
-	border-radius: 4px;
-	box-sizing: border-box;
-	margin: 5px ;
-    padding: 5px 7px;
-    
-}
 
 .viewUserContainer option{
     font-size: 12pt;
@@ -432,7 +452,7 @@ input[class="commonBtn"], button[class="commonBtn"]{
 
 /* the Left side box*/
 .addUserContainer .addUserForm{
-	width: 550px;
+	width: 400px;
     height: 500px;
     margin: 20px 20px 20px 20px;
     float:left;
@@ -461,14 +481,11 @@ div[class="addProgramContainer"]{
 
 .addProgramContainer div[class="programInfoInAddProgram"]{
     align-content:  right;
-	width: 1130px;
-    height: 300px;
-	background-color: #858fa0;
+	width: 830px;
+    height: 250px;
     padding: 10px;
 	margin-left: auto; margin-right: auto;
-	margin: 20px 5px 20px 20px;
-	border:1px black solid;
-	border-radius: 10px;
+	margin: 20px;
 }
 
 .addProgramContainer h4[class="programInformationHeader"]{
@@ -518,17 +535,6 @@ div[class="addProgramContainer"]{
     width: 400px;
     height: 110px;
 }*/
-
-/* For all drop down box in add program container to  select Institution, CAE designation and Degree*/
-.addProgramContainer select{
-    margin: 0px 0px 0px 5px;
-	padding: 5px;
-    text-align: center;
-    width: 350px;
-    border-radius: 5px;
-    font-size: 13pt;
-    border: 2px solid black; 
-}
 
 
 /* End Career Course Div */

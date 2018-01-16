@@ -208,7 +208,7 @@
     <div style="display:inline-block; float: left; hidden; width: 100px;"></div>
     <div style="display:inline-block; float: right; padding: 10px;">
       <form name="search" method="post" action="/degrees/search">
-      <input type="text" name="text" placeholder="Search by name..."/><input type="submit" value="Find"/>
+      <input type="text" name="text" class="addUserInput" placeholder="Search by name..."/><input class="commonBtn" type="submit" value="Find"/>
       </form>
     </div>
     <div style="clear: both;"></div>
@@ -226,10 +226,10 @@
         <strong>Duration:</strong> {{ degree.duration }}<br/>
         {% endif %}
         {% if user.role.id == globalAdminRole %}
-        <button onclick="displayForm( {{ degree.id }} )">Edit</button>
-        <button onclick="deleteDegree( {{ degree.id }}, '{{ degree.title }}' )">Delete</button>
+        <button class="commonBtn" onclick="displayForm( {{ degree.id }} )">Edit</button>
+        <button class="commonBtn" onclick="deleteDegree( {{ degree.id }}, '{{ degree.title }}' )">Delete</button>
         {% endif %}
-        <button onclick="hideDegree( {{ degree.id }} )">Close</button>
+        <button class="commonBtn" onclick="hideDegree( {{ degree.id }} )">Close</button>
         <br/>
         <q id="dw_{{ degree.id }}" class="warning" style="display: none;"></q>
       </div>
@@ -237,11 +237,11 @@
         <form id="df_{{ degree.id }}" onsubmit="return update( {{ degree.id }}, '{{ degree.title }}' );">
           <input type="hidden" name="id" value="{{ degree.id }}" />
           <label class="label">Title:</label>
-          <input type="text" name="title" value="{{ degree.title }}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
+          <input type="text" class="addUserInput" name="title" value="{{ degree.title }}" required pattern="[^'\x22]+" title="Quotes not allowed"/><br/>
           <label class="label">Duration:</label>
-          <input type="text" name="duration" value="{{ degree.duration }}" /><br/>
-          <input type="submit" value="Save" />
-          <button onclick="hideForm( {{ degree.id }} )">Close</button>
+          <input type="text" class="addUserInput" name="duration" value="{{ degree.duration }}" /><br/>
+          <input class="commonBtn" type="submit" value="Save" />
+          <button class="commonBtn" onclick="hideForm( {{ degree.id }} )">Close</button>
         </form>
       </div>
     </div>
@@ -250,18 +250,18 @@
   <div id="create" style="display:none">
     <form id="createDegree" onsubmit="return createDegree(this);">
       <label class="label">Title:</label>
-      <input type="text" name="title" required pattern="[^'\x22]+" title="Quotes not allowed"/>
+      <input class="addUserInput" type="text" name="title" required pattern="[^'\x22]+" title="Quotes not allowed"/>
       <br/>
       <label class="label">Duration:</label>
-      <input type="text" name="duration" />
+      <input class="addUserInput" type="text" name="duration" />
       <br/>
-      <input type="submit" value="Create"/>
-      <button onclick="hideCreate()">Cancel</button>
+      <input class="commonBtn" type="submit" value="Create"/>
+      <button class="commonBtn" onclick="hideCreate()">Cancel</button>
     </form>
     <q id="createWarning" class="warning" style="display: none;"></q>
   </div>
   {% if user.role.id == globalAdminRole %}
   <br/>
-  <button id="createButton" onclick="displayCreate()">Add Degree</button>
+  <button class="commonBtn" id="createButton" onclick="displayCreate()">Add Degree</button>
   {% endif %}
 </div>
