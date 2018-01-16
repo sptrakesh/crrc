@@ -14,7 +14,6 @@
 <script type="text/javascript">
    var institutions = [];
    var programList = [];
-    var institutionType = [];
    
    /************* Institution Functions **************/
    retrieveInstitutions();
@@ -188,30 +187,6 @@
        xhr.send( '' );
    }
     
-    /********************* Get the institution type **************************/
-    
-    getInstitutionTypes();
-    function getInstitutionTypes()
-    {
-        let xhr = new XMLHttpRequest();
-        xhr.open( 'POST', '/institutionTypes' );
-        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-        xhr.onload = function ()
-            {
-                if ( xhr.status === 200 && xhr.readyState == 4)
-                    {            
-                        //console.log( xhr.responseText );
-                        institutionType = JSON.parse( xhr.responseText );
-                        //populateDegrees();
-                    }
-                else
-                    {
-                        console.log( `Unable to retrieve Institution Type list.  Server returned status: ${xhr.status}` );
-                    }
-            };
-       xhr.send( '' );
-    }
-    
      /********************** Remove Institutions From Select ********************/
     
    //clear institution list to prepare for population of filtered institutions
@@ -286,62 +261,7 @@
        } 
    }
    
-   
-   
-   /************* Institution Type ********************/
-   function populateInstitutionType()
-    {
-        let element = document.getElementById( 'InstitutionType' );
-        let types = [];
-        for (let institution in institutions)
-            {
-                if ( !isEmpty(institution.type) )
-                    {
-                        if (!types.contains(institution.type) ) types.append(institution.type); 
-                    }
-            }
-   
-        for (let type in types)
-            {
-                let option = document.createElement( 'option' );
-                 option.value = type;
-                option.textContent = type;
-                element.appendChild( element );
-            }
-    }
-   
-   function filterByInstitutionType(type)
-    {
-       document.getElementById("StateF").innerHTML = "";
-       document.getElementById("CityF").innerHTML = "";
-       document.getElementById("DegreeF").innerHTML = "";
-       let select = document.getElementById("InstitutionType");
-        let typeId = select.options[select.selectedIndex].value;
-        let typeName = select.options[select.selectedIndex].text;
-        document.getElementById("InstitutionF").innerHTML = "Instiution Type: " + typeName;
-        
-        
-        let select = document.getElementById('institution');
-        var length = select.options.length;
-   
-        for (i = 0; i < length; i++) 
-           {
-               select.options[i] = null;
-           }
-   
-        for (let institution in institutions)
-            {
-                if (institution.type != null && type == institution.type)
-                    {
-                        let option = document.createElement('option');
-                        option.value = institution.id;
-                        option.textContent = institution.name;
-                        select.appendChild( option );
-                    }
-            }
-    }
-   
-   /********************* Degrees ****************************/
+     /********************* Degrees ****************************/
    
    function filterDegrees()
    {
@@ -439,8 +359,8 @@
    <div id="PageTitle">
       <h2 align="center">View Institutions</h2>
    </div>
-   <div style="min-height: 600px; width: 1400px">
-      <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 200px; height: 450px; width:450px">
+   <div style="min-height: 650px; width: 1400px">
+      <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 100px; height: 450px; width:450px">
          <table>
             <tr>
                <h3>Select An Institution</h3>
@@ -448,7 +368,7 @@
             <tr>
                <!-- The list of institutions -->
                <td>
-                  <select name="institution" id="institution" class="institution" size="10" style="width:550px; height:300px">
+                  <select name="institution" id="institution" class="institution" size="10" style="width:620px; height:300px">
                      
                   </select>
                </td>
@@ -461,19 +381,19 @@
                   <table align=center>
                      <tr>
                         <td>
-                           <button onclick="displayInstitutionsPage()" class="commonBtn" style="width: 140px">Select Institution</button>
+                           <button onclick="displayInstitutionsPage()" class="commonBtn" style="width: 150px">Select Institution</button>
                         </td>
                         <td>
                            <form action = "/institutions/create"
                            {% if globalAdminRole == user.role.id %}Create Institution{% endif %}>
-                           <input type="submit" name="addInstitution" value="Add Institution" onclick="" id="addInstitutionButton" class = "commonBtn">
+                           <input type="submit" name="addInstitution" value="Add Institution" onclick="" id="addInstitutionButton" class = "commonBtn" style="width:150px">
                            </form>
                         </td>
                         <td>
-                           <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton" class="commonBtn" style="width:145px">
+                           <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton" class="commonBtn" style="width:150px">
                         </td>
                         <td>
-                           <input type="button" id="unapplyFilter" value="Remove Filters" onclick="removeAllFilters()" class="commonBtn">
+                           <input type="button" id="unapplyFilter" value="Remove Filters" onclick="removeAllFilters()" class="commonBtn" style="width:150px">
                         </td>
                      </tr>
                   </table>
@@ -499,25 +419,8 @@
       </div>
       <!-- The Search Filters -->
       <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 200px 0px 0px; width:350px; height: 450px">
-         <h3>Search By Institution Name</h3>
-         <script>
-            //this script is used to toggle the new prereq info
-            $(document).ready(function()
-                              {
-                $("#AdvancedSearchButton").click(function()
-                                                 {
-                    $("#AdvancedOptionTable").toggle();
-                })
-            
-            
-            })                                   
-         </script>
-         <form name="search" method="post" action="/institutions/search">
-            <input type="text" id= "schoolName" name="schoolName" placeholder="Search by name..." class="addUserInput"/><input type="button" value="Find" onclick="filterByName()" class="commonBtn"/>
-         </form>
-         <br>
-         <!-- Advanced Search Options -->
-         <h3>Advanced Search Options</h3>
+         <h3>Filters</h3>
+          
          <table id="AdvancedOptionTable">
             <!--
                <tr>
@@ -539,8 +442,25 @@
                    </td>
                </tr>
                -->
+             <tr>
+               <th colspan=2 style="align: center"><u>Name</u></th>
+            </tr>
+             <tr>
+                 <td>Institution Name: </td>
+                 
+                 <td align="center">
+                     
+            <input type="text" id= "schoolName" name="schoolName" placeholder="Search by name..." class="addUserInput"/>
+                 </td>
+                 
+             </tr>
+             <tr>
+                 <td colspan="2" align="center">
+                 <input type="button" value="Apply Filter" onclick="filterByName()" class="commonBtn"/>
+                     </td>
+             </tr>
             <tr>
-               <th colspan=2 style="align: center"><u>Location</u></th>
+               <th colspan=2 style="align: center"><br><u>Location</u></th>
             </tr>
             <tr>
                <td>
@@ -548,7 +468,7 @@
                   State:
                </td>
                <td>
-                  <select name="state" id="state" style="width:100%" onchange="populateInstitutionCitySelect()" class="CmbBox">
+                  <select name="state" id="state" style="width:300px" onchange="populateInstitutionCitySelect()" class="CmbBox">
                      <!-- <option selected value="-1">Select State</option> -->
                   </select>
                   <!-- populate state list -->
@@ -614,7 +534,7 @@
                   City (Optional):
                </td>
                <td>
-                  <select id="city" name="city" style="width: 100%" class="CmbBox">
+                  <select id="city" name="city" style="width: 300px" class="CmbBox">
                      <!-- <option selected value="-1">Select City</option> -->
                   </select>
                   <script>
@@ -634,8 +554,7 @@
                </td>
             </tr>
             <tr>
-               <td></td>
-               <td><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()" class="commonBtn"><br><br></td>
+               <td colspan="2"align="center"><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()" class="commonBtn"/><br><br></td>
             </tr>
             <tr>
                <th colspan=2 style="align: center"><u>Degree Type</u></th>
@@ -645,7 +564,7 @@
                   Degree Type:
                </td>
                <td>
-                  <select name="DegreeType" id="DegreeType" style="width:100%" class="CmbBox">
+                  <select name="DegreeType" id="DegreeType" style="width:300px" class="CmbBox">
                   </select>
                   <!-- populate the degree list -->     
                   <script>
@@ -682,8 +601,7 @@
                </td>
             </tr>
             <tr>
-               <td></td>
-               <td>
+               <td colspan="2" align="center">
                   <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton" onclick="filterDegrees()" class="commonBtn"><br><br>
                </td>
             </tr>
@@ -693,7 +611,7 @@
             <tr>
                <td>Institution Type:</td>
                <td>
-                  <select id="InstitutionType" name="InstitutionType" style="width:100%" onclick="filterByInstitutionType()" class="CmbBox">
+                  <select id="InstitutionType" name="InstitutionType" style="width:300px" onclick="" class="CmbBox">
                      <!-- <option selected>Select Institution Type</option> 
                      <option>Two Year Degree Granting Institution</option>
                      <option>Two and Four Years Degree Granting Institutions</option>
@@ -706,8 +624,7 @@
                </td>
             </tr>
             <tr>
-               <td></td>
-               <td><input type="submit" value="Apply Filter" name="InstitutionTypeButton" onclick = "filterByInstitutionType()" class="commonBtn"></td>
+               <td colspan="2" align="center"><input type="submit" value="Apply Filter" name="InstitutionTypeButton" onclick = "filterByInstitutionType()" class="commonBtn"></td>
             </tr>
          </table>
       </div>
@@ -718,6 +635,56 @@
 <div id="clear"></div>
 <!-- end institutions container -->
 <script>
+    
+    /***********************************************************/
+    var ITypeList = [];
+    getInstitutionTypes();
+    function getInstitutionTypes()
+    {
+        let types = [];
+        let xhr = new XMLHttpRequest();
+        xhr.open( 'POST', '/institutionTypes' );
+        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        xhr.onload = function ()
+            {
+                if ( xhr.status === 200 && xhr.readyState == 4)
+                    {            
+                        //console.log( xhr.responseText );
+                        ITypeList = JSON.parse( xhr.responseText );
+                        console.log(ITypeList);
+                        populateITypes();
+                    }
+                else
+                    {
+                        console.log( `Unable to retrieve Institution Type list.  Server returned status: ${xhr.status}` );
+                    }
+            };
+       xhr.send( '' );
+    }
+    
+    function populateITypes(){
+                     
+                         let element = document.getElementById('InstitutionType');
+                     
+                         let optionDefault = document.createElement( 'option' );
+                         optionDefault.value = -1;
+                         //optionDefault.textContent = "Select Degree";
+                         element.appendChild(optionDefault); 
+
+                         for (var i = 0; i < ITypeList.length; ++i){
+                           
+                            //console.log(ITypeList.id);
+                             let option = document.createElement( 'option' );
+                             option.value = ITypeList[i].id;
+                             option.textContent = ITypeList[i].name;  
+                             element.appendChild( option );           
+                         }
+                     } 
+    
+    
+   /***********************************************************/ 
+    
+    
    //Filter by the location
    function programFilter(){
       //let selectProgram = document.getElementById('DegreeType');
