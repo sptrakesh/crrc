@@ -360,7 +360,7 @@
       <h2 align="center">View Institutions</h2>
    </div>
    <div style="min-height: 650px; width: 1400px">
-      <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 200px; height: 450px; width:450px">
+      <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 100px; height: 450px; width:450px">
          <table>
             <tr>
                <h3>Select An Institution</h3>
@@ -368,7 +368,7 @@
             <tr>
                <!-- The list of institutions -->
                <td>
-                  <select name="institution" id="institution" class="institution" size="10" style="width:550px; height:300px">
+                  <select name="institution" id="institution" class="institution" size="10" style="width:620px; height:300px">
                      
                   </select>
                </td>
@@ -381,19 +381,19 @@
                   <table align=center>
                      <tr>
                         <td>
-                           <button onclick="displayInstitutionsPage()" class="commonBtn" style="width: 140px">Select Institution</button>
+                           <button onclick="displayInstitutionsPage()" class="commonBtn" style="width: 150px">Select Institution</button>
                         </td>
                         <td>
                            <form action = "/institutions/create"
                            {% if globalAdminRole == user.role.id %}Create Institution{% endif %}>
-                           <input type="submit" name="addInstitution" value="Add Institution" onclick="" id="addInstitutionButton" class = "commonBtn">
+                           <input type="submit" name="addInstitution" value="Add Institution" onclick="" id="addInstitutionButton" class = "commonBtn" style="width:150px">
                            </form>
                         </td>
                         <td>
-                           <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton" class="commonBtn" style="width:145px">
+                           <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton" class="commonBtn" style="width:150px">
                         </td>
                         <td>
-                           <input type="button" id="unapplyFilter" value="Remove Filters" onclick="removeAllFilters()" class="commonBtn">
+                           <input type="button" id="unapplyFilter" value="Remove Filters" onclick="removeAllFilters()" class="commonBtn" style="width:150px">
                         </td>
                      </tr>
                   </table>
