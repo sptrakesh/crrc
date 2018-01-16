@@ -572,7 +572,7 @@
                <h4>View User</h4>
             </div> <!--End of Title Header </div-->
             <!--Start of div view Users Multiline Select -->
-           <div style="margin-left: auto; margin-right: auto; width: 1000px;">
+           <div style="margin-left: auto; margin-right: auto; width: 1100px;">
 
             <div class="viewUsersMultilineSelect">
              <q id="displayStatus">  {% if searchText %} Search results for ({{ searchText }}) {% endif %} </q><br>
@@ -594,7 +594,7 @@
             <div class="filterByInViewUsers" align="right">
                <h2 style="margin: 0px; " align="center"> Filter By</h2>
 
-               <fieldset>
+               <div style="margin: 20px 5px;">
                   
                         Institute:
                       <select class="CmbBox" name="institute" id="institution" style="width: 300px;">
@@ -602,8 +602,8 @@
                       </select>
                   
                    <button class="commonBtn" onclick="instituteFilter()">Apply Filter</button>
-               </fieldset>
-               <fieldset>
+               </div>
+               <div style="margin: 20px 5px;">
                  Filter By State: 
                   <select class="CmbBox" id="InstitutionStateFilter" onchange="populateCity()">
                      <option value="-1" style="display: none"> Select State </option>
@@ -613,17 +613,17 @@
                      <option value="-1" style="display: none"> Select City </option>
                   </select>
                    <div style="clear:both;"></div>
-                  <button class="commonBtn" style="float: right;" onclick="locationFilter()"> Apply Filter </button> 
-               </fieldset>
-               <fieldset>
+                  <button class="commonBtn" onclick="locationFilter()"> Apply Filter </button> 
+               </div>
+              
+               <div style="margin: 20px 5px;">
                    Role:
                   <select id="role"  class="CmbBox"  {% if object.user %}{% else %}{% endif %}>
                       <option value="-1" style="font-size: 16px;">Select Role</option>
-                      
                     </select><br>
                    <button class="commonBtn" onclick="roleFilter()">Apply Filter</button>
-               </fieldset>
-               <fieldset>
+               </div>
+               <div style="margin: 20px 5px;">
                         User Name:
                         <input type="text" class="findUser" id="contactName" placeholder="Search by name">
                         <br>
@@ -634,7 +634,7 @@
 
                        <!--input type="submit" class="commonBtn"  value="Find"/-->
                  <!--/form-->
-               </fieldset>
+               </div>
             </div> <!--End of div filterBy -->
            </div>
          </div><!--viewUserContainer-->

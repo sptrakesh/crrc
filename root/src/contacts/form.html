@@ -122,22 +122,22 @@
     {% else %}
     <h2>Create Contact</h2>
     {% endif %}
-    <div style="margin-left: auto; margin-right: auto; width: 1000px; min-height: 500px;">
+    <div style="margin-left: auto; margin-right: auto; width: 1050px; min-height: 500px;">
     <div class="addUserForm" align="right"> 
     <label class="label">Full Name:</label>
-    <input name="name" class="addUserInput" id="name" type="text" size="30" width="100" required="required"
+    <input name="name" placeholder="Full Name" class="addUserInput" id="name" type="text" size="30" width="100" required="required"
            {% if object %}value="{{ object.name }}" {% endif %} />
     <br />
     <label class="label">Email (Work):</label>
-    <input name="workEmail" class="addUserInput" id="workEmail" type="email" size="30" width="100"
+    <input name="workEmail" placeholder="someone@institution.edu" class="addUserInput" id="workEmail" type="email" size="30" width="100"
            {% if object %}value="{{ object.workEmail }}" {% endif %} />
     <br />
     <label class="label">Telephone (Work):</label>
-    <input name="workPhone" class="addUserInput" id="workPhone" type="tel" size="30" width="100"
+    <input name="workPhone" placeholder="workPhone" class="addUserInput" id="workPhone" type="tel" size="30" width="100"
            {% if object %}value="{{ object.workPhone }}" {% endif %} />
     <br />
     <label class="label">Telephone (Other):</label>
-    <input name="otherPhone" class="addUserInput" id="otherPhone" type="tel" size="30" width="100"
+    <input name="otherPhone" placeholder="otherPhone" class="addUserInput" id="otherPhone" type="tel" size="30" width="100"
            {% if object %}value="{{ object.otherPhone }}" {% endif %} />
     <br />
     <label class="label">Link: </label>
