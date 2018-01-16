@@ -145,11 +145,11 @@
                 {% if globalAdminRole == user.role.id or institutionAdminRole == user.role.id %}
     {% if globalAdminRole == user.role.id or userInstitution.id == object.id %}
     <form id="details" method="post" action="/institutions/id/{{ object.id }}/update" style="display: inline-block;">
-      <input type="submit" value="Edit" />
+      <input type="submit" value="Edit" class="commonBtn"/>
     </form>
     <form action="/institutions/remove" method="post" style="display: inline-block;">
       <input type="hidden" name="id" value="{{ object.id }}" />
-      <input type="submit" value="Delete" />
+      <input type="submit" value="Delete" class="commonBtn"/>
     </form>
     {% endif %}
   {% endif %}

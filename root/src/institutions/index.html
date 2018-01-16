@@ -448,9 +448,8 @@
             <tr>
                <!-- The list of institutions -->
                <td>
-                  <select name="institution" id="institution" class="institution" size="10" style="width:500px; height:300px">
-                     <optgroup style="font-size:16px">
-                     </optgroup>
+                  <select name="institution" id="institution" class="institution" size="10" style="width:550px; height:300px">
+                     
                   </select>
                </td>
             </tr>
@@ -462,19 +461,19 @@
                   <table align=center>
                      <tr>
                         <td>
-                           <button onclick="displayInstitutionsPage()">Select Institution</button>
+                           <button onclick="displayInstitutionsPage()" class="commonBtn" style="width: 140px">Select Institution</button>
                         </td>
                         <td>
                            <form action = "/institutions/create"
                            {% if globalAdminRole == user.role.id %}Create Institution{% endif %}>
-                           <input type="submit" name="addInstitution" value="Add Institution" onclick="" id="addInstitutionButton">
+                           <input type="submit" name="addInstitution" value="Add Institution" onclick="" id="addInstitutionButton" class = "commonBtn">
                            </form>
                         </td>
                         <td>
-                           <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton">
+                           <input type="submit" name="removeInstitution" value="Remove Institution" onclick="removeInsitution()" id="removeInstitutionButton" class="commonBtn" style="width:145px">
                         </td>
                         <td>
-                           <input type="button" id="unapplyFilter" value="Remove Filters" onclick="removeAllFilters()">
+                           <input type="button" id="unapplyFilter" value="Remove Filters" onclick="removeAllFilters()" class="commonBtn">
                         </td>
                      </tr>
                   </table>
@@ -514,7 +513,7 @@
             })                                   
          </script>
          <form name="search" method="post" action="/institutions/search">
-            <input type="text" id= "schoolName" name="schoolName" placeholder="Search by name..."/><input type="button" value="Find" onclick="filterByName()"/>
+            <input type="text" id= "schoolName" name="schoolName" placeholder="Search by name..." class="addUserInput"/><input type="button" value="Find" onclick="filterByName()" class="commonBtn"/>
          </form>
          <br>
          <!-- Advanced Search Options -->
@@ -549,7 +548,7 @@
                   State:
                </td>
                <td>
-                  <select name="state" id="state" style="width:100%" onchange="populateInstitutionCitySelect()">
+                  <select name="state" id="state" style="width:100%" onchange="populateInstitutionCitySelect()" class="CmbBox">
                      <!-- <option selected value="-1">Select State</option> -->
                   </select>
                   <!-- populate state list -->
@@ -615,7 +614,7 @@
                   City (Optional):
                </td>
                <td>
-                  <select id="city" name="city" style="width: 100%">
+                  <select id="city" name="city" style="width: 100%" class="CmbBox">
                      <!-- <option selected value="-1">Select City</option> -->
                   </select>
                   <script>
@@ -636,7 +635,7 @@
             </tr>
             <tr>
                <td></td>
-               <td><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()"><br><br></td>
+               <td><input type="submit" value="Apply Filter" name="searchLocationButton" id="searchLocationButton" onclick="locationFilter()" class="commonBtn"><br><br></td>
             </tr>
             <tr>
                <th colspan=2 style="align: center"><u>Degree Type</u></th>
@@ -646,7 +645,7 @@
                   Degree Type:
                </td>
                <td>
-                  <select name="DegreeType" id="DegreeType" style="width:100%">
+                  <select name="DegreeType" id="DegreeType" style="width:100%" class="CmbBox">
                   </select>
                   <!-- populate the degree list -->     
                   <script>
@@ -685,7 +684,7 @@
             <tr>
                <td></td>
                <td>
-                  <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton" onclick="filterDegrees()"><br><br>
+                  <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton" onclick="filterDegrees()" class="commonBtn"><br><br>
                </td>
             </tr>
             <tr>
@@ -694,7 +693,7 @@
             <tr>
                <td>Institution Type:</td>
                <td>
-                  <select id="InstitutionType" name="InstitutionType" style="width:100%" onclick="filterByInstitutionType()">
+                  <select id="InstitutionType" name="InstitutionType" style="width:100%" onclick="filterByInstitutionType()" class="CmbBox">
                      <!-- <option selected>Select Institution Type</option> 
                      <option>Two Year Degree Granting Institution</option>
                      <option>Two and Four Years Degree Granting Institutions</option>
@@ -708,7 +707,7 @@
             </tr>
             <tr>
                <td></td>
-               <td><input type="submit" value="Apply Filter" name="InstitutionTypeButton" onclick = "filterByInstitutionType()"></td>
+               <td><input type="submit" value="Apply Filter" name="InstitutionTypeButton" onclick = "filterByInstitutionType()" class="commonBtn"></td>
             </tr>
          </table>
       </div>
