@@ -1,4 +1,5 @@
 <script type="text/javascript">
+
     let programs = {{programs}};
     var programList = [];           // To hold the array of objects that contain list of program from JSON.
     var institutionList = [];       // To hold the array of objects that contain list of institutions from JSON.
@@ -22,7 +23,7 @@
                
                // The designations are currently not specified in the database so kept unpopulated.
                
-               // populateDesignations();         //This function will populate the list of program designation to filter from.
+                populateDesignations();         //This function will populate the list of program designation to filter from.
               }
               else
               {
@@ -39,13 +40,13 @@
                 {
                     let option = document.createElement( 'option' );
                     option.value = programList[i].id;
-                    option.textContent = programList[i].title + " - "  + programList[i].institution.name ;
+                    option.textContent = programList[i].title ;
                     element.appendChild( option );
                 }
         }
        
     retrieveInstitutions();         // Calling the function below.
-    
+
     function retrieveInstitutions(){            //Function prototype to get list of all institutions from server as form of JSON and put into institutionList variable.
          let xhr = new XMLHttpRequest();
          xhr.open( 'POST', '/institutions' );
@@ -92,7 +93,7 @@
             }
        }
       
-    
+   
     
     function populateInstitutionStateSelect(){      //This function is called from retrieveInstitutions(). This will populate states of Institution for location filter.
         let element = document.getElementById('InstitutionStateFilter');
@@ -122,8 +123,7 @@
             }
     }
     
-    
-    
+         
     function populateCity(){      //This function is called by html event onChange. This will execute only when user selects a state.
         clearSelectCities();
         var count = 0;
@@ -201,8 +201,8 @@
         var uniquesName = [];
         for (var i = 0; i < programList.length; ++i){
           if(programList[i].designation == undefined){
-            id[i] = programList[0].designation.id;
-               names[i] = programList[0].designation.title ;
+              id[i] = -2;
+               names[i] = "undefined" ;
           }
           else{
                id[i] = programList[i].designation.id;
@@ -277,8 +277,10 @@
     xhr.send( `id=${programId}` );
     return false;
   }
+
     
-    /* End of Rakes Code */
+    
+    /* End of Rakesh's Code */
     
     function removeProgram(){       //This function will delete the selected program from the server. 
         let select = document.getElementById('selectProgram');
@@ -322,6 +324,7 @@
              }
         }
     }
+
         
         function displayProgramDetails(){       // This function will redirect to selected program details page.
         let select = document.getElementById('selectProgram');
@@ -426,7 +429,7 @@
         }
       
     }
-    
+
    function locationFilter(){       
         //The location filter works for both state and city. If the user has not selected a city, It will show all the programs from Institution in selected state. If the user has city selected it will show the list of programs in selected city.
        
@@ -496,6 +499,7 @@
              }
         }
     }
+
     function degreeFilter(){        
         var count = 0;
         let select = document.getElementById('DegreeListFilter');
@@ -509,7 +513,10 @@
         $("#InstitutionCityFilter").val("-1");
         $("#DesignationsFilter").val("-1");
         removeAllPrograms();
+
+    
         for (var i = 0; i < programList.length; ++i){
+
               if(programList[i].degree == undefined){
                   //console.log(programList[i].degree + " is not defined. User error");
               }
@@ -533,6 +540,7 @@
           }
                
         
+        
         //removeAllInstitutions();
         }
         else{       // If user has not selected a degree to filter.
@@ -540,7 +548,6 @@
         }
     }
     
-    //work on this
     function designationFilter(){
         var count = 0;
         let select = document.getElementById('DesignationsFilter');
@@ -604,6 +611,7 @@
                 
             }
     }
+
     function removeAllFilters(){
       removeAllPrograms();
       populateProgramSelect();
@@ -614,6 +622,7 @@
       $("#DesignationsFilter").val("-1");
       document.getElementById("displayStatus").innerHTML = ""; 
     }
+    
 </script>
 
 <div style="min-height: 700px; margin-left: auto;margin-right: auto;">
@@ -641,52 +650,53 @@
                <option value="-1" style="display: none" selected></option>
                </select>
                <br>
-                <button onclick="displayProgramDetails()" class="commonBtn2InViewPrograms" >View Program Details</button>
-                <a href="/programs/create"><button class="commonBtn2InViewPrograms" >Add Program</button></a>
-                <button onclick="removeProgram()" class="commonBtn2InViewPrograms" >Remove Program</button>
+                <button onclick="displayProgramDetails()" class="commonBtn" >View Details</button>
+                <a href="/programs/create"><button class="commonBtn" >Add Program</button></a>
+                <button onclick="removeProgram()" class="commonBtn" style="width: 150px;" >Remove Program</button>
+                <button  onclick="removeAllFilters()" class="commonBtn">No Filters</button>
                <br>
               
             </div> <!--End of div viewProgramsMultilineSelect -->
             <div class="filterByInViewPrograms" align="right">
-               <h2 style="width: 350px;float: left;margin: 0px;" align="center"> Filter By </h2> <button  onclick="removeAllFilters()" class="commonBtn2InViewPrograms">No Filters</button>
-               <fieldset>
-               Program Name: <input type="text" id="programName" class="commonTxtBoxCSS" placeholder="Search by name..."/><button onclick="filterByName()" class="commonBtn" style="width: 90px;height: 30px">Find</button> 
+               <h2 style="margin: 3px 5px;" align="center"> Filter By </h2> 
+               <fieldset style="margin: 3px 5px;">
+               Program Name: <input type="text" id="programName" class="addUserInput" placeholder="Search by name..."/><button onclick="filterByName()" class="commonBtn" style="width: 90px;height: 30px">Find</button> 
                  <!--form name="search" method="post" action="/programs/search">
                   Program Name: <input type="text" name="text" class="commonTxtBoxCSS" placeholder="Search by name..."/><input class="commonBtn3InViewPrograms" type="submit" value="Find"/>
                   </form-->
                </fieldset>
-               <fieldset>
+               <fieldset style="margin: 3px 5px;">
                    Institution:
-                  <select id="InstitutionListFilter">
+                  <select id="InstitutionListFilter" class="CmbBox">
                      <option value="-1" style="display: none"> Select Institute </option>
                   </select>
-                 <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="instituteFilter()">  
+                 <input type="button" value="Apply Filter" class="commonBtn" onclick="instituteFilter()">  
                 </fieldset>
-                <fieldset>
+                <fieldset style="margin: 3px 5px;">
                   Filter By State: 
-                  <select class="commonCmbBoxCSS" id="InstitutionStateFilter" onchange="populateCity()" style="margin: 0px 100px 0px 0px">
+                  <select class="CmbBox" id="InstitutionStateFilter" onchange="populateCity()" style="margin: 0px 100px 0px 0px">
                      <option value="-1" style="display: none"> Select State </option>
                   </select><br>
                     Filter By City:
-                  <select class="commonCmbBoxCSS" id="InstitutionCityFilter">
+                  <select class="CmbBox" id="InstitutionCityFilter">
                      <option value="-1" style="display: none"> Select City </option>
                   </select>
-                  <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="locationFilter()">  
+                  <input type="button" value="Apply Filter" class="commonBtn" onclick="locationFilter()">  
                </fieldset>
-               <fieldset>
+               <fieldset style="margin: 3px 5px;">
                    Degree Type:
-                  <select  id = "DegreeListFilter">
+                  <select  id = "DegreeListFilter" class="CmbBox">
                      <option value="-1" style="display: none"> Select Degree</option>
                   </select>
-                  <input type="button" value="Apply Filter" onclick="degreeFilter()" class="commonBtn3InViewPrograms"> 
+                  <input type="button" value="Apply Filter" onclick="degreeFilter()" class="commonBtn"> 
                </fieldset>
-               <fieldset>
+               <fieldset style="margin: 3px 5px;">
                
                  CAE Designation:
-                  <select  id ="DesignationsFilter" style=" width: 280px;">
+                  <select  id ="DesignationsFilter" class="CmbBox" style=" width: 280px;">
                      <option value="-1" style="display: none"> Select Designations</option>
                    </select><br>
-                  <input type="button" value="Apply Filter" class="commonBtn3InViewPrograms" onclick="designationFilter()"> 
+                  <input type="button" value="Apply Filter" class="commonBtn" onclick="designationFilter()"> 
                </fieldset>
 
                <br>

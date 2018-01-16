@@ -29,7 +29,7 @@
             <tr>
                <td align="right">Program Title:</td>
                <td>
-                  <input name="title" id="title" placeholder="Program Title"   class="TxtBox" type="text" size="35" width="50" required="required"
+                  <input name="title" id="title" placeholder="Program Title"   class="addUserInput" type="text" size="35" width="50" required="required"
                   {% if object %}value="{{ object.title }}"{% endif %} /> 
                </td>
                <td align="right">Institution:</td>
@@ -48,7 +48,7 @@
             <tr>
                <td align="right">Total Credit Hours:</td>
                <td>
-                  <input name="credits" id="credits" class="TxtBox" type="text" size="35" width="250" placeholder="Total Credit Hours"
+                  <input name="credits" id="credits" class="addUserInput" type="text" size="35" width="250" placeholder="Total Credit Hours"
                   {% if object %}value="{{ object.credits }}"{% endif %} />
                </td>
                <td> CAE Designation:</td>
@@ -67,7 +67,7 @@
             <tr>
                <td align="right">Curriculam Code:</td>
                <td>
-                  <input name="curriculumCode" id="curriculumCode" type="text" size="35" width="250" class="TxtBox" placeholder="Enter Program Code"
+                  <input name="curriculumCode" id="curriculumCode" type="text" size="35" width="250" class="addUserInput" placeholder="Enter Program Code"
                   {% if object %}value="{{ object.curriculumCode }}"{% endif %} />
                </td>
                <td align="right">Degree:</td>
@@ -90,7 +90,8 @@
             </tr>
             <tr>
                <td colspan="5">
-                  <input name="url" id="url" type="text" placeholder="Program URL" class="TxtBox3" size="35" width="250"  {% if object %}value="{{ object.url }}"{% endif %} />
+                  <input name="url" id="url" type="text" placeholder="Program URL" class="addUserInput" size="35" width="250" style="margin: auto; width: 
+                  380px; display: block;" {% if object %}value="{{ object.url }}"{% endif %} />
                </td>
             </tr>
          </table>
@@ -177,7 +178,7 @@
       {% if object %}
       <input type="hidden" name="id" value="{{ object.id }}" />
       {% endif %}
-      <p align="center"><input type="submit" value="Save"  class="btnSave"/>
+      <p align="center"><input type="submit" value="Save"  class="commonBtn"/>
       </p>
       <br/>
       <q id="warning" class="warning" style="display: none;"></q>

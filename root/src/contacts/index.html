@@ -583,15 +583,16 @@
                    <option value="{{ contact.id }}" {% if contact.id == object.contact.id %}selected="selected"{% endif %}>{{contact.name}} </option> {% endfor %}
                </select>
                <br><br>
-                <button onclick = "displayContactDetails()" >View User Details</button>
-               <a href="/contacts/create"><input type="button" name="addUser" value="Add User" id="addUserButton"></a>
-                <button onclick="removeUser()">Remove User</button>
+                <button class="commonBtn" onclick = "displayContactDetails()" >View Details</button>
+               <a href="/contacts/create"><input type="button" name="addUser" value="Add User" class="commonBtn" id="addUserButton"></a>
+                <button class="commonBtn" onclick="removeUser()">Remove User</button>
+                <button class="commonBtn" onclick="removeAllFilters()">No Filters</button>
                <br>
             </div> <!--End of div viewUsersMultilineSelect -->
            
             <!--Start of div filterBy -->
             <div class="filterByInViewUsers" align="right">
-               <h2 style="margin: 0px;width: 350px; float: left;" align="center"> Filter By</h2> <button  onclick="removeAllFilters()">No Filters</button>
+               <h2 style="margin: 0px; " align="center"> Filter By</h2>
 
                <fieldset>
                   
@@ -608,10 +609,11 @@
                      <option value="-1" style="display: none"> Select State </option>
                   </select><br>
                     Filter By City:
-                  <select class="CmbBox" id="InstitutionCityFilter">
+                  <select class="CmbBox" id="InstitutionCityFilter" >
                      <option value="-1" style="display: none"> Select City </option>
                   </select>
-                  <button class="commonBtn" onclick="locationFilter()"> Apply Filter </button> 
+                   <div style="clear:both;"></div>
+                  <button class="commonBtn" style="float: right;" onclick="locationFilter()"> Apply Filter </button> 
                </fieldset>
                <fieldset>
                    Role:
