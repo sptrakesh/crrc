@@ -456,10 +456,10 @@
         removeAllUsers();
          for (var i = 0; i < contactList.length; ++i){
             if(contactList[i].user == undefined){
-                console.log("Contact information is insufficeint at id = " + contactList[i].id + " for " + contactList[i].name);
+                //console.log("Contact information is insufficeint at id = " + contactList[i].id + " for " + contactList[i].name);
             }
             else if(contactList[i].user.role == undefined){
-                console.log("Contact information is insufficeint at id = " + contactList[i].id + " for " + contactList[i].name); 
+                //console.log("Contact information is insufficeint at id = " + contactList[i].id + " for " + contactList[i].name); 
             }
             else if (contactList[i].user.role.role  == role)   //If the institution Name from select box is same as iName at i.
                 {
@@ -469,10 +469,10 @@
                       option.textContent =  contactList[i].name +" - "  + contactList[i].institution.name;
                       element.appendChild( option );
                       ++count;
-                      document.getElementById("displayStatus").innerHTML = "Found " + count + " Users for " + role;
+                      document.getElementById("displayStatus").innerHTML = "Role : " + role + "<br>" + "Found " + count + " Users for " + role;
                 }
                 else if(count == 0){
-                      document.getElementById("displayStatus").innerHTML = "Found " + count + " Users for " + role;   
+                      document.getElementById("displayStatus").innerHTML = "Role : " + role + "<br>" + "Found " + count + " Users for " + role;   
                 }
         }
       }
@@ -575,7 +575,6 @@
            <div style="margin-left: auto; margin-right: auto; width: 1100px;">
 
             <div class="viewUsersMultilineSelect">
-             <q id="displayStatus">  {% if searchText %} Search results for ({{ searchText }}) {% endif %} </q><br>
                <select multiple id="lstBoxselectUser_ViewUser" style="font-size: 16px;">
                    <option value="-1" selected style="display: none;"></option>
                    <script type="text/javascript">//displayAll();</script>
@@ -588,6 +587,8 @@
                 <button class="commonBtn" onclick="removeUser()">Remove User</button>
                 <button class="commonBtn" onclick="removeAllFilters()">No Filters</button>
                <br>
+               <h4 align="center"><u>Filters Applied</u></h4>
+                <p id="displayStatus">  {% if searchText %} Search results for ({{ searchText }}) {% endif %} </p><br>
             </div> <!--End of div viewUsersMultilineSelect -->
            
             <!--Start of div filterBy -->
