@@ -342,22 +342,22 @@
         }
 
     function filterByName()
-    {
+    {  $("#InstitutionListFilter").val("-1");
        $("#InstitutionStateFilter").val("-1");
        $("#InstitutionCityFilter").val("-1");
        $("#DegreeListFilter").val("-1");
        $("#DesignationsFilter").val("-1");
-      
+      var count = 0;
       
        let select = document.getElementById('programName');//the name searched
-       console.log(select.value);
+       
        if(select.value != ""){
       
-       document.getElementById("displayStatus").innerHTML = "Institute : " +  select.value;//tell the user what filter was applied
+       //document.getElementById("displayStatus").innerHTML = "Institute : " +  select.value;//tell the user what filter was applied
        //document.getElementById("NameF").innerHTML = "Institution Name: " + select.value;//tell the user what filter was applied
        let nameInput = select.value.toUpperCase(); //put the name in all caps to ignore case sensitivity
        //nameInput = nameInput.toUpperCase();
-       console.log(nameInput);
+      
        //let institutionDisplayName = "";//how the institution name appears in the choices
        //let newID = null;//have to update the institution id for the correct institution to be pulled when selected
     
@@ -368,11 +368,11 @@
            {
                let temp = programList[i].title;
                let tempUpper = temp.toUpperCase();
-               if(tempUpper.includes(nameInput))
+               if(tempUpper.includes(nameInput))    // If found the results
                    {
                        let element = document.getElementById('selectProgram');
                        let option = document.createElement('option');
-                       if(programList[i].institution != null){
+                       if(programList[i].institution != null){    // If the program have a institution.
                            let chosen = programList[i].title + " - " + programList[i].institution.name + " , " + programList[i].institution.city;
                            let chosenID = programList[i].id;
                            option.value = chosenID;
@@ -384,8 +384,12 @@
                            option.value = chosenID;
                            option.textContent = chosen;
                        }
-                       
+                       count++;
+                       document.getElementById("displayStatus").innerHTML ="Institute : " +  select.value + "<br>Found " + count + " Programs for " + select.value;;
                        element.appendChild(option);
+                   }
+                   else{          // If found nothing.
+                      document.getElementById("displayStatus").innerHTML ="Institute : " +  select.value + "<br>Found " + count + " Programs for " + select.value;;
                    }
            }
        
@@ -407,6 +411,7 @@
                   $("#InstitutionCityFilter").val("-1");
                   $("#DegreeListFilter").val("-1");
                   $("#DesignationsFilter").val("-1");
+                  $("#programName").val("");
                  removeAllPrograms();
                  for (var i = 0; i < programList.length; ++i){
                     if (programList[i].institution.name  == institutionName)   //If the institution Name from select box is same as the one in programList.
@@ -417,7 +422,7 @@
                               option.textContent = programList[i].title +" - " + programList[i].institution.name;
                               element.appendChild( option );
                              ++count;
-                            document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + institutionName;
+                            document.getElementById("displayStatus").innerHTML = "Institution : " + institutionName + "<br>Found " + count + " Programs for " + institutionName;
                         }
                      else{
                         //delete programList[i] ;
@@ -464,6 +469,7 @@
                   $("#InstitutionCityFilter").val("-1");
                   $("#DegreeListFilter").val("-1");
                   $("#DesignationsFilter").val("-1");
+                  $("#programName").val("");
                  removeAllPrograms();
                 for(var i = 0; i < programList.length; ++i){
                     if(stateName == programList[i].institution.state){
@@ -473,7 +479,7 @@
                             option.textContent = programList[i].title +" - "  + programList[i].institution.name ;
                             element.appendChild( option );
                             ++count;
-                          document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + stateName;
+                          document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>Found " + count + " Programs for " + stateName;
                     }
                 }
             }
@@ -485,6 +491,7 @@
             $("#InstitutionListFilter").val("-1");
             $("#DegreeListFilter").val("-1");
             $("#DesignationsFilter").val("-1");
+            $("#programName").val("");
              removeAllPrograms();
              for(var i = 0; i < programList.length; ++i){
                   if(cityName == programList[i].institution.city){
@@ -494,7 +501,7 @@
                        option.textContent = programList[i].title +" - "  + programList[i].institution.name;
                        element.appendChild( option );
                        ++count;
-                       document.getElementById("displayStatus").innerHTML = "Found " + count + " Programs for " + cityName;
+                       document.getElementById("displayStatus").innerHTML = "City : " + cityName +"<br>Found " + count + " Programs for " + cityName;
                   }
              }
         }
@@ -512,6 +519,7 @@
         $("#InstitutionStateFilter").val("-1");
         $("#InstitutionCityFilter").val("-1");
         $("#DesignationsFilter").val("-1");
+        $("#programName").val("");
         removeAllPrograms();
 
     
@@ -530,10 +538,10 @@
                       element.appendChild( option );
                        
                         ++count;
-                       document.getElementById("displayStatus").innerHTML = "Found " + count + " record for " + degreeName;
+                       document.getElementById("displayStatus").innerHTML = "Degree : " + degreeName + "<br>Found " + count + " progams for " + degreeName;
                    }
                   else {
-                document.getElementById("displayStatus").innerHTML = "Found " + count + " record for " + degreeName;
+                document.getElementById("displayStatus").innerHTML = "Degree : " + degreeName + "<br>Found " + count + " record for " + degreeName;
                 //delete programList[i] ;
                   }
             }
@@ -559,6 +567,7 @@
         $("#InstitutionStateFilter").val("-1");
         $("#InstitutionCityFilter").val("-1");
         $("#DegreeListFilter").val("-1");
+        $("#programName").val("");
         removeAllPrograms();
         for (var i = 0; i < programList.length; ++i){
                if(programList[i].designation == undefined){
@@ -620,6 +629,7 @@
       $("#InstitutionCityFilter").val("-1");
       $("#DegreeListFilter").val("-1");
       $("#DesignationsFilter").val("-1");
+      $("#programName").val("");
       document.getElementById("displayStatus").innerHTML = ""; 
     }
     
@@ -645,7 +655,7 @@
                <h4>View Programs</h4>
             </div>
             <div class="viewProgramsMultilineSelect">
-                <q id="displayStatus"></q>
+                
                <select multiple id="selectProgram">
                <option value="-1" style="display: none" selected></option>
                </select>
@@ -655,7 +665,7 @@
                 <button onclick="removeProgram()" class="commonBtn" style="width: 150px;" >Remove Program</button>
                 <button  onclick="removeAllFilters()" class="commonBtn">Remove Filters</button>
                <br>
-              
+              <p id="displayStatus"></p>
             </div> <!--End of div viewProgramsMultilineSelect -->
             <div class="filterByInViewPrograms" align="right">
                <h2 style="margin: 3px 5px;" align="center"> Filter By </h2> 
