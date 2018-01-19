@@ -349,7 +349,7 @@
                         option.textContent = cName[i] +" - " + iName[i];
                         element.appendChild( option );
                         ++count;
-                          document.getElementById("displayStatus").innerHTML = "Found " + count + " User for " + institutionName;
+                          document.getElementById("displayStatus").innerHTML = "Institution : " + institutionName + "<br>" +"Found " + count + " User for " + institutionName;
                   }
           }
         }
@@ -381,8 +381,10 @@
                 {
                     if(institutionList[i].state == stateName){
                         for(var j = 0; j<contactList.length;++j){
-                            if( contactList[j].institution.city == institutionList[i].city){
-                                contactList[j].institution.state = stateName;
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = stateName;
+                                }
                             }
                         }
                     }
@@ -393,22 +395,25 @@
                 $("#contactName").val("");
                 removeAllUsers();
                 for(var i = 0; i < contactList.length; ++i){
-                    if(contactList[i].institution == undefined){
-                      document.getElementById("displayStatus").innerHTML = "insufficeint data. exiting the loop.";
-                      break;
-                  }
-                    if(stateName == contactList[i].institution.state){
+                    if(contactList[i].institution != undefined){  //If there are institutions defined for contacts.
+                       
+                       if(stateName == contactList[i].institution.state){   // If the state name matches.
                            let element = document.getElementById('lstBoxselectUser_ViewUser');
                             let option = document.createElement( 'option' );
                              option.value = contactList[i].id;
                             option.textContent = contactList[i].name +" - "  + contactList[i].institution.name;
                             element.appendChild( option );
                             ++count;
-                          document.getElementById("displayStatus").innerHTML = "Found " + count + " User for " + stateName;
+                          document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>" +"Found " + count + " User for " + stateName;
+                      }
+                      else{
+                          document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>" +"Found " + count + " User for " + stateName;
+                      }  
                     }
                     else{
-                          document.getElementById("displayStatus").innerHTML = "Found " + count + " User for " + stateName;
+                       // document.getElementById("displayStatus").innerHTML = "insufficeint data. exiting the loop.";
                     }
+                    
                 }
             }
          
@@ -422,22 +427,24 @@
              removeAllUsers();
              for(var i = 0; i < contactList.length; ++i){
                   
-                  if(contactList[i].institution == undefined){
-                      document.getElementById("displayStatus").innerHTML = "insufficeint data. exiting the loop.";
-                      break;
-                  }
-                  if(cityName == contactList[i].institution.city){
+                  if(contactList[i].institution != undefined){
+                       if(cityName == contactList[i].institution.city){
                        let element = document.getElementById('lstBoxselectUser_ViewUser');
                        let option = document.createElement( 'option' );
                        option.value = contactList[i].id;
                        option.textContent = contactList[i].name +" - "  + contactList[i].institution.name;
                        element.appendChild( option );
                        ++count;
-                       document.getElementById("displayStatus").innerHTML = "Found " + count + " Users for " + cityName;
+                       document.getElementById("displayStatus").innerHTML = "City : " + cityName + "<br>" + "Found " + count + " Users for " + cityName;
+                      }
+                      else{
+                         document.getElementById("displayStatus").innerHTML = "City : " + cityName + "<br>" + "Found " + count + " Users for " + cityName;
+                      }     
                   }
                   else{
-                       document.getElementById("displayStatus").innerHTML = "Found " + count + " Users for " + cityName;
-                  }
+                     // document.getElementById("displayStatus").innerHTML = "insufficeint data. exiting the loop.";
+                  }/*
+                 */
              }
         }
     }
@@ -520,7 +527,7 @@
       
        let select = document.getElementById('contactName');//the name searched
        console.log(select.value);
-       document.getElementById("displayStatus").innerHTML = "results for " + select.value;//tell the user what filter was applied
+       document.getElementById("displayStatus").innerHTML =  "Name : " +  select.value;//tell the user what filter was applied
        //document.getElementById("NameF").innerHTML = "Institution Name: " + select.value;//tell the user what filter was applied
        let nameInput = select.value.toUpperCase(); //put the name in all caps to ignore case sensitivity
        //nameInput = nameInput.toUpperCase();
