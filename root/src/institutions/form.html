@@ -157,7 +157,7 @@
                         <label class="label">Institution Name:</label>
                     </td>
                     <td>
-                        <input name="name" id="name" type="text" size="35" width="50" required="required"
+                        <input name="name" class="addUserInput" id="name" type="text" size="35" width="50" required="required"
                  {% if object %}value="{{ object.name }}" {% endif %} />
                      <q id="nameWarning" class="warning" style="display: none;">Institution with specified name already exists in this city.</q>   
                     </td>
@@ -168,7 +168,7 @@
                         <label class="label">Institution Type:</label>
                     </td>
                     <td>
-                        <select id="InstitutionType" style="width:100%"></select>
+                        <select id="InstitutionType" style="width:250px" class="CmbBox"></select>
                     </td>
                 </tr>
                 
@@ -177,7 +177,7 @@
                         <label class="label">Address:</label>
                     </td>
                     <td>
-                        <input name="address" id="address" type="text" size="35" width="250"
+                        <input name="address" id="address" class="addUserInput" type="text" size="35" width="250"
                  {% if object %}value="{{ object.address }}" {% endif %} />
                     </td>
                 </tr>
@@ -188,7 +188,7 @@
                     </td>
                     
                     <td>
-                        <input name="city" id="city" type="text" size="35" width="100" required
+                        <input name="city" id="city" type="text" size="35" class="addUserInput" width="100" required
                  {% if object %}value="{{ object.city }}" {% endif %} />
                     </td>
                 </tr>
@@ -199,7 +199,7 @@
                     </td>
                     
                     <td>
-                        <select name="state" id="state" style="width:100%"
+                        <select name="state" id="state" style="width:250px" class="CmbBox"
                                 {% if object %}value="{{ object.state }}" {% endif %} >
                         <option value="AL">Alabama (AL)</option>
 	<option value="AK">Alaska (AK)</option>
@@ -261,7 +261,7 @@
                         <label class="label">Postal Code:</label>
                     </td>
                     <td>
-                        <input name="postalCode" id="postalCode" type="text" size="35" width="100"
+                        <input name="postalCode" id="postalCode" type="text" size="35" class="addUserInput" width="100"
                  {% if object %}value="{{ object.postal_code }}" {% endif %} />
                     </td>
                 </tr>
@@ -271,7 +271,7 @@
                        <label class="label">Country:</label> 
                     </td>
                     <td>
-                        <input name="country" id="country" type="text" size="35" width="100" value="{% if object %}{{ object.country }}{% else %}USA{% endif %}" />
+                        <input name="country" id="country" type="text" class="addUserInput" size="35" width="100" value="{% if object %}{{ object.country }}{% else %}USA{% endif %}" />
                     </td>
                 </tr>
                 
@@ -280,7 +280,7 @@
                         <label class="label">URL:</label>
                     </td>
                     <td>
-                        <input name="website" id="website" type="text" size="35"
+                        <input name="website" id="website" type="text" size="35" class="addUserInput"
                  {% if object %}value="{{ object.website }}" {% endif %} />
                     </td>
                 </tr>
