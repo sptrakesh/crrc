@@ -359,8 +359,8 @@
    <div id="PageTitle">
       <h2 align="center">View Institutions</h2>
    </div>
-   <div style="min-height: 650px; width: 1400px">
-      <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 100px; height: 450px; width:450px">
+   <div style="min-height: 650px; width: 1100px">
+      <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 20px; height: 450px; width:450px">
          <table>
              <tr>
                <br><br>
@@ -401,6 +401,7 @@
             </tr>
          </table>
          <h4 align="center"><u>Filters Applied</u></h4>
+          <p id="displayStatus"> </p><br>
          <ul class="WhatFilter" style="background-color: white; list-style-type:none">
             <li id="StateF"></li>
          </ul>
@@ -418,7 +419,7 @@
          </ul>
       </div>
       <!-- The Search Filters -->
-      <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 200px 0px 0px; width:350px; height: 450px">
+      <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 20px 0px 0px; width:350px; height: 450px">
          <h2>Filter By</h2>
           
          <table id="AdvancedOptionTable">
@@ -462,6 +463,332 @@
             <tr>
                <th colspan=2 style="align: center"><br><u>Location</u></th>
             </tr>
+            <tr>
+              <td>  Filter By Region:</td>
+              <td><select class="CmbBox" id="InstitutionRegionFilter" style="width:300px" >
+                    <option value="-1"> Select Region </option>
+                    <option value="1">Western Region</option>
+                    <option value="2">North Central Region</option>
+                    <option value="3">South Cental Region</option>
+                    <option value="4">Central Eastern Region</option>
+                    <option value="5">North Eastern Region</option>
+                    <option value="6">South East Region</option>
+                  </select>
+                  <br>
+                  </td>
+            </tr>
+            <tr>
+              <td><button onclick="filterByRegion()"> Filter</button></td>
+            </tr>
+            <script type="text/javascript">
+              
+              function filterByRegion(){
+               let select = document.getElementById('InstitutionRegionFilter');
+               let optionValue = select.options[select.selectedIndex].value;
+               let optionsText = select.options[select.selectedIndex].text;
+
+               if(optionValue == -1){
+                   // document.getElementById("displayStatus").innerHTML =  "Please select a Region to Filter"; 
+                   console.log("Please select a Region to Filter");
+               }
+
+               else{
+                   // document.getElementById("displayStatus").innerHTML =  "Region : " +  optionsText; 
+                    console.log("Region : " +  optionsText);
+                    clearSelectStates();
+                    //console.log("cleared all");
+                    let state = document.getElementById('state');
+                    let stateOption = document.createElement( 'option' );
+                    stateOption.value = -1;
+                    stateOption.textContent = "Select State";
+                    state.appendChild( stateOption );
+                    
+
+                            if(optionsText == "Western Region"){
+                               populateWesternRegion();
+                            }
+                            else if(optionsText == "North Central Region"){
+                              populateNorthCentralRegion();
+
+                            }
+                            else if(optionsText == "South Cental Region"){
+                              
+                              populateSouthCentralRegion();
+                            }
+                            else if(optionsText == "Central Eastern Region"){
+                                populateCentralEasternRegion();
+                            }
+                            else if(optionsText == "North Eastern Region"){
+                                populateNorthEasternRegion();
+                            }
+                            else if(optionsText == "South East Region"){
+                              populateSouthEastRegion();
+                            }
+                        }
+                   
+            
+              }
+
+              function clearSelectStates()
+              {
+                 let element = document.getElementById('state');
+                  while(element.firstChild)
+                      {
+                          element.removeChild(element.firstChild);
+                      }
+              }
+
+              function populateWesternRegion(){
+                   
+                    var count = 0; 
+                    //  Hard Coding Western States;
+                    var westernStates = [];
+
+                    westernStates[0] = "AZ";
+                    westernStates[1] = "CA";
+                    westernStates[2] = "CO";
+                    westernStates[3] = "HI";
+                    westernStates[4] = "ID";
+                    westernStates[5] = "OR";
+                    westernStates[6] = "UT";
+                    westernStates[7] = "WA";
+                    clearInstitutions();
+                    
+                   for(var i=0; i< institutions.length; i++){
+                       
+                      //console.log(institutions[i].state);
+
+                           if( institutions[i].state != undefined){
+                              for(var j=0; j<westernStates.length; j++){
+                                  
+                                    if( institutions[i].state == westernStates[j]){
+                                        
+                                        ++count;
+                                         document.getElementById("displayStatus").innerHTML =  "Region : Western <br> Found " + count + " Institutions for Western Region" ; 
+                                           addInstitution_at(i);
+                                          addState_at(i);
+                                    }
+                               }
+                                
+                            }
+                         
+                    } 
+                 }
+
+                 function populateNorthCentralRegion(){
+
+                     
+                    var count = 0; 
+                    //  Hard Coding Western States;
+                    var ncStates = [];
+
+                    ncStates[0] = "IA";
+                    ncStates[1] = "IL";
+                    ncStates[2] = "IN";
+                    ncStates[3] = "MI";
+                    ncStates[4] = "MN";
+                    ncStates[5] = "MO";
+                    ncStates[6] = "ND";
+                    ncStates[7] = "NE";
+                    ncStates[8] = "OH";
+                    ncStates[9] = "SD";
+                    ncStates[10] = "WI";
+
+                    clearInstitutions();
+
+                    for(var i=0; i< institutions.length; i++){
+                          
+                           if( institutions[i].state != undefined){
+                              for(var j=0; j<ncStates.length; j++){
+                                 
+                                    if( institutions[i].state == ncStates[j]){
+                                     
+                                        ++count;
+                                         document.getElementById("displayStatus").innerHTML =  "Region : North Central <br> Found " + count + " Institutions for Western Region" ; 
+                                           addInstitution_at(i);
+                                          addState_at(i);
+                                    }
+                               }
+                             }
+                           
+                 }
+               }
+
+               function populateSouthCentralRegion(){
+                    
+                    var count = 0; 
+                    //  Hard Coding Western States;
+                    var scStates = [];
+
+                    scStates[0] = "AR";
+                    scStates[1] = "KS";
+                    scStates[2] = "LA";
+                    scStates[3] = "MS";
+                    scStates[4] = "NM";
+                    scStates[5] = "OK";
+                    scStates[6] = "TX";
+                    
+                    clearInstitutions();
+                   for(var i=0; i< institutions.length; i++){
+                         
+                           if( institutions[i].state != undefined){
+                              for(var j=0; j<scStates.length; j++){
+                                  
+                                    if( institutions[i].state == scStates[j]){
+                                       
+                                        ++count;
+                                        
+                                        
+                                          document.getElementById("displayStatus").innerHTML =  "Region : South Central <br> Found " + count + " Institutions for South Central Region" ; 
+                                          addInstitution_at(i);
+                                          addState_at(i);
+                                    }
+                               }
+                                
+                            }
+                         
+                    } 
+                 }
+
+                 function populateCentralEasternRegion(){
+                    
+                    var count = 0; 
+                    //  Hard Coding Western States;
+                    var ceStates = [];
+
+                    ceStates[0] = "DC";
+                    ceStates[1] = "DE";
+                    ceStates[2] = "KY";
+                    ceStates[3] = "MD";
+                    ceStates[4] = "NC";
+                    ceStates[5] = "VA";
+                    ceStates[6] = "WV";
+                    
+                   clearInstitutions();
+                   for(var i=0; i< institutions.length; i++){
+                         
+                           if( institutions[i].state != undefined){
+                              for(var j=0; j<ceStates.length; j++){
+                                  console.log( institutions[i].state);
+                                    if( institutions[i].state == ceStates[j]){
+                                        
+                                        ++count;
+                                        
+                                        
+                                          document.getElementById("displayStatus").innerHTML =  "Region : Central Eastern <br> Found " + count + " Institutions for Central Eastern Region" ; 
+
+                                           addInstitution_at(i);
+                                          addState_at(i);
+
+                                    }
+                               }
+                                
+                            }
+                         
+                    } 
+                 }
+
+                 function populateNorthEasternRegion(){
+                    
+
+                    var count = 0; 
+                    //  Hard Coding Western States;
+                    var neStates = [];
+
+                    neStates[0] = "CT";
+                    neStates[1] = "MA";
+                    neStates[2] = "ME";
+                    neStates[3] = "NH";
+                    neStates[4] = "NJ";
+                    neStates[5] = "NY";
+                    neStates[6] = "PA";
+                    neStates[7] = "RI";
+                    neStates[8] = "VT";
+                    
+                    clearInstitutions();
+                   for(var i=0; i< institutions.length; i++){
+                        
+                           if( institutions[i].state != undefined){
+                              for(var j=0; j<neStates.length; j++){
+                                  
+                                    if( institutions[i].state == neStates[j]){
+                                        
+                                        ++count;
+                                         document.getElementById("displayStatus").innerHTML =  "Region : North Eastern <br> Found " + count + " Institutions for North Eastern Region" ; 
+
+                                           addInstitution_at(i);
+                                          addState_at(i);
+
+                                    }
+                               }
+                                
+                            }
+                         
+                    } 
+                 }
+
+                 function populateSouthEastRegion(){
+                    
+                    var count = 0; 
+                    //  Hard Coding Western States;
+                    var seStates = [];
+
+                    seStates[0] = "AL";
+                    seStates[1] = "FL";
+                    seStates[2] = "GA";
+                    seStates[3] = "PR";
+                    seStates[4] = "SC";
+                    seStates[5] = "TN";
+                  
+                    
+                    clearInstitutions();
+                   for(var i=0; i< institutions.length; i++){
+                          
+                           if( institutions[i].state != undefined){
+                              for(var j=0; j<seStates.length; j++){
+                                 
+                                    if( institutions[i].state == seStates[j]){
+                                        
+                                        ++count;
+                                        
+                                         document.getElementById("displayStatus").innerHTML =  "Region : South East <br> Found " + count + " Institutions for South East Region" ; 
+                                           addInstitution_at(i);
+                                          addState_at(i);
+
+                                    }
+                               }
+                                
+                            }
+                         
+                    } 
+                 }
+                 function addInstitution_at(i)
+                 {
+                     let element = document.getElementById( 'institution' );
+                     let option = document.createElement( 'option' );
+                      option.value = institutions[i].id;
+                      option.textContent =  institutions[i].name + " - " + " (" + institutions[i].city + ", " +institutions[i].state + ")  ";
+                       element.appendChild( option );
+                       
+
+                 }
+
+                 function addState_at(st){
+
+                      var stateValue = institutions[st].state;
+                      let state = document.getElementById('state');
+                      if( $ ('#state option:contains('+ stateValue + ')').length) { //Testing if the state already exits in the select
+                           //alert("exits");
+                      }
+                      else{
+                        let stateOption = document.createElement( 'option' );
+                        stateOption.value = st;
+                         stateOption.textContent = institutions[st].state;
+                         state.appendChild( stateOption );
+                      }
+                       
+                }
+            </script>
             <tr>
                <td>
                   <!-- Search by state -->
