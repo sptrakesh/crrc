@@ -82,11 +82,12 @@
         </tr>
         {% endif %}
     </table>
-    <button onclick="window.location.href='/programs/id/{{ object.id }}/update'"> Edit</button>
+    <br>
+    <button class="commonBtn"  onclick="window.location.href='/programs/id/{{ object.id }}/update'"> Edit</button>
     <form action="/programs/remove" method="post" style="display: inline-block;" onsubmit="return deleteProgram( this );">
       <input type="hidden" name="id" value="{{ object.id }}" />
       <input type="hidden" name="name" value="{{ program.name }}"/>
-      <input type="submit" value="Delete" />
+      <input type="submit" class="commonBtn" value="Delete" />
     </form>
 </div>
 

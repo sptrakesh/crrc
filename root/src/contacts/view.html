@@ -7,7 +7,7 @@
 
 <div style="margin-left: auto;margin-right: auto;">
     <table>
-        <thead>User Details</thead>
+        <!--thead>User Details</thead-->
         <tr>
             <h3>Name: {{object.name}} </h3>
         </tr>
@@ -67,14 +67,15 @@
         </tr>
         {% endif %}
 </table>
+<br>
   <div>
     <form id="details" method="post" action="/contacts/id/{{ object.id }}/update" style="display: inline-block;">
-      <input type="submit" value="Edit" />
+      <input type="submit" class="commonBtn"  value="Edit" />
     </form>
     <form action="/contacts/remove" method="post" style="display: inline-block;" onsubmit="return deleteContact( this );">
       <input type="hidden" name="id" value="{{ object.id }}" />
       <input type="hidden" name="name" value="{{ contact.name }}"/>
-      <input type="submit" value="Delete" />
+      <input type="submit" class="commonBtn" value="Delete" />
     </form>
   </div>
 </div>

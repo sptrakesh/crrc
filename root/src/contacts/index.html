@@ -134,6 +134,8 @@
         $.each(id,function(i,el){
             if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
         });
+        uniquesID.sort();
+            uniquesName.sort();
          for (var i = 0; i < uniquesName.length; ++i){
                
                 let option = document.createElement('option');
@@ -144,38 +146,40 @@
     }
 
     function populateInstitutionStateSelect(){      //This function is called from retrieveInstitutions(). This will populate states of Institution for location filter.
+
+        clearSelectStates();
         let element = document.getElementById('InstitutionStateFilter');
         let option1 = document.createElement('option');
         option1.value = -1;
         option1.textContent = "Select State";
         element.appendChild( option1);
         var id = [];
-            var names = [];
-            var uniquesID = [];
-            var uniquesName = []; 
+        var names = [];
+        var uniquesID = [];
+        var uniquesName = []; 
 
-            // TO  find populate States from Contacts Array.
-
-            /*for (var i = 0; i < contactList.length; ++i){
-               if(contactList[i].institution != null){ 
-                   id[i] = i;             
-                   names[i] = (contactList[i].institution.city);
-                }
-                else if(contactList[i].institution == null){
-                   id[i] = -2;
-                   names[i] = "undefined";
-                }
-            }*/
-            for (var i = 0; i < institutionList.length; ++i){
-               id[i] = institutionList[i].id;
-               names[i] =  institutionList[i].state ;
-            }
+        for(var i = 0; i<institutionList.length;++i){
+          console.log(institutionList[i].state);
+                    if(institutionList[i].state != undefined){
+                        for(var j = 0; j<contactList.length;++j){
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = institutionList[i].state;
+                                  id[i] = contactList[i].id;
+                                  names[i] =  contactList[j].institution.state;
+                              }
+                            }
+                        }
+                    }
+      }
             $.each(names,function(i,el){
                 if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
             });
             $.each(id,function(i,el){
                 if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
             });
+            uniquesID.sort();
+            uniquesName.sort();
             for (var i = 0; i < uniquesName.length; ++i){
                 let option = document.createElement( 'option' );
                 option.value  = uniquesID[i];
@@ -198,18 +202,31 @@
         var names = [];
         
         var uniquesName = []; 
-        for(var i = 0; i < institutionList.length; ++i){
-            if(institutionList[i].state == stateName)
-                {
-                    names[i] = institutionList[i].city;
-                }
-        }
+
+        for(var i = 0; i<institutionList.length;++i){
+          console.log(institutionList[i].state);
+                    if(institutionList[i].state != undefined){
+                        for(var j = 0; j<contactList.length;++j){
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = institutionList[i].state;
+                                   if(contactList[j].institution.state == stateName)
+                                    {
+                                        names[i] = contactList[j].institution.city;
+                                    }
+                              }
+                            }
+                        }
+                    }
+      }
+       
         $.each(names,function(i,el){
             if(el != undefined)
                 {
                    if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
                 }
         });
+        uniquesName.sort();
         for(var i = 0; i < uniquesName.length; ++i){
             
             let element = document.getElementById('InstitutionCityFilter');
@@ -372,8 +389,75 @@
             let optionValue = selectState.options[selectState.selectedIndex].value;
             let stateName = selectState.options[selectState.selectedIndex].text;
              
-            if(optionValue == -1){  // If the user has not selected any state, it will give a warning message.
-                document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
+            if(optionValue == -1){  // If the user has not selected any state, it will filter by Region.
+                //document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
+                // Creating and Populating Institution State because ContactList Array does not contain an option for Institution State.
+                // ContactList is an option of City in the array. So I am pulling from InstitutionList Array to find a match and populating States.
+
+                $("#institution").val("-1");
+                $("#InstitutionStateFilter").val("-1");
+                $("#InstitutionCityFilter").val("-1");
+                $("#role").val("-1");
+                $("#contactName").val(""); 
+
+                for(var i = 0; i<institutionList.length;++i){
+
+                              if(institutionList[i].state != undefined){
+                                  for(var j = 0; j<contactList.length;++j){
+                                      if(contactList[j].institution != undefined){
+                                        if( contactList[j].institution.city == institutionList[i].city){
+                                            contactList[j].institution.state = institutionList[i].state;
+                                            
+                                          }
+                                      }
+                                  }
+                              }
+                } 
+               
+
+
+               let select = document.getElementById('InstitutionRegionFilter');
+               let optionValue = select.options[select.selectedIndex].value;
+               let optionsText = select.options[select.selectedIndex].text;
+
+               if(optionValue == -1){
+                    document.getElementById("displayStatus").innerHTML =  "Please select a Region to Filter"; 
+               }
+
+               else{
+                    document.getElementById("displayStatus").innerHTML =  "Region : " +  optionsText; 
+
+                    clearSelectStates();
+                    console.log("cleared all");
+                    let state = document.getElementById('InstitutionStateFilter');
+                    let stateOption = document.createElement( 'option' );
+                    stateOption.value = -1;
+                    stateOption.textContent = "Select State";
+                    state.appendChild( stateOption );
+                    
+
+                            if(optionsText == "Western Region"){
+                               populateWesternRegion();
+                            }
+                            else if(optionsText == "North Central Region"){
+                              populateNorthCentralRegion();
+
+                            }
+                            else if(optionsText == "South Cental Region"){
+                              //alert("boom");
+                              populateSouthCentralRegion();
+                            }
+                            else if(optionsText == "Central Eastern Region"){
+                                populateCentralEasternRegion();
+                            }
+                            else if(optionsText == "North Eastern Region"){
+                                populateNorthEasternRegion();
+                            }
+                            else if(optionsText == "South East Region"){
+                              populateSouthEastRegion();
+                            }
+                        }
+                   
             }
             else{
                 var count = 0;
@@ -428,7 +512,9 @@
              for(var i = 0; i < contactList.length; ++i){
                   
                   if(contactList[i].institution != undefined){
+
                        if(cityName == contactList[i].institution.city){
+                         console.log(cityName + " = " + contactList[i].institution.city );
                        let element = document.getElementById('lstBoxselectUser_ViewUser');
                        let option = document.createElement( 'option' );
                        option.value = contactList[i].id;
@@ -493,10 +579,18 @@
         while(element.firstChild)
             {
                 element.removeChild(element.firstChild);
-                
             }
     }
+     
 
+    function clearSelectStates()
+    {
+       let element = document.getElementById('InstitutionStateFilter');
+        while(element.firstChild)
+            {
+                element.removeChild(element.firstChild);
+            }
+    }
     function removeAllUsers(){
         
             let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
@@ -508,6 +602,9 @@
       removeAllUsers();
       display();
       $("#institution").val("-1");
+      $("#InstitutionRegionFilter").val("-1");
+      
+      populateInstitutionStateSelect(); 
       $("#InstitutionStateFilter").val("-1");
       $("#InstitutionCityFilter").val("-1");
       $("#role").val("-1");
@@ -519,25 +616,21 @@
 
     function filterByName()
    {
-       $("#institution").val("-1");
+      $("#institution").val("-1");
       $("#InstitutionStateFilter").val("-1");
       $("#InstitutionCityFilter").val("-1");
       $("#role").val("-1");
       
       
        let select = document.getElementById('contactName');//the name searched
-       console.log(select.value);
+       
        document.getElementById("displayStatus").innerHTML =  "Name : " +  select.value;//tell the user what filter was applied
-       //document.getElementById("NameF").innerHTML = "Institution Name: " + select.value;//tell the user what filter was applied
+      
        let nameInput = select.value.toUpperCase(); //put the name in all caps to ignore case sensitivity
-       //nameInput = nameInput.toUpperCase();
-       console.log(nameInput);
-       //let institutionDisplayName = "";//how the institution name appears in the choices
-       //let newID = null;//have to update the institution id for the correct institution to be pulled when selected
     
    
        removeAllUsers();
-       //document.getElementById("NameF").innerHTML = "Institution Name: " + nameInput;
+       
        for(var i=0; i<contactList.length; i++)
            {
                let temp = contactList[i].name;
@@ -553,7 +646,7 @@
                            option.textContent = chosen;
                        }
                        else{
-                            let chosen = contactList[i].name + " - " ;//+ contactList[i].institute.name + " , " + contactList[i].institute.city + " )";
+                            let chosen = contactList[i].name + " - " ;
                            let chosenID = contactList[i].id;
                            option.value = chosenID;
                            option.textContent = chosen;
@@ -563,6 +656,352 @@
                    }
            }
        
+   }
+
+
+   function populateWesternRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                    if(institutionList[i].state != undefined){
+                        for(var j = 0; j<contactList.length;++j){
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = institutionList[i].state;
+                                }
+                            }
+                        }
+                    }
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var westernStates = [];
+
+      westernStates[0] = "AZ";
+      westernStates[1] = "CA";
+      westernStates[2] = "CO";
+      westernStates[3] = "HI";
+      westernStates[4] = "ID";
+      westernStates[5] = "OR";
+      westernStates[6] = "UT";
+      westernStates[7] = "WA";
+      removeAllUsers();
+     for(var i=0; i< contactList.length; i++){
+          if(contactList[i].institution == undefined){        //  If the contacts have not assigned Institution.
+          
+          }
+          else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
+             if( contactList[i].institution.state != undefined){
+                for(var j=0; j<westernStates.length; j++){
+                    console.log( contactList[i].institution.state);
+                      if( contactList[i].institution.state == westernStates[j]){
+                          console.log( contactList[i].institution.state + " " + westernStates[j]);
+                          ++count;
+                           document.getElementById("displayStatus").innerHTML =  "Region : Western <br> Found " + count + " Users for Western Region" ; 
+
+                             addUser(i);
+                              
+                              addState(i);
+                      }
+                 }
+                  
+              }
+           }
+      } 
+   }
+   function addUser(i)
+   {
+       let element = document.getElementById( 'lstBoxselectUser_ViewUser' );
+       let option = document.createElement( 'option' );
+        option.value = contactList[i].id;
+        option.textContent =  contactList[i].name +" - "  + contactList[i].institution.name + " (" + contactList[i].institution.city + ", " +contactList[i].institution.state + ")  ";
+         element.appendChild( option );
+         console.log(contactList[i].name + " added " + option.textContent);
+
+   }
+
+   function addState(st){
+
+        var stateValue = contactList[st].institution.state;
+        let state = document.getElementById('InstitutionStateFilter');
+        if( $ ('#InstitutionStateFilter option:contains('+ stateValue + ')').length) { //Testing if the state already exits in the select
+             //alert("exits");
+        }
+        else{
+          let stateOption = document.createElement( 'option' );
+          stateOption.value = st;
+           stateOption.textContent = contactList[st].institution.state;
+           state.appendChild( stateOption );
+        }
+         
+  }
+
+   function populateNorthCentralRegion(){
+
+        for(var i = 0; i<institutionList.length;++i){
+
+                    if(institutionList[i].state != undefined){
+                        for(var j = 0; j<contactList.length;++j){
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = institutionList[i].state;
+                                }
+                            }
+                        }
+                    }
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var ncStates = [];
+
+      ncStates[0] = "IA";
+      ncStates[1] = "IL";
+      ncStates[2] = "IN";
+      ncStates[3] = "MI";
+      ncStates[4] = "MN";
+      ncStates[5] = "MO";
+      ncStates[6] = "ND";
+      ncStates[7] = "NE";
+      ncStates[8] = "OH";
+      ncStates[9] = "SD";
+      ncStates[10] = "WI";
+
+       removeAllUsers();
+
+      for(var i=0; i< contactList.length; i++){
+          if(contactList[i].institution == undefined){        //  If the contacts have not assigned Institution.
+          
+          }
+          else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
+             if( contactList[i].institution.state != undefined){
+                for(var j=0; j<ncStates.length; j++){
+                   
+                      if( contactList[i].institution.state == ncStates[j]){
+                          console.log( contactList[i].institution.state + " " + ncStates[j]);
+                          ++count;
+                           document.getElementById("displayStatus").innerHTML =  "Region : North Central <br> Found " + count + " Users for Western Region" ; 
+                            addUser(i);
+                              addState(i);
+                      }
+                 }
+               }
+             }
+   }
+ }
+
+ function populateSouthCentralRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                    if(institutionList[i].state != undefined){
+                        for(var j = 0; j<contactList.length;++j){
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = institutionList[i].state;
+                                }
+                            }
+                        }
+                    }
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var scStates = [];
+
+      scStates[0] = "AR";
+      scStates[1] = "KS";
+      scStates[2] = "LA";
+      scStates[3] = "MS";
+      scStates[4] = "NM";
+      scStates[5] = "OK";
+      scStates[6] = "TX";
+      
+      removeAllUsers();
+     for(var i=0; i< contactList.length; i++){
+          if(contactList[i].institution == undefined){        //  If the contacts have not assigned Institution.
+          
+          }
+          else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
+             if( contactList[i].institution.state != undefined){
+                for(var j=0; j<scStates.length; j++){
+                    console.log( contactList[i].institution.state);
+                      if( contactList[i].institution.state == scStates[j]){
+                          console.log( contactList[i].institution.state + " " + scStates[j]);
+                          ++count;
+                          
+                          
+                             document.getElementById("displayStatus").innerHTML =  "Region : South Central <br> Found " + count + " Users for South Central Region" ; 
+
+                             addUser(i);
+                              
+                              addState(i);
+         }
+                 }
+                  
+              }
+           }
+      } 
+   }
+
+   function populateCentralEasternRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                    if(institutionList[i].state != undefined){
+                        for(var j = 0; j<contactList.length;++j){
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = institutionList[i].state;
+                                }
+                            }
+                        }
+                    }
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var ceStates = [];
+
+      ceStates[0] = "DC";
+      ceStates[1] = "DE";
+      ceStates[2] = "KY";
+      ceStates[3] = "MD";
+      ceStates[4] = "NC";
+      ceStates[5] = "VA";
+      ceStates[6] = "WV";
+      
+      removeAllUsers();
+     for(var i=0; i< contactList.length; i++){
+          if(contactList[i].institution == undefined){        //  If the contacts have not assigned Institution.
+          
+          }
+          else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
+             if( contactList[i].institution.state != undefined){
+                for(var j=0; j<ceStates.length; j++){
+                    console.log( contactList[i].institution.state);
+                      if( contactList[i].institution.state == ceStates[j]){
+                          console.log( contactList[i].institution.state + " " + ceStates[j]);
+                          ++count;
+                          
+                          
+                             document.getElementById("displayStatus").innerHTML =  "Region : Central Eastern <br> Found " + count + " Users for Central Eastern Region" ; 
+
+                             addUser(i);
+                             
+                              addState(i);
+
+                      }
+                 }
+                  
+              }
+           }
+      } 
+   }
+
+   function populateNorthEasternRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                    if(institutionList[i].state != undefined){
+                        for(var j = 0; j<contactList.length;++j){
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = institutionList[i].state;
+                                }
+                            }
+                        }
+                    }
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var neStates = [];
+
+      neStates[0] = "CT";
+      neStates[1] = "MA";
+      neStates[2] = "ME";
+      neStates[3] = "NH";
+      neStates[4] = "NJ";
+      neStates[5] = "NY";
+      neStates[6] = "PA";
+      neStates[7] = "RI";
+      neStates[8] = "VT";
+      
+      removeAllUsers();
+     for(var i=0; i< contactList.length; i++){
+          if(contactList[i].institution == undefined){        //  If the contacts have not assigned Institution.
+          
+          }
+          else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
+             if( contactList[i].institution.state != undefined){
+                for(var j=0; j<neStates.length; j++){
+                    console.log( contactList[i].institution.state);
+                      if( contactList[i].institution.state == neStates[j]){
+                          console.log( contactList[i].institution.state + " " + neStates[j]);
+                          ++count;
+                          
+                          
+                             document.getElementById("displayStatus").innerHTML =  "Region : North Eastern <br> Found " + count + " Users for North Eastern Region" ; 
+
+                             addUser(i);
+                              
+                              addState(i);
+
+                      }
+                 }
+                  
+              }
+           }
+      } 
+   }
+
+   function populateSouthEastRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                    if(institutionList[i].state != undefined){
+                        for(var j = 0; j<contactList.length;++j){
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = institutionList[i].state;
+                                }
+                            }
+                        }
+                    }
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var seStates = [];
+
+      seStates[0] = "AL";
+      seStates[1] = "FL";
+      seStates[2] = "GA";
+      seStates[3] = "PR";
+      seStates[4] = "SC";
+      seStates[5] = "TN";
+    
+      
+      removeAllUsers();
+     for(var i=0; i< contactList.length; i++){
+          if(contactList[i].institution == undefined){        //  If the contacts have not assigned Institution.
+          
+          }
+          else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
+             if( contactList[i].institution.state != undefined){
+                for(var j=0; j<seStates.length; j++){
+                    console.log( contactList[i].institution.state);
+                      if( contactList[i].institution.state == seStates[j]){
+                          console.log( contactList[i].institution.state + " " + seStates[j]);
+                          ++count;
+                          
+                           document.getElementById("displayStatus").innerHTML =  "Region : South East <br> Found " + count + " Users for South East Region" ; 
+                           addUser(i);
+                           addState(i);
+
+                      }
+                 }
+                  
+              }
+           }
+      } 
    }
 </script>
 
@@ -592,7 +1031,7 @@
                 <button class="commonBtn" onclick = "displayContactDetails()" >View Details</button>
                <a href="/contacts/create"><input type="button" name="addUser" value="Add User" class="commonBtn" id="addUserButton"></a>
                 <button class="commonBtn" onclick="removeUser()">Remove User</button>
-                <button class="commonBtn" onclick="removeAllFilters()">No Filters</button>
+                <button class="commonBtn" onclick="removeAllFilters()">Remove Filters</button>
                <br>
                <h4 align="center"><u>Filters Applied</u></h4>
                 <p id="displayStatus">  {% if searchText %} Search results for ({{ searchText }}) {% endif %} </p><br>
@@ -612,6 +1051,17 @@
                    <button class="commonBtn" onclick="instituteFilter()">Apply Filter</button>
                </div>
                <div style="margin: 20px 5px;">
+                  Filter By Region:
+                  <select class="CmbBox" id="InstitutionRegionFilter">
+                    <option value="-1"> Select Region </option>
+                    <option value="1">Western Region</option>
+                    <option value="2">North Central Region</option>
+                    <option value="3">South Cental Region</option>
+                    <option value="4">Central Eastern Region</option>
+                    <option value="5">North Eastern Region</option>
+                    <option value="6">South East Region</option>
+                  </select>
+                  <br>
                  Filter By State: 
                   <select class="CmbBox" id="InstitutionStateFilter" onchange="populateCity()">
                      <option value="-1" style="display: none"> Select State </option>
@@ -632,7 +1082,7 @@
                    <button class="commonBtn" onclick="roleFilter()">Apply Filter</button>
                </div>
                <div style="margin: 20px 5px;">
-                        User Name:
+                        User's Name:
                         <input type="text" class="addUserInput" id="contactName" placeholder="Search by name">
                         <br>
                         <button class="commonBtn" onclick="filterByName()">Find user</button>
