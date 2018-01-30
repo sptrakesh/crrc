@@ -371,6 +371,10 @@
                   <select name="institution" id="institution" class="institution" size="10" style="width:620px; height:300px">
                      
                   </select>
+                   <script type="text/javascript"> $('#institution').dblclick(function() {
+                        displayInstitutionsPage();
+                  });
+                  </script>
                </td>
             </tr>
             <!-- -->
@@ -465,7 +469,7 @@
             </tr>
             <tr>
               <td>  Filter By Region:</td>
-              <td><select class="CmbBox" id="InstitutionRegionFilter" style="width:300px" >
+              <td><select class="CmbBox" id="InstitutionRegionFilter" onchange="filterByRegion()" style="width:300px" >
                     <option value="-1"> Select Region </option>
                     <option value="1">Western Region</option>
                     <option value="2">North Central Region</option>
@@ -477,9 +481,7 @@
                   <br>
                   </td>
             </tr>
-            <tr>
-              <td><button onclick="filterByRegion()"> Filter</button></td>
-            </tr>
+            
             <script type="text/javascript">
               
               function filterByRegion(){

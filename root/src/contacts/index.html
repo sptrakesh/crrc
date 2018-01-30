@@ -159,7 +159,7 @@
         var uniquesName = []; 
 
         for(var i = 0; i<institutionList.length;++i){
-          console.log(institutionList[i].state);
+         
                     if(institutionList[i].state != undefined){
                         for(var j = 0; j<contactList.length;++j){
                             if(contactList[j].institution != undefined){
@@ -169,6 +169,7 @@
                                   names[i] =  contactList[j].institution.state;
                               }
                             }
+                            
                         }
                     }
       }
@@ -1021,11 +1022,15 @@
            <div style="margin-left: auto; margin-right: auto; width: 1100px;">
 
             <div class="viewUsersMultilineSelect">
-               <select multiple id="lstBoxselectUser_ViewUser" style="font-size: 16px;">
+               <select multiple id="lstBoxselectUser_ViewUser">
                    <option value="-1" selected style="display: none;"></option>
                    <script type="text/javascript">//displayAll();</script>
                    {% for contact in contacts %}
                    <option value="{{ contact.id }}" {% if contact.id == object.contact.id %}selected="selected"{% endif %}>{{contact.name}} </option> {% endfor %}
+                  <script type="text/javascript"> $('#lstBoxselectUser_ViewUser').dblclick(function() {
+                        displayContactDetails();
+                  });
+                  </script>
                </select>
                <br><br>
                 <button class="commonBtn" onclick = "displayContactDetails()" >View Details</button>

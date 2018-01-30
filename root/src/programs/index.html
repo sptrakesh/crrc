@@ -106,8 +106,17 @@
             var uniquesID = [];
             var uniquesName = []; 
             for (var i = 0; i < institutionList.length; ++i){
-               id[i] = institutionList[i].id;
-               names[i] =  institutionList[i].state ;
+              if(institutionList[i].state != undefined){
+                  for(var j = 0; j<programList.length;++j){
+                      if(programList[j].institution != undefined){
+                           if( programList[j].institution.city == institutionList[i].city){
+                            programList[j].institution.state = institutionList[i].state;
+                            id[i] = institutionList[i].id;
+                            names[i] =  institutionList[i].state ;
+                          }
+                        }
+                      }
+                    }
              }
             $.each(names,function(i,el){
                 if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
@@ -115,6 +124,7 @@
             $.each(id,function(i,el){
                 if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
             });
+            uniquesName.sort();
             for (var i = 0; i < uniquesName.length; ++i){
             let option = document.createElement( 'option' );
             option.value  = uniquesID[i];
@@ -444,48 +454,55 @@
        
         
         if( cityId == -1){      // If the user has not selected any city, It will target all the Institution from selected state.
-            
             let selectState = document.getElementById('InstitutionStateFilter');
             let optionValue = selectState.options[selectState.selectedIndex].value;
             let stateName = selectState.options[selectState.selectedIndex].text;
-             
-            if(optionValue == -1){  // If the user has not selected any state, it will give a warning message.
-                document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
-            }
-            else{
-                var count = 0;
+
+            var count = 0;
                 for(var i = 0; i<institutionList.length;++i)
                 {
                     if(institutionList[i].state == stateName){
                         for(var j = 0; j<programList.length;++j){
-                            if( programList[j].institution.city == institutionList[i].city){
-                                programList[j].institution.state = stateName;
+                            if(programList[j].institution != undefined){
+                              if( programList[j].institution.city == institutionList[i].city){
+                                  programList[j].institution.state = stateName;
+                                }
                             }
                         }
                     }
                 }
 
-                  $("#InstitutionListFilter").val("-1");
+                 $("#InstitutionListFilter").val("-1");
                   $("#InstitutionCityFilter").val("-1");
                   $("#DegreeListFilter").val("-1");
                   $("#DesignationsFilter").val("-1");
                   $("#programName").val("");
                  removeAllPrograms();
-                for(var i = 0; i < programList.length; ++i){
-                    if(stateName == programList[i].institution.state){
+
+                 for(var i = 0; i < programList.length; ++i){
+                    if(programList[i].institution != undefined){  //If there are institutions defined for contacts.
+                       
+                       if(stateName == programList[i].institution.state){   // If the state name matches.
                            let element = document.getElementById('selectProgram');
                             let option = document.createElement( 'option' );
                              option.value = programList[i].id;
-                            option.textContent = programList[i].title +" - "  + programList[i].institution.name ;
+                            option.textContent = programList[i].title +" - "  + programList[i].institution.name;
                             element.appendChild( option );
                             ++count;
-                          document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>Found " + count + " Programs for " + stateName;
+                          document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>" +"Found " + count + " User for " + stateName;
+                      }
+                      else{
+                          document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>" +"Found " + count + " User for " + stateName;
+                      }  
                     }
+                    else{
+                       // document.getElementById("displayStatus").innerHTML = "insufficeint data. exiting the loop.";
+                    }
+                    
                 }
+                 
+                
             }
-         
-       
-        }       
         else{       // If user has selected a city.
             var count = 0;
             $("#InstitutionListFilter").val("-1");
@@ -659,6 +676,10 @@
                <select multiple id="selectProgram">
                <option value="-1" style="display: none" selected></option>
                </select>
+               <script type="text/javascript"> $('#selectProgram').dblclick(function() {
+                        displayProgramDetails();
+                  });
+                  </script>
                <br>
                 <button onclick="displayProgramDetails()" class="commonBtn" >View Details</button>
                 <a href="/programs/create"><button class="commonBtn" >Add Program</button></a>

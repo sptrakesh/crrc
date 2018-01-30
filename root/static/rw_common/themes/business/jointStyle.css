@@ -343,7 +343,7 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
 .viewUserContainer .viewUsersMultilineSelect{
     width: 550px;
     height: 500px;
-    margin: 20px 20px 20px 20px;
+    margin: 20px;
     float:left;
 }
 
@@ -376,18 +376,10 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
 
 
 .viewUserContainer option{
-    font-size: 12pt;
+    font-size: 14pt;
 }
 
-/*.viewUserContainer input[type="submit"], button[class="commonBtn"]{
 
-    font-size: 15px;
-	border: 1px solid black;
-	border-radius: 5px;
-    width: 120px;
-    height: 30px;
-    margin: 3px;
-}*/
 /* This is end of div filterBy in view User*/
 /*---------------------------------    End of View User --------------------------------------------------*/
 
@@ -401,7 +393,7 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
     
     width: 550px;
     height: 500px;
-    margin: 20px 20px 20px 20px;
+    margin: 20px;
     float:left;
 }
 .viewProgramContainer select[id="selectProgram"]{
@@ -415,7 +407,9 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
     border-radius: 5px;
     overflow: scroll;
     }
-
+.viewProgramContainer option{
+    font-size: 14pt;
+}
 /* end of div multiLine select in view Programs */ 
 
 /* Start of Filter by in View Programs */
@@ -426,7 +420,7 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
     border-radius: 10px;
     width: 450px;
     height: 400px;
-    margin: 20px 20px 20px 20px;
+    margin: 20px;
     float:right;
 }
 
@@ -454,7 +448,7 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
 .addUserContainer .addUserForm{
 	width: 400px;
     height: 500px;
-    margin: 20px 20px 20px 20px;
+    margin: 20px;
     float:left;
 }
 
@@ -462,7 +456,7 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
 .addUserContainer .institute_addUser{
 	width: 350px;
     height: 500px;
-    margin: 20px 20px 20px 20px;
+    margin: 20px;
     float:right;
 
 }
