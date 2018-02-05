@@ -32,7 +32,7 @@
     //           console.log( xhr.responseText );
                let json = JSON.parse( xhr.responseText );
                institutions = json;
-               //populateInstitutionStateSelect();
+               populateInstitutionStateSelect();
                populateInstitutionSelect();
                //populateInstitutionStateSelect();
    
@@ -113,10 +113,12 @@
      $("#city").val("-1");
      $("#DegreeType").val("-1");
      $("#InstitutionType").val("-1");
+     $("#InstitutionRegionFilter").val("-1");
      document.getElementById("StateF").innerHTML = "";
      document.getElementById("CityF").innerHTML = "";
      document.getElementById("DegreeF").innerHTML = "";
      document.getElementById("InstitutionF").innerHTML = "";
+     document.getElementById("RegionF").innerHTML = "";
      //document.getElementById("displayStatus").innerHTML = ""; 
    }
    
@@ -161,31 +163,63 @@
    
        }
    }
-   
-   /************ Get the programs each institution has ************/
-   getPrograms();
-   //Retrieves from the server and puts everything in the program list array
-   function getPrograms() 
-   {
-   
-       let xhr = new XMLHttpRequest();
-       xhr.open( 'POST', '/programs' );
-       xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-       xhr.onload = function ()
-       {
-           if ( xhr.status === 200 && xhr.readyState == 4)
-           {
-                   console.log( xhr.responseText );
-               programList = JSON.parse( xhr.responseText );
-                //populateDegrees();
-           }
-           else
-           {
-               console.log( `Unable to retrieve Program list.  Server returned status: ${xhr.status}` );
-           }
-       };
-       xhr.send( '' );
-   }
+    
+    //populateInstitutionStateSelect();
+                     
+                     function populateInstitutionStateSelect()
+                     {
+                         
+                         let element = document.getElementById('state');
+                     
+                         for(var i=0; i< institutions.length; ++i)
+                         {
+                             let option = document.createElement ('option');
+                     
+                             option.value = institutions[i].id;
+                             option.textContent = institutions[i].state;
+                         console.log(institutions[i].state + " added");
+                             element.appendChild(option);
+                     
+                         }
+                         
+                         //this part will remove duplicates
+                             var repeatState = {};
+                     
+                             $("select[name='state'] > option").each(function () 
+                             {
+                                 if(repeatState[this.text] /*|| this.text == ""*/)//removed code will remove blank options in the select 
+                                     {
+                                         $(this).remove();
+                                     }
+                                 else 
+                                     {
+                                         repeatState[this.text] = this.value;
+                                     }
+                             });
+                             
+                             //This will do the sorting
+                             
+                             var lb = document.getElementById('state');
+                             arrTexts = new Array();
+                     
+                             for(i=0; i< lb.length; i++)  
+                                 {
+                                     arrTexts[i] = lb.options[i].text;
+                                 }
+                                 arrTexts.sort();
+                     
+                             for(i=0; i<lb.length; i++)  
+                                 {
+                                     lb.options[i].text = arrTexts[i];
+                                     lb.options[i].value = arrTexts[i];
+                                 }
+                             //lb.options[0].text = "Select State";
+                         
+                         
+                     }
+                     
+                     
+            
     
      /********************** Remove Institutions From Select ********************/
     
@@ -404,8 +438,14 @@
                </td>
             </tr>
          </table>
-         <h4 align="center"><u>Filters Applied</u></h4>
-          <p id="displayStatus"> </p><br>
+         
+          <ul style="background-color: white; list-style-type:none">
+            <li><h3><u>Filters Applied</u></h3></li>
+         </ul>
+
+          <ul class="WhatFilter" style="background-color: white; list-style-type:none">
+            <li id="RegionF"></li>
+         </ul>
          <ul class="WhatFilter" style="background-color: white; list-style-type:none">
             <li id="StateF"></li>
          </ul>
@@ -421,6 +461,7 @@
          <ul class="WhatFilter" style="background-color: white; list-style-type:none">
             <li id="NameF"></li>
          </ul>
+          
       </div>
       <!-- The Search Filters -->
       <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 20px 0px 0px; width:350px; height: 450px">
@@ -554,7 +595,7 @@
                     westernStates[5] = "OR";
                     westernStates[6] = "UT";
                     westernStates[7] = "WA";
-                    clearInstitutions();
+                    //clearInstitutions();
                     
                    for(var i=0; i< institutions.length; i++){
                        
@@ -566,8 +607,8 @@
                                     if( institutions[i].state == westernStates[j]){
                                         
                                         ++count;
-                                         document.getElementById("displayStatus").innerHTML =  "Region : Western <br> Found " + count + " Institutions for Western Region" ; 
-                                           addInstitution_at(i);
+                                         document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for Western Region <br><br>Region : Western"  ; 
+                                           //addInstitution_at(i);
                                           addState_at(i);
                                     }
                                }
@@ -596,7 +637,7 @@
                     ncStates[9] = "SD";
                     ncStates[10] = "WI";
 
-                    clearInstitutions();
+                    //clearInstitutions();
 
                     for(var i=0; i< institutions.length; i++){
                           
@@ -606,8 +647,8 @@
                                     if( institutions[i].state == ncStates[j]){
                                      
                                         ++count;
-                                         document.getElementById("displayStatus").innerHTML =  "Region : North Central <br> Found " + count + " Institutions for Western Region" ; 
-                                           addInstitution_at(i);
+                                         document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for North Central Region <br><br> Region : North Central" ; 
+                                          // addInstitution_at(i);
                                           addState_at(i);
                                     }
                                }
@@ -630,7 +671,7 @@
                     scStates[5] = "OK";
                     scStates[6] = "TX";
                     
-                    clearInstitutions();
+                    //clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                          
                            if( institutions[i].state != undefined){
@@ -641,8 +682,8 @@
                                         ++count;
                                         
                                         
-                                          document.getElementById("displayStatus").innerHTML =  "Region : South Central <br> Found " + count + " Institutions for South Central Region" ; 
-                                          addInstitution_at(i);
+                                          document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for South Central Region <br><br>Region : South Central" ; 
+                                          //addInstitution_at(i);
                                           addState_at(i);
                                     }
                                }
@@ -666,7 +707,7 @@
                     ceStates[5] = "VA";
                     ceStates[6] = "WV";
                     
-                   clearInstitutions();
+                   //clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                          
                            if( institutions[i].state != undefined){
@@ -677,9 +718,9 @@
                                         ++count;
                                         
                                         
-                                          document.getElementById("displayStatus").innerHTML =  "Region : Central Eastern <br> Found " + count + " Institutions for Central Eastern Region" ; 
+                                          document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for Central Eastern Region <br><br>Region : Central Eastern" ; 
 
-                                           addInstitution_at(i);
+                                           //addInstitution_at(i);
                                           addState_at(i);
 
                                     }
@@ -707,7 +748,7 @@
                     neStates[7] = "RI";
                     neStates[8] = "VT";
                     
-                    clearInstitutions();
+                    //clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                         
                            if( institutions[i].state != undefined){
@@ -716,9 +757,9 @@
                                     if( institutions[i].state == neStates[j]){
                                         
                                         ++count;
-                                         document.getElementById("displayStatus").innerHTML =  "Region : North Eastern <br> Found " + count + " Institutions for North Eastern Region" ; 
+                                         document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for North Eastern Region <br><br>Region : North Eastern" ; 
 
-                                           addInstitution_at(i);
+                                           //addInstitution_at(i);
                                           addState_at(i);
 
                                     }
@@ -743,7 +784,7 @@
                     seStates[5] = "TN";
                   
                     
-                    clearInstitutions();
+                    //clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                           
                            if( institutions[i].state != undefined){
@@ -753,8 +794,8 @@
                                         
                                         ++count;
                                         
-                                         document.getElementById("displayStatus").innerHTML =  "Region : South East <br> Found " + count + " Institutions for South East Region" ; 
-                                           addInstitution_at(i);
+                                         document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for South East Region <br><br>Region : South East" ; 
+                                           //addInstitution_at(i);
                                           addState_at(i);
 
                                     }
@@ -894,11 +935,46 @@
                </td>
                <td>
                   <select name="DegreeType" id="DegreeType" style="width:300px" class="CmbBox">
+                      <option value="-1" ></option>
                   </select>
                   <!-- populate the degree list -->     
                   <script>
-                     populateDegrees();
-                     var repeatDegree = {};
+                     //populateDegrees();
+                
+   /************ Get the programs each institution has ************/
+   getPrograms();
+   //Retrieves from the server and puts everything in the program list array
+   function getPrograms() 
+   {
+   
+       let xhr = new XMLHttpRequest();
+       xhr.open( 'POST', '/programs' );
+       xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+       xhr.onload = function ()
+       {
+           if ( xhr.status === 200 && xhr.readyState == 4)
+           {
+                  // console.log( xhr.responseText );
+               programList = JSON.parse( xhr.responseText );
+                //populateDegrees();
+               //alert(programList.length + " script");
+               
+               
+               populateDegrees();
+                        function populateDegrees(){
+                        
+                         let element = document.getElementById('DegreeType');
+                     
+                         
+                     //alert(programList.length);
+                         for (var i = 0; i < programList.length; ++i){
+                             let optionDegree = document.createElement( 'option' );
+                             optionDegree.value = i;
+                             optionDegree.textContent = programList[i].degree.title; 
+                             console.log(programList[i].degree.title + " added")
+                             element.appendChild( optionDegree );           
+                         }
+                            var repeatDegree = {};
                      
                      $("select[name='DegreeType'] > option").each(function () {
                          if(repeatDegree[this.text]) 
@@ -910,22 +986,19 @@
                              repeatDegree[this.text] = this.value;
                          }
                      });
-                     function populateDegrees(){
-                     
-                         let element = document.getElementById('DegreeType');
-                     
-                         let optionDegree = document.createElement( 'option' );
-                         optionDegree.value = -1;
-                         //optionDegree.textContent = "Select Degree";
-                         element.appendChild(optionDegree); 
-                     
-                         for (var i = 0; i < programList.length; ++i){
-                             let optionDegree = document.createElement( 'option' );
-                             optionDegree.value = i;
-                             optionDegree.textContent = programList[i].degree.title;  
-                             element.appendChild( optionDegree );           
-                         }
                      }
+                  
+                     
+               
+           }
+           else
+           {
+               console.log( `Unable to retrieve Program list.  Server returned status: ${xhr.status}` );
+           }
+       };
+       xhr.send( '' );
+   }
+        
                   </script>
                </td>
             </tr>
@@ -935,12 +1008,12 @@
                </td>
             </tr>
              
-             <!--
+             <!-- 
             <tr>
                <th colspan=2 style="align: center"><u>Institution Type</u></th>
             </tr>
              
-             
+            
             <tr>
                <td>Institution Type:</td>
                <td>
@@ -953,7 +1026,7 @@
             <tr>
                <td colspan="2" align="center"><input type="submit" value="Apply Filter" name="InstitutionTypeButton" onclick = "filterByInstitutionType()" class="commonBtn"></td>
             </tr>
-             -->
+              -->
              
          </table>
       </div>
@@ -965,7 +1038,7 @@
 <!-- end institutions container -->
 <script>
     
-    /***********************************************************
+    /***********************************************************/
     var ITypeList = [];
     getInstitutionTypes();
     function getInstitutionTypes()
@@ -1011,7 +1084,7 @@
                      } 
     
     
-   ***********************************************************/ 
+   /***********************************************************/ 
     
     
    //Filter by the location
