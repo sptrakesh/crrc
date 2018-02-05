@@ -11,7 +11,7 @@
         {
           if ( xhr.status === 200 )
           {
-            //console.log( xhr.responseText );
+            console.log( xhr.responseText );
             contactList = JSON.parse( xhr.responseText );
             populateInstitutionsSelect();
             populateRoles();
@@ -165,14 +165,19 @@
                             if(contactList[j].institution != undefined){
                               if( contactList[j].institution.city == institutionList[i].city){
                                   contactList[j].institution.state = institutionList[i].state;
-                                  id[i] = contactList[i].id;
+                                    
+                                  id[i] =  contactList[j].id;
                                   names[i] =  contactList[j].institution.state;
+                              
                               }
+                              
                             }
-                            
+                                              
                         }
+
                     }
       }
+
             $.each(names,function(i,el){
                 if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
             });

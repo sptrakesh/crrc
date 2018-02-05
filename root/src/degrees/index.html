@@ -102,8 +102,6 @@
 
   function deleteDegree( degreeId, title )
   {
-    
-
     if ( !confirm( `Do you wish to permanently delete ${title}?` ) ) return false;
     let xhr = new XMLHttpRequest();
     xhr.open( 'POST', '/degrees/remove' );
@@ -134,48 +132,6 @@
     xhr.send( `id=${degreeId}` );
   }
 
-  function deleteDegree2()
-  {
-    let select = document.getElementById("selectDegree");
-    let degreeId = select.options[select.selectedIndex].value;
-    let degreeTitle = select.options[select.selectedIndex].text;
-    if(degreeId == -1){
-        console.log("not selected");
-    }
-    else{
-          if ( !confirm( "Do you wish to permanently delete " + degreeTitle + "?" ) ) return false;
-          let xhr = new XMLHttpRequest();
-          xhr.open( 'POST', '/degrees/remove' );
-          xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-          xhr.onload = function ()
-          {
-            if ( xhr.status === 200 )
-            {
-              console.log( xhr.responseText );
-              let json = JSON.parse( xhr.responseText );
-              if ( json.status && json.count === 1 )
-              {
-                let element = document.getElementById( `d_${degreeId}` );
-                let index = degreeId;
-                //let index = titles.indexOf( title );
-                if ( index >= 0 ) titles.splice( index, 1 );
-                element.parentElement.removeChild( element );
-              }
-              else
-              {
-                document.getElementById( `dw_${degreeId}` ).innerText = 'Unable to delete degree from the server.  Please try again later.';
-              }
-            }
-            else
-            {
-              document.getElementById( `dw_${degreeId}` ).innerText = 'Unable to delete degree from the server.  Please try again later.';
-            }
-          };
-          xhr.send( `id=${degreeId}` );
-    }
-    
-    
-  }
   function hideForm( degreeId )
   {
     document.getElementById( `de_${degreeId}` ).style.display = 'none';
@@ -244,20 +200,6 @@
     form.duration.value = '';
   }
 {% endif %}
-
-
-
-function displayDegreeDetails(){
-  
-    let select = document.getElementById("selectDegree");
-    let degreeId = select.options[select.selectedIndex].value;
-    let degreeTitle = select.options[select.selectedIndex].text;
-    {degree.id} = degreeId;
-    console.log("id = " + degreeId + " - title = " + degreeTitle) ;
-
-    document.getElementById("displayTitle").innerText = degreeTitle;
-    document.getElementById( degreeId ).style.display = 'inline';
-}
 </script>
 
 <div style="margin-left: auto;margin-right: auto;">
@@ -274,27 +216,6 @@ function displayDegreeDetails(){
   {% if searchText %}
   <h3>Search results for ({{ searchText }})</h3>
   {% endif %}
-  <div  style="background-color: gray;width: 600px; float: left">
-
-  <select multiple id="selectDegree">
-  <option value="-1" style="display: none" selected></option>
-   {% for degree in degrees %}
-    <option value="{{degree.id}}">{{degree.title}}</option>
-    {% endfor %}
-  </select>
-  <script type="text/javascript">
-        $('#selectDegree').dblclick(function() {
-                        displayDegreeDetails();
-
-});
-  </script>
-  <button class="commonBtn">View Details</button>
-    <button class="commonBtn" onclick="deleteDegree2()">Delete</button>
-  </div>
-  <div style="background-color: gray;width: 400px; height: 300px; float: right">
-  Title: <p id="displayTitle"></p>
-  </div>
-  <div style="clear: both;"></div>
   <div id="degrees">
     {% for degree in degrees %}
     <div id="d_{{ degree.id }}">
@@ -344,3 +265,4 @@ function displayDegreeDetails(){
   <button class="commonBtn" id="createButton" onclick="displayCreate()">Add Degree</button>
   {% endif %}
 </div>
+
