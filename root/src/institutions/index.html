@@ -89,7 +89,7 @@
        {
            if ( xhr.status === 200 )
            {
-               console.log( xhr.responseText );
+               //console.log( xhr.responseText );
                let json = JSON.parse( xhr.responseText );
                if ( json.status && json.count === 1 )
                {
@@ -177,7 +177,7 @@
                      
                              option.value = institutions[i].id;
                              option.textContent = institutions[i].state;
-                         console.log(institutions[i].state + " added");
+                         //console.log(institutions[i].state + " added");
                              element.appendChild(option);
                      
                          }
@@ -352,11 +352,11 @@
        document.getElementById("NameF").innerHTML = "";
        
        let select = document.getElementById('schoolName');//the name searched
-       console.log(select);
+       //console.log(select);
        document.getElementById("NameF").innerHTML = "Institution Name: " + select.value;//tell the user what filter was applied
        let nameInput = select.value.toUpperCase(); //put the name in all caps to ignore case sensitivity
        //nameInput = nameInput.toUpperCase();
-       console.log(nameInput);
+       //console.log(nameInput);
        //let institutionDisplayName = "";//how the institution name appears in the choices
        //let newID = null;//have to update the institution id for the correct institution to be pulled when selected
     
@@ -366,7 +366,7 @@
        for(var i=0; i<institutions.length; i++)
            {
                let temp = institutions[i].name;
-               console.log(institutions[i].type);
+               //console.log(institutions[i].type);
                let tempUpper = temp.toUpperCase();
                if(tempUpper.includes(nameInput))
                    {
@@ -537,7 +537,7 @@
 
                else{
                    // document.getElementById("displayStatus").innerHTML =  "Region : " +  optionsText; 
-                    console.log("Region : " +  optionsText);
+                    //console.log("Region : " +  optionsText);
                     clearSelectStates();
                     //console.log("cleared all");
                     let state = document.getElementById('state');
@@ -712,7 +712,7 @@
                          
                            if( institutions[i].state != undefined){
                               for(var j=0; j<ceStates.length; j++){
-                                  console.log( institutions[i].state);
+                                  //console.log( institutions[i].state);
                                     if( institutions[i].state == ceStates[j]){
                                         
                                         ++count;
@@ -971,7 +971,7 @@
                              let optionDegree = document.createElement( 'option' );
                              optionDegree.value = i;
                              optionDegree.textContent = programList[i].degree.title; 
-                             console.log(programList[i].degree.title + " added")
+                             //console.log(programList[i].degree.title + " added")
                              element.appendChild( optionDegree );           
                          }
                             var repeatDegree = {};
@@ -1038,7 +1038,7 @@
 <!-- end institutions container -->
 <script>
     
-    /***********************************************************/
+    /***********************************************************
     var ITypeList = [];
     getInstitutionTypes();
     function getInstitutionTypes()
@@ -1084,7 +1084,7 @@
                      } 
     
     
-   /***********************************************************/ 
+   ***********************************************************/ 
     
     
    //Filter by the location
