@@ -14,7 +14,7 @@
             {
               if ( xhr.status === 200 )
               {
-               // console.log( xhr.responseText );
+               //console.log( xhr.responseText );
                 let json = JSON.parse( xhr.responseText );
                 programList = json;             
                 populateProgramSelect();        //This function will populate the multiline select with list of all programs.
@@ -39,9 +39,19 @@
            for (var i = 0; i < programList.length; ++i)
                 {
                     let option = document.createElement( 'option' );
-                    option.value = programList[i].id;
-                    option.textContent = programList[i].title ;
-                    element.appendChild( option );
+                    if(programList[i].institution)
+                    {
+                      option.value = programList[i].id;
+                      option.textContent = programList[i].institution.name + " - " +  programList[i].title ;
+                      element.appendChild( option );
+                      //console.log(programList[i].institution.name);
+                    }
+                    else{
+                        option.value = programList[i].id;
+                       option.textContent = programList[i].title ;
+                       element.appendChild( option );  
+                    }
+                    
                 }
         }
        
