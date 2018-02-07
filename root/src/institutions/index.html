@@ -308,9 +308,11 @@
        let degreeId = select.options[select.selectedIndex].value;
        let degreeName = select.options[select.selectedIndex].text;
        let degreeDisplayName = "";
+       clearInstitutions();
        
        for (var i=0; i<programList.length; i++)
            {
+              // console.log(programList[i].title);
                if(programList[i].degree.title == degreeName)
                    {
                        for(var j=0; j<institutions.length; j++)
@@ -318,26 +320,23 @@
                                if(institutions[j].id == programList[i].institution.id)
                                    {
                                        //institutions[j].degree.id = programList[i].degree.id;
-                                       degreeDisplayName = programList[i].degree.title + " in " + programList[i].title;
-                                       institutions[j].degree = programList[i].degree.title;
-   //                                        console.log(institutions[j].degree);
+                                       //degreeDisplayName = programList[i].degree.title + " in " + programList[i].title;
+                                       //.institutions[j].degree = programList[i].degree.title;
+                                       
+                                       let element = document.getElementById('institution');
+                                       let option = document.createElement('option');
+                                       option.value = i;
+                                       option.textContent = institutions[i].name + " - " + programList[i].title;
+                                       element.appendChild(option);
+
+                                           //console.log(institutions[j].degree);
                                    }
                            }
                    }
            }
-       clearInstitutions();
+       
        document.getElementById("DegreeF").innerHTML = "Degree Type: " + degreeName;
-       for(var i=0; i<institutions.length; i++)
-           {
-               if( degreeName == institutions[i].degree)
-                   {
-                       let element = document.getElementById('institution');
-                       let option = document.createElement('option');
-                       option.value = i;
-                       option.textContent = institutions[i].name + " - " + degreeDisplayName;
-                       element.appendChild(option);
-                   }
-           }
+
    }
    
    
