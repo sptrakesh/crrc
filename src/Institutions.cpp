@@ -2,12 +2,13 @@
 #include "dao/InstitutionDAO.h"
 #include "dao/DesignationDAO.h"
 #include "dao/InstitutionDesignationDAO.h"
+#include "dao/InstitutionTypeDAO.h"
 #include "dao/functions.h"
+#include "model/Designation.h"
 #include "model/Institution.h"
 #include "model/InstitutionDesignation.h"
 
 #include <QtCore/QJsonArray>
-#include "model/Designation.h"
 
 namespace crrc
 {
@@ -55,7 +56,8 @@ void Institutions::create( Cutelyst::Context* c ) const
 
   c->stash( {
     { "template", "institutions/form.html" },
-    { "designations", dao::DesignationDAO().retrieveByType( "CAE" ) }
+    { "designations", dao::DesignationDAO().retrieveByType( "CAE" ) },
+    { "institutionTypes", dao::InstitutionTypeDAO().retrieveAll() }
   } );
 }
 
