@@ -19,15 +19,19 @@
             </td>
         </tr>
         
-        <!--
+        <!-- -->
         <tr>
             <td>
                 <b>Institution Type:</b>
             </td>
+            {% if object.institutionType %}
             <td>
+                {{ object.institutionType.name }}
+
             </td>
+            {% endif %}
         </tr>
-        -->
+        <!-- -->
 
         <tr>
             <td>

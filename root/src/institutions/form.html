@@ -107,7 +107,7 @@
             {
                 if ( xhr.status === 200 && xhr.readyState == 4)
                     {            
-                        //console.log( xhr.responseText );
+                        console.log( xhr.responseText );
                         ITypeList = JSON.parse( xhr.responseText );
                         //console.log(ITypeList);
                         populateITypes();
@@ -122,12 +122,12 @@
     
     function populateITypes(){
                      
-                         let element = document.getElementById('InstitutionType');
+                         let element = document.getElementById('institutionTypeId');
                      
                          let optionDefault = document.createElement( 'option' );
                          optionDefault.value = -1;
-                         optionDefault.textContent = "Select Degree";
-                         element.appendChild(optionDefault); 
+                         //optionDefault.textContent = "";
+                       //  element.appendChild(optionDefault); 
 
                          for (var i = 0; i < ITypeList.length; ++i){
                            
@@ -146,7 +146,7 @@
       <td>
         <form id="edit" method="post" action="/institutions/edit" onsubmit="return false;">
           {% if object %}
-          <h2>Edit Institution</h2>
+          <h2 align="center">Edit Institution</h2>
           {% else %}
           <h2 align="center">Create Institution</h2>
           {% endif %}
@@ -163,18 +163,23 @@
                     </td>
                 </tr>
                 
-                <!--
+                <!-- -->
                 <tr>
                     <td>
                         <label class="label">Institution Type:</label>
                         
                     </td>
                     <td>
-                        <select id="InstitutionType" style="width:250px" class="CmbBox"></select>
+                        <select id="institutionTypeId" style="width:250px" class="CmbBox">
+                            
+                            <option value="{{ object.institutionType.id }}">{{ object.institutionType.name }}</option>
+
+                            
+                        </select>
                     </td>
                 </tr>
                 
-                 -->
+                <!-- -->
                 
                 <tr>
                     <td>

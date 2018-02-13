@@ -29,7 +29,7 @@
        {
            if ( xhr.status === 200 )
            {
-    //           console.log( xhr.responseText );
+            console.log( xhr.responseText );
                let json = JSON.parse( xhr.responseText );
                institutions = json;
                populateInstitutionStateSelect();
@@ -1007,7 +1007,7 @@
                </td>
             </tr>
              
-             <!-- 
+             <!-- -->
             <tr>
                <th colspan=2 style="align: center"><u>Institution Type</u></th>
             </tr>
@@ -1025,7 +1025,7 @@
             <tr>
                <td colspan="2" align="center"><input type="submit" value="Apply Filter" name="InstitutionTypeButton" onclick = "filterByInstitutionType()" class="commonBtn"></td>
             </tr>
-              -->
+              <!-- -->
              
          </table>
       </div>
@@ -1037,7 +1037,7 @@
 <!-- end institutions container -->
 <script>
     
-    /***********************************************************
+    /***********************************************************/
     var ITypeList = [];
     getInstitutionTypes();
     function getInstitutionTypes()
@@ -1083,7 +1083,7 @@
                      } 
     
     
-   ***********************************************************/ 
+   /***********************************************************/ 
     
     
    //Filter by the location
