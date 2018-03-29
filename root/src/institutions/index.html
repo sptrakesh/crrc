@@ -29,10 +29,10 @@
        {
            if ( xhr.status === 200 )
            {
-            console.log( xhr.responseText );
+            //console.log( xhr.responseText );
                let json = JSON.parse( xhr.responseText );
                institutions = json;
-               populateInstitutionStateSelect();
+              
                populateInstitutionSelect();
                //populateInstitutionStateSelect();
    
@@ -59,6 +59,7 @@
                    option.textContent = institutions[i].name + " ("  + institutions[i].city + " , " + institutions[i].state + ")" ;
                    element.appendChild( option );
                }
+
        }
    
    //Redirects to institution information page
@@ -113,12 +114,12 @@
      $("#city").val("-1");
      $("#DegreeType").val("-1");
      $("#InstitutionType").val("-1");
-     $("#InstitutionRegionFilter").val("-1");
+     $("#InstitutiondisplayStatusilter").val("-1");
      document.getElementById("StateF").innerHTML = "";
      document.getElementById("CityF").innerHTML = "";
      document.getElementById("DegreeF").innerHTML = "";
      document.getElementById("InstitutionF").innerHTML = "";
-     document.getElementById("RegionF").innerHTML = "";
+     document.getElementById("displayStatus").innerHTML = "";
      //document.getElementById("displayStatus").innerHTML = ""; 
    }
    
@@ -174,12 +175,14 @@
                          for(var i=0; i< institutions.length; ++i)
                          {
                              let option = document.createElement ('option');
-                     
+                             
                              option.value = institutions[i].id;
+                            
                              option.textContent = institutions[i].state;
-                         //console.log(institutions[i].state + " added");
+                             
                              element.appendChild(option);
-                     
+                           
+                             
                          }
                          
                          //this part will remove duplicates
@@ -213,7 +216,7 @@
                                      lb.options[i].text = arrTexts[i];
                                      lb.options[i].value = arrTexts[i];
                                  }
-                             //lb.options[0].text = "Select State";
+                             lb.options[0].text = "Select State";
                          
                          
                      }
@@ -254,8 +257,10 @@
            let optionValue = selectState.options[selectState.selectedIndex].value;
             stateName = selectState.options[selectState.selectedIndex].text;
    
-           if(optionValue == -1){ //if state is not selected
-               alert("Please Select a State to Filter!");
+           if(optionValue ==-1){ //if state is not selected
+              //document.getElementById("displayStatus").innerHTML =  "Please select a Region to Filter"; 
+              filterByRegion();
+              
            }
            else{
                
@@ -443,7 +448,7 @@
          </ul>
 
           <ul class="WhatFilter" style="background-color: white; list-style-type:none">
-            <li id="RegionF"></li>
+            <li id="displayStatus"></li>
          </ul>
          <ul class="WhatFilter" style="background-color: white; list-style-type:none">
             <li id="StateF"></li>
@@ -460,7 +465,7 @@
          <ul class="WhatFilter" style="background-color: white; list-style-type:none">
             <li id="NameF"></li>
          </ul>
-          
+          <p id="displayStatus">  </p><br>
       </div>
       <!-- The Search Filters -->
       <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 20px 0px 0px; width:350px; height: 450px">
@@ -509,14 +514,17 @@
             </tr>
             <tr>
               <td>  Filter By Region:</td>
-              <td><select class="CmbBox" id="InstitutionRegionFilter" onchange="filterByRegion()" style="width:300px" >
+              <td><select class="CmbBox" id="InstitutiondisplayStatusilter" onchange="filterByRegion()" style="width:300px" >
                     <option value="-1"> Select Region </option>
-                    <option value="1">Western Region</option>
-                    <option value="2">North Central Region</option>
-                    <option value="3">South Cental Region</option>
-                    <option value="4">Central Eastern Region</option>
-                    <option value="5">North Eastern Region</option>
-                    <option value="6">South East Region</option>
+                    <option value="1">Northwest Region</option>
+                    <option value="2">Southwest Region</option>
+                    <option value="3">South Central Region</option>
+                    <option value="4">Mid-west Region</option>
+                    <option value="5">North Central Region</option>
+                    <option value="6">Central Eastern Region</option>
+                    <option value="7">North East Region</option>
+                    <option value="8">National Capital Region</option>
+                    <option value="9">South East Region</option>
                   </select>
                   <br>
                   </td>
@@ -525,17 +533,18 @@
             <script type="text/javascript">
               
               function filterByRegion(){
-               let select = document.getElementById('InstitutionRegionFilter');
+               let select = document.getElementById('InstitutiondisplayStatusilter');
                let optionValue = select.options[select.selectedIndex].value;
                let optionsText = select.options[select.selectedIndex].text;
 
                if(optionValue == -1){
-                   // document.getElementById("displayStatus").innerHTML =  "Please select a Region to Filter"; 
-                   console.log("Please select a Region to Filter");
+                    document.getElementById("displayStatus").innerHTML =  "Please select a Region to Filter"; 
+                   //console.log("Please select a Region to Filter");
                }
 
                else{
-                   // document.getElementById("displayStatus").innerHTML =  "Region : " +  optionsText; 
+
+                   document.getElementById("displayStatus").innerHTML =  "Region : " +  optionsText; 
                     //console.log("Region : " +  optionsText);
                     clearSelectStates();
                     //console.log("cleared all");
@@ -546,25 +555,33 @@
                     state.appendChild( stateOption );
                     
 
-                            if(optionsText == "Western Region"){
-                               populateWesternRegion();
+                           if(optionsText == "Northwest Region"){
+                           
+                               populateNorthWestRegion();
+                            }
+                            else if(optionsText == "Southwest Region"){
+                                populateSouthWestRegion();
                             }
                             else if(optionsText == "North Central Region"){
                               populateNorthCentralRegion();
-
-                            }
-                            else if(optionsText == "South Cental Region"){
-                              
+                             }
+                            else if(optionsText == "South Central Region"){
                               populateSouthCentralRegion();
+                            }
+                            else if(optionsText == "Mid-west Region"){
+                              populateMidWestRegion();
                             }
                             else if(optionsText == "Central Eastern Region"){
                                 populateCentralEasternRegion();
                             }
-                            else if(optionsText == "North Eastern Region"){
+                            else if(optionsText == "North East Region"){
                                 populateNorthEasternRegion();
                             }
                             else if(optionsText == "South East Region"){
                               populateSouthEastRegion();
+                            }
+                            else if(optionsText == "National Capital Region"){
+                              populateNationalCapitalRegion();
                             }
                         }
                    
@@ -580,34 +597,70 @@
                       }
               }
 
-              function populateWesternRegion(){
+              function populateNorthWestRegion(){
                    
+                           
                     var count = 0; 
                     //  Hard Coding Western States;
-                    var westernStates = [];
+                   var nwstates = [];
 
-                    westernStates[0] = "AZ";
-                    westernStates[1] = "CA";
-                    westernStates[2] = "CO";
-                    westernStates[3] = "HI";
-                    westernStates[4] = "ID";
-                    westernStates[5] = "OR";
-                    westernStates[6] = "UT";
-                    westernStates[7] = "WA";
-                    //clearInstitutions();
-                    
+                    nwstates[0] = "WA";
+                    nwstates[1] = "OR";
+                    nwstates[2] = "ID";
+                    nwstates[3] = "MT";
+                    nwstates[4] = "WY";
+                    nwstates[5] = "AK";
+                    nwstates[6] = "HI";
+                      clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                        
                       //console.log(institutions[i].state);
 
                            if( institutions[i].state != undefined){
-                              for(var j=0; j<westernStates.length; j++){
+                              for(var j=0; j<nwstates.length; j++){
                                   
-                                    if( institutions[i].state == westernStates[j]){
-                                        
+                                    if( institutions[i].state == nwstates[j]){
+                                       // alert(count);
                                         ++count;
-                                         document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for Western Region <br><br>Region : Western"  ; 
-                                           //addInstitution_at(i);
+                                         document.getElementById("displayStatus").innerHTML =  "Found " + count + " Institutions for North West Region <br><br>Region : North West Region"  ; 
+                                           addInstitution_at(i);
+                                          addState_at(i);
+                                    }
+                               }
+                                
+                            }
+                         
+                    } 
+                 }
+
+                 function populateSouthWestRegion(){
+                   
+                           
+                    var count = 0; 
+                    //  Hard Coding Western States;
+                   var swstates = [];
+
+                    swstates[0] = "CA";
+                    swstates[1] = "NV";
+                    swstates[2] = "UT";
+                    swstates[3] = "AZ";
+                    swstates[4] = "CO";
+                    swstates[5] = "NM";
+                   
+      
+                      clearInstitutions();
+                   for(var i=0; i< institutions.length; i++){
+                       
+                      //console.log(institutions[i].state);
+
+                           if( institutions[i].state != undefined){
+                              for(var j=0; j<swstates.length; j++){
+                                  
+                                    if( institutions[i].state == swstates[j]){
+                                       // alert(count);
+                                        ++count;
+                                         document.getElementById("displayStatus").innerHTML =  "Found " + count + " Institutions for South West Region <br><br>Region : South West Region"  ; 
+                                           addInstitution_at(i);
                                           addState_at(i);
                                     }
                                }
@@ -624,19 +677,13 @@
                     //  Hard Coding Western States;
                     var ncStates = [];
 
-                    ncStates[0] = "IA";
+                   ncStates[0] = "WI";
                     ncStates[1] = "IL";
-                    ncStates[2] = "IN";
-                    ncStates[3] = "MI";
-                    ncStates[4] = "MN";
-                    ncStates[5] = "MO";
-                    ncStates[6] = "ND";
-                    ncStates[7] = "NE";
-                    ncStates[8] = "OH";
-                    ncStates[9] = "SD";
-                    ncStates[10] = "WI";
+                    ncStates[2] = "MI";
+                    ncStates[3] = "IN";
+                    ncStates[4] = "OH";
 
-                    //clearInstitutions();
+                    clearInstitutions();
 
                     for(var i=0; i< institutions.length; i++){
                           
@@ -646,8 +693,8 @@
                                     if( institutions[i].state == ncStates[j]){
                                      
                                         ++count;
-                                         document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for North Central Region <br><br> Region : North Central" ; 
-                                          // addInstitution_at(i);
+                                         document.getElementById("displayStatus").innerHTML =  "Found " + count + " Institutions for North Central Region <br><br> Region : North Central" ; 
+                                           addInstitution_at(i);
                                           addState_at(i);
                                     }
                                }
@@ -662,15 +709,12 @@
                     //  Hard Coding Western States;
                     var scStates = [];
 
-                    scStates[0] = "AR";
-                    scStates[1] = "KS";
-                    scStates[2] = "LA";
-                    scStates[3] = "MS";
-                    scStates[4] = "NM";
-                    scStates[5] = "OK";
-                    scStates[6] = "TX";
+                    scStates[0] = "TX";
+                    scStates[1] = "OK";
+                    scStates[2] = "AR";
+                    scStates[3] = "LA";
                     
-                    //clearInstitutions();
+                    clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                          
                            if( institutions[i].state != undefined){
@@ -681,8 +725,8 @@
                                         ++count;
                                         
                                         
-                                          document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for South Central Region <br><br>Region : South Central" ; 
-                                          //addInstitution_at(i);
+                                          document.getElementById("displayStatus").innerHTML =  "Found " + count + " Institutions for South Central Region <br><br>Region : South Central" ; 
+                                          addInstitution_at(i);
                                           addState_at(i);
                                     }
                                }
@@ -692,21 +736,51 @@
                     } 
                  }
 
+                  function populateMidWestRegion(){
+                    var count = 0;
+
+                    //  Hard Coding Western States;
+                    var mwStates = [];
+
+                    mwStates[0] = "ND";
+                    mwStates[1] = "SD";
+                    mwStates[2] = "NE";
+                    mwStates[3] = "KS";
+                    mwStates[4] = "MN";
+                    mwStates[5] = "IA";
+                    mwStates[6] = "MO";
+
+                      clearInstitutions();
+                   for(var i=0; i< institutions.length; i++){
+                         
+                           if( institutions[i].state != undefined){
+                              for(var j=0; j<mwStates.length; j++){
+                                  //console.log( institutions[i].state);
+                                    if( institutions[i].state == mwStates[j]){
+                                        
+                                        ++count;
+                                         document.getElementById("displayStatus").innerHTML =  "Found " + count + " Institutions for Mid-West Region <br><br>Region : Mid-West" ; 
+
+                                           addInstitution_at(i);
+                                          addState_at(i);
+                                    }
+                               }
+                            }
+                     } 
+                  }
                  function populateCentralEasternRegion(){
                     
                     var count = 0; 
                     //  Hard Coding Western States;
                     var ceStates = [];
 
-                    ceStates[0] = "DC";
-                    ceStates[1] = "DE";
-                    ceStates[2] = "KY";
-                    ceStates[3] = "MD";
+                   ceStates[0] = "KY";
+                    ceStates[1] = "TN";
+                    ceStates[2] = "WV";
+                    ceStates[3] = "VA";
                     ceStates[4] = "NC";
-                    ceStates[5] = "VA";
-                    ceStates[6] = "WV";
                     
-                   //clearInstitutions();
+                   clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                          
                            if( institutions[i].state != undefined){
@@ -717,9 +791,9 @@
                                         ++count;
                                         
                                         
-                                          document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for Central Eastern Region <br><br>Region : Central Eastern" ; 
+                                          document.getElementById("displayStatus").innerHTML =  "Found " + count + " Institutions for Central Eastern Region <br><br>Region : Central Eastern" ; 
 
-                                           //addInstitution_at(i);
+                                           addInstitution_at(i);
                                           addState_at(i);
 
                                     }
@@ -747,7 +821,7 @@
                     neStates[7] = "RI";
                     neStates[8] = "VT";
                     
-                    //clearInstitutions();
+                    clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                         
                            if( institutions[i].state != undefined){
@@ -756,9 +830,9 @@
                                     if( institutions[i].state == neStates[j]){
                                         
                                         ++count;
-                                         document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for North Eastern Region <br><br>Region : North Eastern" ; 
+                                         document.getElementById("displayStatus").innerHTML =  "Found " + count + " Institutions for North Eastern Region <br><br>Region : North Eastern" ; 
 
-                                           //addInstitution_at(i);
+                                           addInstitution_at(i);
                                           addState_at(i);
 
                                     }
@@ -769,6 +843,36 @@
                     } 
                  }
 
+                 function populateNationalCapitalRegion(){
+                      var count = 0; 
+                    //  Hard Coding Western States;
+                    var nCapStates = [];
+
+                    nCapStates[0] = "DE";
+                    nCapStates[1] = "MD";
+                    nCapStates[2] = "DC";
+
+                    clearInstitutions();
+                    for(var i=0; i< institutions.length; i++){
+                          
+                           if( institutions[i].state != undefined){
+                              for(var j=0; j<nCapStates.length; j++){
+                                 
+                                    if( institutions[i].state == nCapStates[j]){
+                                        
+                                        ++count;
+                                        
+                                         document.getElementById("displayStatus").innerHTML =  "Found " + count + " Institutions for National Capital Region <br><br>Region : National Capital" ; 
+                                           addInstitution_at(i);
+                                          addState_at(i);
+
+                                    }
+                               }
+                                
+                            }
+                         
+                    }
+                 }
                  function populateSouthEastRegion(){
                     
                     var count = 0; 
@@ -783,7 +887,7 @@
                     seStates[5] = "TN";
                   
                     
-                    //clearInstitutions();
+                    clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                           
                            if( institutions[i].state != undefined){
@@ -793,8 +897,8 @@
                                         
                                         ++count;
                                         
-                                         document.getElementById("RegionF").innerHTML =  "Found " + count + " Institutions for South East Region <br><br>Region : South East" ; 
-                                           //addInstitution_at(i);
+                                         document.getElementById("displayStatus").innerHTML =  "Found " + count + " Institutions for South East Region <br><br>Region : South East" ; 
+                                           addInstitution_at(i);
                                           addState_at(i);
 
                                     }
@@ -838,63 +942,11 @@
                </td>
                <td>
                   <select name="state" id="state" style="width:300px" onchange="populateInstitutionCitySelect()" class="CmbBox">
-                     <!-- <option selected value="-1">Select State</option> -->
+                      
                   </select>
                   <!-- populate state list -->
                   <script>
                      populateInstitutionStateSelect();
-                     
-                     function populateInstitutionStateSelect()
-                     {
-                         let element = document.getElementById('state');
-                     
-                         for(var i=0; i< institutions.length; ++i)
-                         {
-                             let option = document.createElement ('option');
-                     
-                             option.value = institutions[i].id;
-                             option.textContent = institutions[i].state;
-                             element.appendChild(option);
-                     
-                         }
-                         
-                         //this part will remove duplicates
-                             var repeatState = {};
-                     
-                             $("select[name='state'] > option").each(function () 
-                             {
-                                 if(repeatState[this.text] /*|| this.text == ""*/)//removed code will remove blank options in the select 
-                                     {
-                                         $(this).remove();
-                                     }
-                                 else 
-                                     {
-                                         repeatState[this.text] = this.value;
-                                     }
-                             });
-                             
-                             //This will do the sorting
-                             
-                             var lb = document.getElementById('state');
-                             arrTexts = new Array();
-                     
-                             for(i=0; i<lb.length; i++)  
-                                 {
-                                     arrTexts[i] = lb.options[i].text;
-                                 }
-                                 arrTexts.sort();
-                     
-                             for(i=0; i<lb.length; i++)  
-                                 {
-                                     lb.options[i].text = arrTexts[i];
-                                     lb.options[i].value = arrTexts[i];
-                                 }
-                             //lb.options[0].text = "Select State";
-                         
-                         
-                     }
-                     
-                     
                   </script>
                </td>
             </tr>
@@ -904,7 +956,7 @@
                </td>
                <td>
                   <select id="city" name="city" style="width: 300px" class="CmbBox">
-                     <!-- <option selected value="-1">Select City</option> -->
+                     <option selected value="-1">Select City</option> 
                   </select>
                   <script>
                      var repeatCity = {};
