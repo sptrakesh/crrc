@@ -15,7 +15,10 @@ using crrc::InstitutionDesignations;
 
 void InstitutionDesignations::index( Cutelyst::Context* c )
 {
-  c->response()->body() = "JSON services";
+  const auto list = dao::InstitutionDesignationDAO().retrieveAll( c );
+  QJsonArray arr;
+  for ( const auto& degree : list ) arr << toJson( *model::InstitutionDesignation::from( degree ) );
+  dao::sendJson( c, arr );
 }
 
 void InstitutionDesignations::base( Cutelyst::Context* c ) const
