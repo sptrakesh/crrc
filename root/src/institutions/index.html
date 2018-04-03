@@ -14,7 +14,8 @@
 <script type="text/javascript">
    var institutions = [];
    var programList = [];
-   
+   var designationList = [];
+
    /************* Institution Functions **************/
    retrieveInstitutions();
    
@@ -35,7 +36,8 @@
               
                populateInstitutionSelect();
                //populateInstitutionStateSelect();
-   
+                retrieveDesignation();
+               
            }
            else
            {
@@ -44,13 +46,97 @@
        };
        xhr.send( '' );
    }
+
    
-     //populate institutions
+   function retrieveDesignation(){
+    
+     let xhr = new XMLHttpRequest();
+
+       xhr.open( 'GET' , '/institution/designations');
+        
+        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+        xhr.onload = function ()
+        {   
+          if (xhr.status === 200 ){
+               
+              //console.log(xhr.responseText);
+              let json= JSON.parse( xhr.responseText );
+              designationList = json;
+                            
+                populateDesignations();
+
+                function populateDesignations(){
+                        var id = [];
+                        var names = [];
+                        var uniquesID = [];
+                        var uniquesName = []; 
+                        let element = document.getElementById('designation');
+                        for(i=0;i<designationList.length;++i){
+                              id[i] = i;
+                              names[i] = designationList[i].designation.title;
+                        }
+                        $.each(names,function(i,el){
+                        if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+                        });
+                        $.each(id,function(i,el){
+                            if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+                        });
+                        uniquesID.sort();
+                        uniquesName.sort();
+                        for (var i = 0; i < uniquesName.length; ++i){
+                            let option = document.createElement( 'option' );
+                            option.value  = uniquesID[i];
+                            option.textContent= uniquesName[i];
+                            element.appendChild( option );  
+                        }
+                }
+
+                populateDesignationExpiration();
+
+                function populateDesignationExpiration(){
+                        var id = [];
+                        var names = [];
+                        var uniquesID = [];
+                        var uniquesName = []; 
+                        let element = document.getElementById('designationExpiration');
+                
+                        for(i=0;i<designationList.length;++i){
+                              id[i] = i;
+                              names[i] = designationList[i].expiration;
+                        }
+                        $.each(names,function(i,el){
+                        if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+                        });
+                        $.each(id,function(i,el){
+                            if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+                        });
+                        uniquesID.sort();
+                        uniquesName.sort();
+                        for (var i = 0; i < uniquesName.length; ++i){
+                            let option = document.createElement( 'option' );
+                            option.value  = uniquesID[i];
+                            option.textContent= uniquesName[i];
+                            element.appendChild( option );  
+                        }
+                }
+                
+            
+          }
+          else{
+            console.log( `Error retrieving institution list.  Server returned status: ${xhr.start}` );
+          }
+        };
+        xhr.send( '' );
+        
+        
+      
+   }
+  
    function populateInstitutionSelect()        //This function is called from getPrograms function.
        {
            
           let element = document.getElementById('institution');
-          //console.log(institutions.length);
+          
           for (var i = 0; i < institutions.length; ++i)
                {
                    
@@ -80,26 +166,40 @@
     
    function removeInsitution() 
    {
+
        let select = document.getElementById( 'institution' );
        let institutionId = select.options[select.selectedIndex].value;
-       let xhr = new XMLHttpRequest();
-   
-       xhr.open( 'PUT', '/institutions/remove' );
-       xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-       xhr.onload = function ()
-       {
-           if ( xhr.status === 200 )
-           {
-               //console.log( xhr.responseText );
-               let json = JSON.parse( xhr.responseText );
-               if ( json.status && json.count === 1 )
-               {
-                   select.remove(select.selectedIndex);
-               }
-   
+       let institutionName = select.options[select.selectedIndex].text;
+       if(institutionId == -1){
+            document.getElementById("displayStatus").innerHTML = "Please select an Institution to delete!";
+       }
+       else{
+        var confirmDelete = confirm("Are you Sure you want to Delete " + institutionName + "?");
+
+           if(confirmDelete == true) {
+                 let xhr = new XMLHttpRequest();
+                 xhr.open( 'PUT', '/institutions/remove' );
+                 xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+                 xhr.onload = function ()
+                 {
+                     if ( xhr.status === 200 )
+                     {
+                         //console.log( xhr.responseText );
+                         let json = JSON.parse( xhr.responseText );
+                         if ( json.status && json.count === 1 )
+                         {
+                             select.remove(select.selectedIndex);
+                         }
+             
+                     }
+                 };
+                 xhr.send( `id=${institutionId}` );
            }
-       };
-       xhr.send( `id=${institutionId}` );
+           else {
+                alert("Delete was unsuccessful");
+           }
+       }
+      
    
    }
    
@@ -114,13 +214,18 @@
      $("#city").val("-1");
      $("#DegreeType").val("-1");
      $("#InstitutionType").val("-1");
-     $("#InstitutiondisplayStatusilter").val("-1");
+     $("#region").val("-1");
+     $("#designation").val("-1");
+     $("#designationExpiration").val("-1");
+     $("#schoolName").val("");
+     
      document.getElementById("StateF").innerHTML = "";
      document.getElementById("CityF").innerHTML = "";
      document.getElementById("DegreeF").innerHTML = "";
      document.getElementById("InstitutionF").innerHTML = "";
      document.getElementById("displayStatus").innerHTML = "";
      //document.getElementById("displayStatus").innerHTML = ""; 
+     populateInstitutionStateSelect();
    }
    
    
@@ -171,7 +276,9 @@
                      {
                          
                          let element = document.getElementById('state');
-                     
+                           while (element.firstChild) {
+                               element.removeChild(element.firstChild);
+                           }
                          for(var i=0; i< institutions.length; ++i)
                          {
                              let option = document.createElement ('option');
@@ -243,7 +350,14 @@
        document.getElementById("DegreeF").innerHTML = "";
        document.getElementById("InstitutionF").innerHTML = "";
        document.getElementById("NameF").innerHTML = "";
-   
+        //$("#state").val("-1");
+        //$("#city").val("-1");
+        $("#DegreeType").val("-1");
+        $("#InstitutionType").val("-1");
+        $("#region").val("-1");
+        $("#designation").val("-1");
+        $("#designationExpiration").val("-1");
+        $("#schoolName").val("");
    
        let selectCity = document.getElementById('city');
        let cityId = selectCity.options[selectCity.selectedIndex].value;
@@ -309,6 +423,14 @@
        document.getElementById("DegreeF").innerHTML = "";
        document.getElementById("InstitutionF").innerHTML = "";
        document.getElementById("NameF").innerHTML = "";
+       $("#state").val("-1");
+       $("#city").val("-1");
+       //$("#DegreeType").val("-1");
+       $("#InstitutionType").val("-1");
+       $("#region").val("-1");
+       $("#designation").val("-1");
+       $("#designationExpiration").val("-1");
+       $("#schoolName").val("");
        let select = document.getElementById('DegreeType');
        let degreeId = select.options[select.selectedIndex].value;
        let degreeName = select.options[select.selectedIndex].text;
@@ -354,6 +476,14 @@
        document.getElementById("DegreeF").innerHTML = "";
        document.getElementById("InstitutionF").innerHTML = "";
        document.getElementById("NameF").innerHTML = "";
+       $("#state").val("-1");
+     $("#city").val("-1");
+     $("#DegreeType").val("-1");
+     $("#InstitutionType").val("-1");
+     $("#region").val("-1");
+     $("#designation").val("-1");
+     $("#designationExpiration").val("-1");
+    
        
        let select = document.getElementById('schoolName');//the name searched
        //console.log(select);
@@ -386,6 +516,79 @@
        
    }
    
+   function filterByDesignationTitle(){
+       document.getElementById("StateF").innerHTML = "";
+       document.getElementById("CityF").innerHTML = "";
+       document.getElementById("DegreeF").innerHTML = "";
+       document.getElementById("InstitutionF").innerHTML = "";
+       document.getElementById("NameF").innerHTML = "";
+      $("#state").val("-1");
+     $("#city").val("-1");
+     $("#DegreeType").val("-1");
+     $("#InstitutionType").val("-1");
+     $("#region").val("-1");
+     $("#designationExpiration").val("-1");
+     $("#schoolName").val("");
+        let select = document.getElementById('designation');//the Option selected from select box e.g. CAE -2Y
+        let designationID = select.options[select.selectedIndex].value;
+       let designationTitle = select.options[select.selectedIndex].text;
+       if(designationID == -1){
+            document.getElementById("displayStatus").innerHTML = "Pleae Select A Designation to Filter";
+       }
+       else{
+          clearInstitutions();
+          document.getElementById("displayStatus").innerHTML = "Designation : " + designationTitle;
+          for(i=0;i<designationList.length;++i){
+              if(designationTitle == designationList[i].designation.title){
+                    
+                    let element = document.getElementById('institution');
+                    let option = document.createElement('option');
+                    option.value = designationList[i].institution.id;
+                    option.textContent = designationList[i].institution.name + " ( " + designationList[i].institution.city + " ) ";
+                    element.appendChild(option);
+              }
+          }
+       }
+   }
+
+   function filterByDesignationExpiration(){
+      //This function is called from html onclick button
+
+      //This function gives the list of all the institutions that have designation expiration in particular year.
+       document.getElementById("StateF").innerHTML = "";
+       document.getElementById("CityF").innerHTML = "";
+       document.getElementById("DegreeF").innerHTML = "";
+       document.getElementById("InstitutionF").innerHTML = "";
+       document.getElementById("NameF").innerHTML = "";
+        $("#state").val("-1");
+       $("#city").val("-1");
+       $("#DegreeType").val("-1");
+       $("#InstitutionType").val("-1");
+       $("#region").val("-1");
+       $("#designation").val("-1");
+       //$("#designationExpiration").val("-1");
+       $("#schoolName").val("");
+        let select = document.getElementById('designationExpiration');//the Option selected from select box e.g. 2019
+        let designationID = select.options[select.selectedIndex].value;
+       let designationYear = select.options[select.selectedIndex].text;
+       if(designationID == -1){
+            document.getElementById("displayStatus").innerHTML = "Pleae Select A Year to Filter";
+       }
+       else{
+          clearInstitutions();
+          document.getElementById("displayStatus").innerHTML = "Designation Expiration Year : " + designationYear;
+          for(i=0;i<designationList.length;++i){
+              if(designationYear == designationList[i].expiration){
+                    
+                    let element = document.getElementById('institution');
+                    let option = document.createElement('option');
+                    option.value = designationList[i].institution.id;
+                    option.textContent = designationList[i].institution.name + " ( " + designationList[i].institution.city + " ) ";
+                    element.appendChild(option);
+              }
+          }
+       }
+   }
    /****************************************************/
    
 </script>
@@ -397,7 +600,7 @@
    <div id="PageTitle">
       <h2 align="center">View Institutions</h2>
    </div>
-   <div style="min-height: 650px; width: 1100px">
+   <div style="min-height: 900px; width: 1100px">
       <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 20px; height: 450px; width:450px">
          <table>
              <tr>
@@ -514,7 +717,7 @@
             </tr>
             <tr>
               <td>  Filter By Region:</td>
-              <td><select class="CmbBox" id="InstitutiondisplayStatusilter" onchange="filterByRegion()" style="width:300px" >
+              <td><select class="CmbBox" id="region" onchange="filterByRegion()" style="width:300px" >
                     <option value="-1"> Select Region </option>
                     <option value="1">Northwest Region</option>
                     <option value="2">Southwest Region</option>
@@ -533,7 +736,7 @@
             <script type="text/javascript">
               
               function filterByRegion(){
-               let select = document.getElementById('InstitutiondisplayStatusilter');
+               let select = document.getElementById('region');
                let optionValue = select.options[select.selectedIndex].value;
                let optionsText = select.options[select.selectedIndex].text;
 
@@ -986,7 +1189,7 @@
                </td>
                <td>
                   <select name="DegreeType" id="DegreeType" style="width:300px" class="CmbBox">
-                      <option value="-1" ></option>
+                      <option value="-1" >Select Degree</option>
                   </select>
                   <!-- populate the degree list -->     
                   <script>
@@ -1058,7 +1261,44 @@
                   <input type="submit" value="Apply Filter" name="searchProgramButton" id="searchProgramButton" onclick="filterDegrees()" class="commonBtn"><br><br>
                </td>
             </tr>
-             
+              <tr>
+               <th colspan=2 style="align: center"><u>Designations</u></th>
+            </tr>
+            <tr>
+               <td>
+                  CAE Designations:
+              </td>
+               <td>
+                  <select id="designation" style="width:300px" class="CmbBox">
+                      <option value="-1" >Select Designation</option>
+                  </select>
+              </td>
+            </tr>
+            <script>
+            // populateDesignation();
+            </script>
+            <tr>
+                <td colspan="2" align="center">
+                        <input type="button" value="Apply Filter" onclick="filterByDesignationTitle()" class="commonBtn"><br><br>
+                 </td>
+             </tr>
+             <tr>
+                <td>
+                    Expiration Year:
+                </td>
+                <td>
+                    <select id="designationExpiration" style="width: 300px" class="CmbBox">
+                        <option value="-1">Select Year</option>
+                    </select>
+                </td>
+             </tr>
+              <tr>
+                <td colspan="2" align="center">
+                        <input type="button" value="Apply Filter"  onclick="filterByDesignationExpiration()" class="commonBtn"><br><br>
+                 </td>
+             </tr>
+                  <br><br>
+
              <!-- -->
             <tr>
                <th colspan=2 style="align: center"><u>Institution Type</u></th>
@@ -1069,6 +1309,7 @@
                <td>Institution Type:</td>
                <td>
                   <select id="InstitutionType" name="InstitutionType" style="width:300px" onclick="" class="CmbBox">
+                      <option value="-1">Select Institution Type</option>
                   </select>
                </td>
             </tr>
@@ -1088,7 +1329,7 @@
 <div id="clear"></div>
 <!-- end institutions container -->
 <script>
-    
+
     /***********************************************************/
     var ITypeList = [];
     getInstitutionTypes();
@@ -1104,7 +1345,7 @@
                     {            
                         //console.log( xhr.responseText );
                         ITypeList = JSON.parse( xhr.responseText );
-                        console.log(ITypeList);
+                       // console.log(ITypeList);
                         populateITypes();
                     }
                 else
