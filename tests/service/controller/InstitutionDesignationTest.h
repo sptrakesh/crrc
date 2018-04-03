@@ -15,6 +15,7 @@ namespace crrc
     void cleanupTestCase();
 
     void create();
+    void retrieveAll();
     void retrieve();
     void update();
     void retrieveModified();
