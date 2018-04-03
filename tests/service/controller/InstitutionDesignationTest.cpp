@@ -98,6 +98,39 @@ void InstitutionDesignationTest::create()
   logout( &mgr, &eventLoop, &req );
 }
 
+void InstitutionDesignationTest::retrieveAll()
+{
+  QEventLoop eventLoop;
+  QNetworkAccessManager mgr;
+  connect( &mgr, SIGNAL( finished( QNetworkReply* ) ), &eventLoop,
+      SLOT( quit() ) );
+  QNetworkRequest req;
+  login( &mgr, &eventLoop, &req );
+
+  const auto url = QString{ "http://localhost:3000/institution/designations/" };
+  const auto reply = get( url, &mgr, &eventLoop, &req );
+
+  QVERIFY2( reply->error() == QNetworkReply::NoError, "Error retrieving list of all institution designations" );
+  const auto doc = QJsonDocument::fromJson( reply->readAll() );
+  const auto arr = doc.array();
+  QVERIFY2( !arr.isEmpty(), "Empty JSON response for institution designation list" );
+
+  bool found = false;
+  for ( const auto& obj : arr )
+  {
+    const auto& designation = obj.toObject()["designation"].toObject();
+    if ( institutionDesignationtest::designationId == designation["id"].toInt() )
+    {
+      found = true;
+      break;
+    }
+  }
+
+  QVERIFY2( found, "Newly created institution designation not returned in list" );
+
+  logout( &mgr, &eventLoop, &req );
+}
+
 void InstitutionDesignationTest::retrieve()
 {
   QEventLoop eventLoop;

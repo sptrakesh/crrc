@@ -215,6 +215,8 @@ available for managing designations.
 *  Designations may be deleted using the `/designations/remove`
    endpoint.  A JSON structure indicating success/failure of the operation is
    returned.  May be accessed using either `POST` or `PUT`.
+*  The full list of all the institution-designations may be retrieved as a JSON
+   array by making a `GET` request to the `/institutions/designations` endpoint.
 
 #### Screens
 The following screens and services are available for managing institution to

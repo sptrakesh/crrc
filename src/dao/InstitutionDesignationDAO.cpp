@@ -24,6 +24,30 @@ namespace crrc
 
 using crrc::dao::InstitutionDesignationDAO;
 
+QVariantList InstitutionDesignationDAO::retrieveAll( Cutelyst::Context* context ) const
+{
+  QVariantList list;
+
+  auto query = CPreparedSqlQueryThreadForDB( 
+    R"(
+select institution_id, designation_id, expiration
+from institution_designations
+order by designation_id
+)",
+    crrc::DATABASE_NAME );
+
+  if ( query.exec() )
+  {
+    while ( query.next() )
+    {
+      list << asVariant( InstitutionDesignation::create( context, query ) );
+    }
+  }
+  else qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
+
+  return list;
+}
+
 QVariantList InstitutionDesignationDAO::retrieve(
   Cutelyst::Context* context, uint32_t institutionId ) const
 {
@@ -44,6 +68,7 @@ where institution_id = :iid
       list << asVariant( InstitutionDesignation::create( context, query ) );
     }
   }
+  else qWarning( INSTITUTION_DESIGNATION_DAO ) << query.lastError().text();
 
   return list;
 }
