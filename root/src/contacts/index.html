@@ -215,7 +215,7 @@
         var uniquesName = []; 
 
         for(var i = 0; i<institutionList.length;++i){
-          console.log(institutionList[i].state);
+          
                     if(institutionList[i].state != undefined){
                         for(var j = 0; j<contactList.length;++j){
                             if(contactList[j].institution != undefined){
@@ -439,7 +439,7 @@
                     document.getElementById("displayStatus").innerHTML =  "Region : " +  optionsText; 
 
                     clearSelectStates();
-                    console.log("cleared all");
+                    
                     let state = document.getElementById('InstitutionStateFilter');
                     let stateOption = document.createElement( 'option' );
                     stateOption.value = -1;
@@ -532,7 +532,7 @@
                   if(contactList[i].institution != undefined){
 
                        if(cityName == contactList[i].institution.city){
-                         console.log(cityName + " = " + contactList[i].institution.city );
+                         
                        let element = document.getElementById('lstBoxselectUser_ViewUser');
                        let option = document.createElement( 'option' );
                        option.value = contactList[i].id;
@@ -714,9 +714,9 @@
           else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
              if( contactList[i].institution.state != undefined){
                 for(var j=0; j<nwstates.length; j++){
-                    console.log( contactList[i].institution.state);
+                    
                       if( contactList[i].institution.state == nwstates[j]){
-                          console.log( contactList[i].institution.state + " " + nwstates[j]);
+                          
                           ++count;
                            document.getElementById("displayStatus").innerHTML =  "Region : Western <br> Found " + count + " Users for Western Region" ; 
 
@@ -738,7 +738,7 @@
         option.value = contactList[i].id;
         option.textContent =  contactList[i].name +" - "  + contactList[i].institution.name + " (" + contactList[i].institution.city + ", " +contactList[i].institution.state + ")  ";
          element.appendChild( option );
-         console.log(contactList[i].name + " added " + option.textContent);
+         
 
    }
 
@@ -794,9 +794,9 @@
           else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
              if( contactList[i].institution.state != undefined){
                 for(var j=0; j<swstates.length; j++){
-                    console.log( contactList[i].institution.state);
+                   
                       if( contactList[i].institution.state == swstates[j]){
-                          console.log( contactList[i].institution.state + " " + swstates[j]);
+                          
                           ++count;
                            document.getElementById("displayStatus").innerHTML =  "Region : South West <br> Found " + count + " Users for South West Region" ; 
 
@@ -850,7 +850,7 @@
                 for(var j=0; j<ncStates.length; j++){
                    
                       if( contactList[i].institution.state == ncStates[j]){
-                          console.log( contactList[i].institution.state + " " + ncStates[j]);
+                          
                           ++count;
                            document.getElementById("displayStatus").innerHTML =  "Region : North Central <br> Found " + count + " Users for Western Region" ; 
                             addUser(i);
@@ -894,9 +894,9 @@
           else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
              if( contactList[i].institution.state != undefined){
                 for(var j=0; j<scStates.length; j++){
-                    console.log( contactList[i].institution.state);
+                    
                       if( contactList[i].institution.state == scStates[j]){
-                          console.log( contactList[i].institution.state + " " + scStates[j]);
+                          
                           ++count;
                           
                           
@@ -946,9 +946,9 @@
           else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
              if( contactList[i].institution.state != undefined){
                 for(var j=0; j<mwStates.length; j++){
-                    console.log( contactList[i].institution.state);
+                   
                       if( contactList[i].institution.state == mwStates[j]){
-                          console.log( contactList[i].institution.state + " " + mwStates[j]);
+                          
                           ++count;
                           
                           
@@ -1000,9 +1000,9 @@
           else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
              if( contactList[i].institution.state != undefined){
                 for(var j=0; j<ceStates.length; j++){
-                    console.log( contactList[i].institution.state);
+                    
                       if( contactList[i].institution.state == ceStates[j]){
-                          console.log( contactList[i].institution.state + " " + ceStates[j]);
+                          
                           ++count;
                           
                           
@@ -1056,9 +1056,9 @@
           else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
              if( contactList[i].institution.state != undefined){
                 for(var j=0; j<neStates.length; j++){
-                    console.log( contactList[i].institution.state);
+                    
                       if( contactList[i].institution.state == neStates[j]){
-                          console.log( contactList[i].institution.state + " " + neStates[j]);
+                          
                           ++count;
                           
                           
@@ -1108,9 +1108,9 @@
           else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
              if( contactList[i].institution.state != undefined){
                 for(var j=0; j<nCapStates.length; j++){
-                    console.log( contactList[i].institution.state + " at j " + nCapStates[j]);
+                    
                       if( contactList[i].institution.state == nCapStates[j]){
-                          console.log( contactList[i].institution.state + " " + nCapStates[j]);
+                          
                           ++count;
                           
                            document.getElementById("displayStatus").innerHTML =  "Region : National Capital <br> Found " + count + " Users for National Capital Region" ; 
@@ -1159,9 +1159,9 @@
           else if(contactList[i].institution != undefined){   // If the contacts have Institutions.  
              if( contactList[i].institution.state != undefined){
                 for(var j=0; j<seStates.length; j++){
-                    console.log( contactList[i].institution.state);
+                    
                       if( contactList[i].institution.state == seStates[j]){
-                          console.log( contactList[i].institution.state + " " + seStates[j]);
+                          
                           ++count;
                           
                            document.getElementById("displayStatus").innerHTML =  "Region : South East <br> Found " + count + " Users for South East Region" ; 

@@ -439,7 +439,7 @@
        
        for (var i=0; i<programList.length; i++)
            {
-              // console.log(programList[i].title);
+              
                if(programList[i].degree.title == degreeName)
                    {
                        for(var j=0; j<institutions.length; j++)
@@ -456,7 +456,7 @@
                                        option.textContent = institutions[i].name + " - " + programList[i].title;
                                        element.appendChild(option);
 
-                                           //console.log(institutions[j].degree);
+                                           
                                    }
                            }
                    }
@@ -486,7 +486,7 @@
     
        
        let select = document.getElementById('schoolName');//the name searched
-       //console.log(select);
+       
        document.getElementById("NameF").innerHTML = "Institution Name: " + select.value;//tell the user what filter was applied
        let nameInput = select.value.toUpperCase(); //put the name in all caps to ignore case sensitivity
        //nameInput = nameInput.toUpperCase();
@@ -500,7 +500,7 @@
        for(var i=0; i<institutions.length; i++)
            {
                let temp = institutions[i].name;
-               //console.log(institutions[i].type);
+               
                let tempUpper = temp.toUpperCase();
                if(tempUpper.includes(nameInput))
                    {
@@ -537,10 +537,12 @@
        }
        else{
           clearInstitutions();
-          document.getElementById("displayStatus").innerHTML = "Designation : " + designationTitle;
+          var count = 0;
+         
           for(i=0;i<designationList.length;++i){
               if(designationTitle == designationList[i].designation.title){
                     
+                    ++count;
                     let element = document.getElementById('institution');
                     let option = document.createElement('option');
                     option.value = designationList[i].institution.id;
@@ -548,6 +550,7 @@
                     element.appendChild(option);
               }
           }
+           document.getElementById("displayStatus").innerHTML = "Designation : " + designationTitle + "<br>" + "Found " + count + " Institutions for this Designation";
        }
    }
 
@@ -576,10 +579,11 @@
        }
        else{
           clearInstitutions();
-          document.getElementById("displayStatus").innerHTML = "Designation Expiration Year : " + designationYear;
+          var count = 0;
+          
           for(i=0;i<designationList.length;++i){
               if(designationYear == designationList[i].expiration){
-                    
+                    ++count;
                     let element = document.getElementById('institution');
                     let option = document.createElement('option');
                     option.value = designationList[i].institution.id;
@@ -587,6 +591,7 @@
                     element.appendChild(option);
               }
           }
+          document.getElementById("displayStatus").innerHTML = "Designation Expiration Year : " + designationYear+ "<br>" + "Found " + count + " Institutions that have Designation expiring on " + designationYear;
        }
    }
    /****************************************************/
@@ -742,15 +747,15 @@
 
                if(optionValue == -1){
                     document.getElementById("displayStatus").innerHTML =  "Please select a Region to Filter"; 
-                   //console.log("Please select a Region to Filter");
+                   
                }
 
                else{
 
                    document.getElementById("displayStatus").innerHTML =  "Region : " +  optionsText; 
-                    //console.log("Region : " +  optionsText);
+                    
                     clearSelectStates();
-                    //console.log("cleared all");
+                   
                     let state = document.getElementById('state');
                     let stateOption = document.createElement( 'option' );
                     stateOption.value = -1;
@@ -817,7 +822,7 @@
                       clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                        
-                      //console.log(institutions[i].state);
+                     
 
                            if( institutions[i].state != undefined){
                               for(var j=0; j<nwstates.length; j++){
@@ -854,7 +859,8 @@
                       clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
                        
-                      //console.log(institutions[i].state);
+                    
+
 
                            if( institutions[i].state != undefined){
                               for(var j=0; j<swstates.length; j++){
@@ -958,7 +964,7 @@
                          
                            if( institutions[i].state != undefined){
                               for(var j=0; j<mwStates.length; j++){
-                                  //console.log( institutions[i].state);
+                                 
                                     if( institutions[i].state == mwStates[j]){
                                         
                                         ++count;
@@ -988,7 +994,7 @@
                          
                            if( institutions[i].state != undefined){
                               for(var j=0; j<ceStates.length; j++){
-                                  //console.log( institutions[i].state);
+                                  
                                     if( institutions[i].state == ceStates[j]){
                                         
                                         ++count;
@@ -1211,7 +1217,7 @@
                   // console.log( xhr.responseText );
                programList = JSON.parse( xhr.responseText );
                 //populateDegrees();
-               //alert(programList.length + " script");
+               
                
                
                populateDegrees();
@@ -1225,7 +1231,7 @@
                              let optionDegree = document.createElement( 'option' );
                              optionDegree.value = i;
                              optionDegree.textContent = programList[i].degree.title; 
-                             //console.log(programList[i].degree.title + " added")
+                             
                              element.appendChild( optionDegree );           
                          }
                             var repeatDegree = {};
