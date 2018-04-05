@@ -8,6 +8,7 @@ namespace crrc
   {
     struct InstitutionDesignationDAO
     {
+      QVariantList retrieveAll( Cutelyst::Context* context ) const;
       QVariantList retrieve( Cutelyst::Context* context, uint32_t institutionId ) const;
       uint32_t save( Cutelyst::Context* context ) const;
       uint32_t remove( Cutelyst::Context* context ) const;
