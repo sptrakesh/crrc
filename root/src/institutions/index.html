@@ -1050,7 +1050,7 @@
             {
                 if ( xhr.status === 200 && xhr.readyState == 4)
                     {            
-                        //console.log( xhr.responseText );
+                        console.log( xhr.responseText );
                         ITypeList = JSON.parse( xhr.responseText );
                         console.log(ITypeList);
                         populateITypes();
