@@ -4,7 +4,7 @@ Application for managing articulation agreements between educational institution
 ## Sections
 * [Technology Stack](#techStack)
 * [Managing Entities](#entities)
-  * [Authentication and Authorisation](#auth)
+  * [Authentication and Authorization](#auth)
   * [InstitutionTypes](#institutionTypes)
   * [Institutions](#institutions)
   * [Contacts](#contacts)
@@ -47,7 +47,7 @@ The templates for managing entities follow a common naming convention:
 *  `<path to>/view.html` - Used to display details of an entity.
 *  `<path to>/form.html` - Used to create/edit entities.
 
-### <a name="auth"></a>Authentication and Authorisation
+### <a name="auth"></a>Authentication and Authorization
 The application is currently designed to be only accessed by authenticated
 users.  Users are granted the following roles:
 
