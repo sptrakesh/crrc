@@ -169,10 +169,15 @@
                         <label class="label">Institution Type:</label>
                         
                     </td>
+                    
                     <td>
                         <select id="institutionTypeId" style="width:250px" class="CmbBox">
-                            
-                            <option value="{{ object.institutionType.id }}">{{ object.institutionType.name }}</option>
+                            {% for institution in institutions %}
+                            <option value="{{ object.institutionType.id }}"
+                                    {% if institutionType.name == object.institutionType.name %}selected="selected" {% endif %}>
+                                {{ object.institutionType.name }}
+                            </option>
+                            {% endfor %}
 
                             
                         </select>
