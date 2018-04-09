@@ -67,12 +67,12 @@
         </tr>
         
         <tr>
-            {% if object.postal_code %}
+            {% if object.postalCode %}
             <td>
                 <b>Zip:</b>
             </td>
             <td>
-                {{ object.postal_code }}
+                {{ object.postalCode }}
             </td>
             {%endif%}
         </tr>
@@ -111,9 +111,15 @@
         </tr>
         
         <tr>
+            {% if object.postal_code %}
             <td>
-                <b>Phone Number:</b>
+                <b>Postal Code:</b>
             </td>
+            <td>
+                <!--b>Phone Number:</b-->
+                {{object.postal_code}}
+            </td>
+            {%endif%}
         </tr>
         
         <!-- -->
