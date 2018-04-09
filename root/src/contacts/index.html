@@ -703,9 +703,6 @@
       nwstates[5] = "AK";
       nwstates[6] = "HI";
       
-      
-      //westernStates[6] = "UT";
-      
       removeAllUsers();
      for(var i=0; i< contactList.length; i++){
           if(contactList[i].institution == undefined){        //  If the contacts have not assigned Institution.
@@ -718,7 +715,7 @@
                       if( contactList[i].institution.state == nwstates[j]){
                           
                           ++count;
-                           document.getElementById("displayStatus").innerHTML =  "Region : Western <br> Found " + count + " Users for Western Region" ; 
+                           document.getElementById("displayStatus").innerHTML =  "Region : North West <br> Found " + count + " Users for North West Region" ; 
 
                              addUser(i);
                               
