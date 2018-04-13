@@ -351,8 +351,8 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
 	padding: 10px;
     margin: 10px 0px;
     text-align: left;
-    width: 550px;
-    height: 350px;
+    width: 620px;
+    height: 300px;
     font-size: 14pt;
     border: 1px solid black;
     border-radius: 5px;
@@ -391,8 +391,8 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
 .viewProgramContainer .viewProgramsMultilineSelect{
     /*background-color: #858fa0;*/
     
-    width: 550px;
-    height: 500px;
+    width: 620px;
+    height: 300px;
     margin: 20px;
     float:left;
 }

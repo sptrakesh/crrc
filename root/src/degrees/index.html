@@ -1,9 +1,17 @@
 <script type="text/javascript">
   var titles = [];
+  var duration = [];
   {% for degree in degrees %}
   titles.push( '{{ degree.title }}' );
+  duration.push( '{{ degree.duration }}' );
   {% endfor %}
-
+  console1();
+  function console1(){
+    var i=0;
+    for(i=0;i<titles.length;++i){
+        console.log(titles[i] + " " + duration[i]);
+    }
+  }
   function displayDegree( degreeId )
   {
     document.getElementById( `dv_${degreeId}` ).style.display = 'inline';

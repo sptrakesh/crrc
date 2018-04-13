@@ -1,4 +1,24 @@
 <script type="text/javascript">
+  var transferInstitution = [];
+  var transfereeInstitution = [];
+  var transferInstitutionState = [];
+  var fileNameArray = [];
+  var agreementIDArray = [];
+  var institutionList = [];
+
+  {% for agreement in agreements %}
+  transferInstitution.push( '{{ agreement.transferInstitution.name }}' );
+  transfereeInstitution.push( '{{ agreement.transfereeInstitution.name }}' );
+  fileNameArray.push ( '{{ agreement.filename }}' );
+  agreementIDArray.push ( '{{ agreement.id }}' );
+  {% endfor %}
+  console1();
+  function console1(){
+    var i=0;
+    for(i=0;i<transferInstitution.length;++i){
+        //console.log(transferInstitution[i] + " - " + transfereeInstitution[i] + " " + fileNameArray[i]  + " " + agreementIDArray[i]);
+    }
+  }
     function deleteAgreement( form )
     {
         if ( !confirm( 'Do you want to permanently delete agreement?' ) ) return false;
@@ -36,6 +56,738 @@
 
         return false;
     }
+    retrieveInstitutions();         // Calling the function below.
+    
+    function retrieveInstitutions(){            //Function prototype to get list of all institutions from server as form of JSON and put into institutionList variable.
+         let xhr = new XMLHttpRequest();
+         xhr.open( 'POST', '/institutions' );
+         xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+         xhr.onload = function ()
+         {
+           if ( xhr.status === 200 )
+           {
+             //console.log( xhr.responseText );
+             institutionList = JSON.parse( xhr.responseText );
+             populateInstitutionStateSelect();          //  This function is calling to populate list for location filter.
+           }
+           else
+           {
+             console.log( `Error retrieving institution list.  Server returned status: ${xhr.start}` );
+           }
+         };
+         xhr.send( '' );
+    }
+
+    function clearSelectStates() //This function clears the options from Filter by State Select.
+    {
+       let element = document.getElementById('InstitutionStateFilter');
+        while(element.firstChild)
+            {
+                element.removeChild(element.firstChild);
+            }
+    }
+    function locationFilter(){       
+        //The location filter works for both state and city. If the user has not selected a city, It will show all the programs from Institution in selected state. If the user has city selected it will show the list of programs in selected city.
+       
+            let selectState = document.getElementById('InstitutionStateFilter');
+            let optionValue = selectState.options[selectState.selectedIndex].value;
+            let stateName = selectState.options[selectState.selectedIndex].text;
+             
+            if(optionValue == -1){  // If the user has not selected any state, it will filter by Region.
+                //document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
+                // Creating and Populating Institution State because ContactList Array does not contain an option for Institution State.
+                // ContactList is an option of City in the array. So I am pulling from InstitutionList Array to find a match and populating States.
+
+               /* $("#institution").val("-1");
+                $("#InstitutionStateFilter").val("-1");
+                $("#InstitutionCityFilter").val("-1");
+                $("#role").val("-1");
+                $("#contactName").val(""); 
+                */
+                for(var i = 0; i<institutionList.length;++i){
+
+                              if(institutionList[i].state != undefined){
+                                  for(var j = 0; j<transferInstitution.length;++j){
+                                        
+                                        if( transferInstitution[j] == institutionList[i].name){
+                                            //console.log(transferInstitution[j] + " = " + institutionList[i].name);
+                                            transferInstitutionState[j] = institutionList[i].state;
+                                            console.log(transferInstitutionState[j] + " == " + institutionList[i].state);
+                                          }
+                                      
+                                  }
+                              }
+                } 
+               
+
+
+               let select = document.getElementById('InstitutionRegionFilter');
+               let optionValue = select.options[select.selectedIndex].value;
+               let optionsText = select.options[select.selectedIndex].text;
+
+               if(optionValue == -1){
+                    document.getElementById("displayStatus").innerHTML =  "Please select a Region to Filter"; 
+               }
+
+               else{
+                    document.getElementById("displayStatus").innerHTML =  "Region : " +  optionsText; 
+
+                    clearSelectStates();
+                    
+                    let state = document.getElementById('InstitutionStateFilter');
+                    let stateOption = document.createElement( 'option' );
+                    stateOption.value = -1;
+                    stateOption.textContent = "Select State";
+                    state.appendChild( stateOption );
+                    
+
+                            if(optionsText == "Northwest Region"){
+                               populateNorthWestRegion();
+
+                            }
+                            else if(optionsText == "Southwest Region"){
+                                populateSouthWestRegion();
+                            }
+                            else if(optionsText == "North Central Region"){
+                              populateNorthCentralRegion();
+                             }
+                            else if(optionsText == "South Central Region"){
+                              populateSouthCentralRegion();
+                            }
+                            else if(optionsText == "Mid-west Region"){
+                              populateMidWestRegion();
+                            }
+                            else if(optionsText == "Central Eastern Region"){
+                                populateCentralEasternRegion();
+                            }
+                            else if(optionsText == "North East Region"){
+                                populateNorthEasternRegion();
+                            }
+                            else if(optionsText == "South East Region"){
+                              populateSouthEastRegion();
+                            }
+                            else if(optionsText == "National Capital Region"){
+                              populateNationalCapitalRegion();
+                            }
+                        }
+                   
+            }
+            else{    // If no region is selected, target the states
+                var count = 0;
+                for(var i = 0; i<institutionList.length;++i)
+                {
+                    if(institutionList[i].state == stateName){
+                        for(var j = 0; j<contactList.length;++j){
+                            if(contactList[j].institution != undefined){
+                              if( contactList[j].institution.city == institutionList[i].city){
+                                  contactList[j].institution.state = stateName;
+                                }
+                            }
+                        }
+                    }
+                }
+                $("#institution").val("-1");
+                $("#InstitutionCityFilter").val("-1");
+                $("#role").val("-1");
+                $("#contactName").val("");
+                removeAllUsers();
+                for(var i = 0; i < contactList.length; ++i){
+                    if(contactList[i].institution != undefined){  //If there are institutions defined for contacts.
+                       
+                       if(stateName == contactList[i].institution.state){   // If the state name matches.
+                           let element = document.getElementById('lstBoxselectUser_ViewUser');
+                            let option = document.createElement( 'option' );
+                             option.value = contactList[i].id;
+                            option.textContent = contactList[i].name +" - "  + contactList[i].institution.name;
+                            element.appendChild( option );
+                            ++count;
+                          document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>" +"Found " + count + " User for " + stateName;
+                      }
+                      else{
+                          document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>" +"Found " + count + " User for " + stateName;
+                      }  
+                    }
+                    else{
+                       // document.getElementById("displayStatus").innerHTML = "insufficeint data. exiting the loop.";
+                    }
+                    
+                }
+            }
+    }
+
+    
+       
+    console.log(transferInstitutionState.length);
+    function populateInstitutionStateSelect(){      //This function is called from retrieveInstitutions(). This will populate states of Institution for location filter.
+
+        //clearSelectStates();
+        let element = document.getElementById('InstitutionStateFilter');
+        let option1 = document.createElement('option');
+        option1.value = -1;
+        option1.textContent = "Select State";
+        element.appendChild( option1);
+        var id = [];
+        var names = [];
+        var uniquesID = [];
+        var uniquesName = []; 
+
+        for(var i = 0; i<institutionList.length;++i){
+         
+                    //if(institutionList[i].state != undefined){
+                        console.log(transferInstitutionState.length);
+                        for(var j = 0; j<transferInstitutionState.length;++j){
+                           // if(transferInstitutionState[j] != undefined){
+                                console.log(transferInstitutionState[j] + " = " + institutionList[i].state);
+                              if( transferInstitutionState[j] == institutionList[i].state){
+                                  id[i] =  agreementIDArray[j];
+                                  names[i] =  transferInstitution[j].state;
+                                  alert("boom");
+                              }
+                              
+                           // }
+                                              
+                        }
+
+                   // }
+      }
+
+            $.each(names,function(i,el){
+                if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+            });
+            $.each(id,function(i,el){
+                if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+            });
+            uniquesID.sort();
+            uniquesName.sort();
+            for (var i = 0; i < uniquesName.length; ++i){
+                let option = document.createElement( 'option' );
+                option.value  = uniquesID[i];
+                option.textContent= uniquesName[i];
+                element.appendChild( option );  
+            }
+    }
+  
+    function populateAgreements(){
+        //console.log(transferInstitution.length + " " + transfereeInstitution.length + " " + agreementIDArray.length + " " + fileNameArray.length + " " );
+        let element = document.getElementById("agreementsBox");
+        for(var i=0;i<transferInstitution.length;++i){
+            console.log( i + " " + agreementIDArray[i] +" "+ transferInstitution[i] + " --> " + transfereeInstitution[i]);
+            let element = document.getElementById("agreementsBox");
+               let option = document.createElement( 'option' );
+                option.value = agreementIDArray[i];
+                 option.textContent = transferInstitution[i] + " -----> "  +transfereeInstitution[i];
+
+                 element.appendChild( option );
+        }
+    }
+
+    function viewAgreement(){
+        let select = document.getElementById('agreementsBox');
+        let agreementID = select.options[select.selectedIndex].value;
+        if(agreementID == -1){
+                alert("invalid selection");
+        }
+        else{
+              window.location.href = `/agreements/id/${agreementID}/view`;
+        }
+     
+    }
+    function clearAgreements(){
+   
+       let element = document.getElementById( 'agreementsBox' );
+       while (element.firstChild) {
+           element.removeChild(element.firstChild);
+       }
+   }
+    function filterByRegion(){
+               let select = document.getElementById('region');
+               let optionValue = select.options[select.selectedIndex].value;
+               let optionsText = select.options[select.selectedIndex].text;
+
+               if(optionValue == -1){
+                    document.getElementById("displayStatus").innerHTML =  "Please select a Region to Filter"; 
+                   
+               }
+
+               else{
+
+                   document.getElementById("displayStatus").innerHTML =  "Region : " +  optionsText; 
+                    
+                    //clearSelectAgreements();
+                   
+                    let state = document.getElementById('InstitutionStateFilter');
+                    let stateOption = document.createElement( 'option' );
+                    stateOption.value = -1;
+                    stateOption.textContent = "Select State";
+                    state.appendChild( stateOption );
+                    
+
+                           if(optionsText == "Northwest Region"){
+                           
+                               populateNorthWestRegion();
+                            }
+                            else if(optionsText == "Southwest Region"){
+                                populateSouthWestRegion();
+                            }
+                            else if(optionsText == "North Central Region"){
+                              populateNorthCentralRegion();
+                             }
+                            else if(optionsText == "South Central Region"){
+                              populateSouthCentralRegion();
+                            }
+                            else if(optionsText == "Mid-west Region"){
+                              populateMidWestRegion();
+                            }
+                            else if(optionsText == "Central Eastern Region"){
+                                populateCentralEasternRegion();
+                            }
+                            else if(optionsText == "North East Region"){
+                                populateNorthEasternRegion();
+                            }
+                            else if(optionsText == "South East Region"){
+                              populateSouthEastRegion();
+                            }
+                            else if(optionsText == "National Capital Region"){
+                              populateNationalCapitalRegion();
+                            }
+                }
+    }
+
+              function populateNorthWestRegion(){
+
+                for(var i = 0; i<institutionList.length;++i){
+
+                     for(var j = 0; j<transferInstitution.length;++j){
+                                
+                              if( transferInstitution[j] == institutionList[i].name){
+                                
+                                  transferInstitutionState[j] = institutionList[i].state;
+                                  console.log(transferInstitutionState[j] + "  = " + institutionList[i].name);
+                                }
+                            
+                        }
+                    
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var nwstates = [];
+
+      nwstates[0] = "WA";
+      nwstates[1] = "OR";
+      nwstates[2] = "ID";
+      nwstates[3] = "MT";
+      nwstates[4] = "WY";
+      nwstates[5] = "AK";
+      nwstates[6] = "HI";
+      
+      clearAgreements();
+     for(var i=0; i< transferInstitutionState.length; i++){
+             if( transferInstitutionState[i] != undefined){
+                for(var j=0; j<nwstates.length; j++){
+                    
+                      if( transferInstitutionState[i] == nwstates[j]){
+        
+                           
+                          ++count;
+                           document.getElementById("displayStatus").innerHTML =  "Region : North West <br> Found " + count + " Agreements for North West Region" ; 
+
+                             addAgreement(i);
+                              
+                             addState(i);
+                      }
+                 }
+                  
+              }
+     }
+           
+      
+      
+   }
+   function addAgreement(i)
+   {
+       let element = document.getElementById( 'agreementsBox' );
+       let option = document.createElement( 'option' );
+        option.value = agreementIDArray[i];
+        option.textContent =  transferInstitution[i] +" --> "  + transfereeInstitution[i];
+         element.appendChild( option );
+         
+
+   }
+
+   function addState(st){
+
+        var stateValue = transferInstitutionState[st];
+        let state = document.getElementById('InstitutionStateFilter');
+        if( $ ('#InstitutionStateFilter option:contains('+ stateValue + ')').length) { //Testing if the state already exits in the select
+             //alert("exits");
+        }
+        else{
+          let stateOption = document.createElement( 'option' );
+          stateOption.value = st;
+           stateOption.textContent = transferInstitutionState[st];
+           state.appendChild( stateOption );
+        }
+         
+  }
+
+  function populateSouthWestRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                    for(var j = 0; j<transferInstitution.length;++j){
+                            
+                              if( transferInstitution[j] == institutionList[i].name){
+                                  transferInstitutionState[j] = institutionList[i].state;
+                                }
+                            }
+      }
+
+      var count = 0; 
+      //  Hard Coding South West States;
+      var swstates = [];
+
+      swstates[0] = "CA";
+      swstates[1] = "NV";
+      swstates[2] = "UT";
+      swstates[3] = "AZ";
+      swstates[4] = "CO";
+      swstates[5] = "NM";
+     
+      clearAgreements();
+
+     for(var i=0; i< transferInstitutionState.length; i++){
+          
+             if( transferInstitutionState[i] != undefined){
+                for(var j=0; j<swstates.length; j++){
+                   
+                      if( transferInstitutionState[i] == swstates[j]){
+                          
+                          ++count;
+                           document.getElementById("displayStatus").innerHTML =  "Region : South West <br> Found " + count + " Agreements for South West Region" ; 
+
+                             addAgreement(i);
+                              
+                              addState(i);
+                      }
+                 }
+
+                  
+              }
+           
+      }
+
+       
+   }
+   function populateNorthCentralRegion(){
+
+        for(var i = 0; i<institutionList.length;++i){
+
+                   for(var j = 0; j<transferInstitution.length;++j){
+                            
+                              if( transferInstitution[j] == institutionList[i].name){
+                                  transferInstitutionState[j] = institutionList[i].state;
+                                }
+                            
+                        }
+                    
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var ncStates = [];
+
+      ncStates[0] = "WI";
+      ncStates[1] = "IL";
+      ncStates[2] = "MI";
+      ncStates[3] = "IN";
+      ncStates[4] = "OH";
+     
+    
+       clearAgreements();
+
+      for(var i=0; i< transferInstitutionState.length; i++){
+          
+           if( transferInstitutionState[i] != undefined){
+                for(var j=0; j<ncStates.length; j++){
+                   
+                      if( transferInstitutionState[i] == ncStates[j]){
+                          
+                          ++count;
+                           document.getElementById("displayStatus").innerHTML =  "Region : North Central <br> Found " + count + " Agreements for Western Region" ; 
+                            addAgreement(i);
+                              addState(i);
+                      }
+                 }
+               }
+             
+   }
+   
+ }
+
+ function populateSouthCentralRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                   
+                        for(var j = 0; j<transferInstitution.length;++j){
+                          
+                              if( transferInstitution[j] == institutionList[i].name){
+                                  transferInstitutionState[j] = institutionList[i].state;
+
+                                }
+                            
+                        }
+                    
+      }
+     
+      var count = 0; 
+      //  Hard Coding Western States;
+      var scStates = [];
+
+      scStates[0] = "TX";
+      scStates[1] = "OK";
+      scStates[2] = "AR";
+      scStates[3] = "LA";
+
+      clearAgreements();
+     for(var i=0; i< transferInstitutionState.length; i++){
+           
+             if( transferInstitutionState[i] != undefined){
+                for(var j=0; j<scStates.length; j++){
+                    console.log(transferInstitutionState[i] + " " + scStates[j]);
+                      if( transferInstitutionState[i] == scStates[j]){
+                          
+                          ++count;
+                          
+                           addAgreement(i);
+                              
+                              addState(i);
+                    }
+                 }
+                  
+              }
+           
+      } 
+      document.getElementById("displayStatus").innerHTML =  "Region : South Central <br> Found " + count + " Agreements for South Central Region" ; 
+   }
+   function populateMidWestRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                    
+                        for(var j = 0; j<transferInstitution.length;++j){
+                            
+                              if( transferInstitution[j] == institutionList[i].name){
+                                  transferInstitutionState[j] = institutionList[i].state;
+                                }
+                            
+                        }
+                    
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var mwStates = [];
+
+      mwStates[0] = "ND";
+      mwStates[1] = "SD";
+      mwStates[2] = "NE";
+      mwStates[3] = "KS";
+      mwStates[4] = "MN";
+      mwStates[5] = "IA";
+      mwStates[6] = "MO";
+
+      clearAgreements();
+     for(var i=0; i< transferInstitutionState.length; i++){
+          
+             if( transferInstitutionState[i] != undefined){
+                for(var j=0; j<mwStates.length; j++){
+                   
+                      if(transferInstitutionState[i] == mwStates[j]){
+                          
+                          ++count;
+                          
+                          
+                             document.getElementById("displayStatus").innerHTML =  "Region : Mid-West <br> Found " + count + " Agreements for Mid-West Region" ; 
+
+                             addAgreement(i);
+                              
+                              addState(i);
+                      }
+                 }
+                  
+              }
+           
+      } 
+   }
+
+
+   function populateCentralEasternRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                     for(var j = 0; j<transferInstitution.length;++j){
+                            
+                              if( transferInstitution[j] == institutionList[i].name){
+                                  transferInstitutionState[j] = institutionList[i].state;
+                                }
+                            
+                        }
+                    
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var ceStates = [];
+
+      ceStates[0] = "KY";
+      ceStates[1] = "TN";
+      ceStates[2] = "WV";
+      ceStates[3] = "VA";
+      ceStates[4] = "NC";
+      
+      
+      
+      clearAgreements();
+     for(var i=0; i< transferInstitutionState.length; i++){
+          
+          if( transferInstitutionState[i] != undefined){
+                for(var j=0; j<ceStates.length; j++){
+                    
+                      if( transferInstitutionState[i] == ceStates[j]){
+                          ++count;
+                          document.getElementById("displayStatus").innerHTML =  "Region : Central Eastern <br> Found " + count + " Agreements for Central Eastern Region" ;
+                             addAgreement(i);
+                             addState(i);
+                        }
+                 }
+                  
+              }
+           
+      } 
+   }
+
+   function populateNorthEasternRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+
+                        for(var j = 0; j<transferInstitution.length;++j){
+                            
+                              if( transferInstitution[j] == institutionList[i].name){
+                                  transferInstitutionState[j] = institutionList[i].state;
+                                }
+                            
+                        }
+                    
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var neStates = [];
+
+      neStates[0] = "CT";
+      neStates[1] = "MA";
+      neStates[2] = "ME";
+      neStates[3] = "NH";
+      neStates[4] = "NJ";
+      neStates[5] = "NY";
+      neStates[6] = "PA";
+      neStates[7] = "RI";
+      neStates[8] = "VT";
+      
+     clearAgreements();
+     for(var i=0; i< transferInstitutionState.length; i++){
+             if( transferInstitutionState[i] != undefined){
+                for(var j=0; j<neStates.length; j++){
+                    
+                      if( transferInstitutionState[i] == neStates[j]){
+                          ++count;
+                           document.getElementById("displayStatus").innerHTML =  "Region : North Eastern <br> Found " + count + " Agreements for North Eastern Region" ; 
+                            addAgreement(i);
+                            addState(i);
+
+                      }
+                 }
+                  
+              }
+           }
+      
+   }
+
+   function populateNationalCapitalRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+         for(var j = 0; j<transferInstitution.length;++j){
+             if( transferInstitution[j] == institutionList[i].name){
+                    transferInstitutionState[j] = institutionList[i].state;
+              }
+          }
+      }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var nCapStates = [];
+
+      nCapStates[0] = "DE";
+      nCapStates[1] = "MD";
+      nCapStates[2] = "DC";
+      
+     clearAgreements();
+     for(var i=0; i< transferInstitutionState.length; i++){
+          
+            if( transferInstitutionState[i] != undefined){
+                for(var j=0; j<nCapStates.length; j++){
+                 
+                   if( transferInstitutionState[i] == nCapStates[j]){
+                      ++count;
+                      document.getElementById("displayStatus").innerHTML =  "Region : National Capital <br> Found " + count + " Agreements for National Capital Region" ; 
+                           addAgreement(i);
+                           addState(i);
+                     }
+                 }
+              }
+        }
+    }
+
+   function populateSouthEastRegion(){
+      for(var i = 0; i<institutionList.length;++i){
+        for(var j = 0; j<transferInstitution.length;++j){
+                 if( transferInstitution[j] == institutionList[i].name){
+                        transferInstitutionState[j] = institutionList[i].state;
+                    }
+             }
+          }
+
+      var count = 0; 
+      //  Hard Coding Western States;
+      var seStates = [];
+
+      seStates[0] = "AL";
+      seStates[1] = "FL";
+      seStates[2] = "GA";
+      seStates[3] = "PR";
+      seStates[4] = "SC";
+      seStates[5] = "MS";
+    
+      
+      clearAgreements();
+
+     for(var i=0; i< transferInstitutionState.length; i++){
+          
+           
+             if( transferInstitutionState[i] != undefined){
+                for(var j=0; j<seStates.length; j++){
+                    
+                      if( transferInstitutionState[i]== seStates[j]){
+                          
+                          ++count;
+                          
+                           document.getElementById("displayStatus").innerHTML =  "Region : South East <br> Found " + count + " Users for South East Region" ; 
+                           addAgreement(i);
+                           addState(i);
+
+                      }
+                 }
+                  
+              }
+           
+      } 
+   }
 </script>
 
 <div>
@@ -53,7 +805,52 @@
     {% if searchText %}
     <h3>Search results for ({{ searchText }})</h3>
     {% endif %}
-    <div id="agreements">
+
+    <div style="float:left;margin: 0px 0px 0px 20px; height: 450px; width:450px">
+    <select multiple="multiple" style="width: 600px;height: 400px;" id="agreementsBox">
+           
+    </select><br>
+    
+    <button onclick="viewAgreement()">View Agreement</button>
+    <button disabled="disabled">Remove Agreement</button>
+    <button disabled="disabled">Create Agreement</button>
+    <p id="displayStatus"></p>
+    </div>
+
+    <div style="float: right; padding: 10px; margin: 0px 20px 0px 0px; width:450px; height: 450px">
+        <table>
+             <tr>
+              <td>  Filter By Region:</td>
+              <td><select class="CmbBox" id="InstitutionRegionFilter">
+                    <option value="-1"> Select Region </option>
+                    <option value="1">Northwest Region</option>
+                    <option value="2">Southwest Region</option>
+                    <option value="3">South Central Region</option>
+                    <option value="4">Mid-west Region</option>
+                    <option value="5">North Central Region</option>
+                    <option value="6">Central Eastern Region</option>
+                    <option value="7">North East Region</option>
+                    <option value="8">National Capital Region</option>
+                    <option value="9">South East Region</option>
+                  </select>
+                  <br>
+              </td>
+              </tr>
+              <tr>
+              <td>  Filter By State: </td>
+
+              <td>
+                <select class="CmbBox" id="InstitutionStateFilter">
+                     <option value="-1" style="display: none"> Select State </option>
+                  </select><br>
+              </td>
+            </tr>
+            <tr>
+                <td> <button class="commonBtn" onclick="locationFilter()"> Apply Filter </button> </td>
+            </tr>
+        </table>
+    </div>
+    <!--div id="agreements">
         {% for agreement in agreements %}
         <div id="av_{{ agreement.id }}">
             {% if agreement.transferInstitution and agreement.transfereeInstitution %}
@@ -69,8 +866,11 @@
             <br/>
             {% endfor %}
         </div>
-    </div>
+    </div-->
 
 </div>
+<script>
+      populateAgreements();
 
+</script>
 
