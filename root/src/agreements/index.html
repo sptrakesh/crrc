@@ -55,7 +55,7 @@
         let select = document.getElementById('agreementsBox');
         let agreementID = select.options[select.selectedIndex].value;
         let transferInstitution = select.options[select.selectedIndex].text;
-        let xhr = new XMLHttpRequest();
+       // let xhr = new XMLHttpRequest();
         
         if(agreementID == -1)
             {
@@ -69,20 +69,21 @@
                 xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
                 xhr.onload = function ()
                 {
-                    if ( xhr.status === 200 )
+                    if ( xhr.status === 200  )
                     {
                         console.log( xhr.responseText );
                         let json = JSON.parse( xhr.responseText );
                         console.log(json.status);
-                        if ( json.status )
+                        if ( json.status && json.count === 1)
                         {
-                            let element = document.getElementById( agreementID );
+                            let element = document.getElementById( agreementsBox );
                             element.parentElement.removeChild( element );
+                            //select.remove(select.selectedIndex);
                         }
                         else
                         {
                            // displayWarning();
-                           console.log("error");
+                           console.log("error - json status false");
                         }
                     }
                     else
@@ -92,7 +93,7 @@
                 };
                 xhr.send( agreementID );
 
-                //return false;
+                return false;
              }
         }
        
@@ -129,6 +130,18 @@
                 element.removeChild(element.firstChild);
             }
     }
+
+    function removeAllFilters(){
+      clearAgreements();
+      populateAgreements();
+      $("#institution").val("-1");
+      $("#InstitutionRegionFilter").val("-1");
+      
+      populateInstitutionStateSelect(); 
+      $("#InstitutionStateFilter").val("-1");
+       
+      document.getElementById("displayStatus").innerHTML = ""; 
+    }
     function locationFilter(){       
         //The location filter works for both state and city. If the user has not selected a city, It will show all the programs from Institution in selected state. If the user has city selected it will show the list of programs in selected city.
        
@@ -137,16 +150,11 @@
             let stateName = selectState.options[selectState.selectedIndex].text;
              
             if(optionValue == -1){  // If the user has not selected any state, it will filter by Region.
-                //document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
-                // Creating and Populating Institution State because ContactList Array does not contain an option for Institution State.
-                // ContactList is an option of City in the array. So I am pulling from InstitutionList Array to find a match and populating States.
-
-               /* $("#institution").val("-1");
-                $("#InstitutionStateFilter").val("-1");
-                $("#InstitutionCityFilter").val("-1");
-                $("#role").val("-1");
-                $("#contactName").val(""); 
-                */
+                document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
+                
+              $("#institution").val("-1");
+              $("#InstitutionStateFilter").val("-1");
+               
                 for(var i = 0; i<institutionList.length;++i){
 
                               if(institutionList[i].state != undefined){
@@ -217,10 +225,10 @@
             }
             else{    // If no region is selected, target the states
                 var count = 0;
-                for(var i = 0; i<institutionList.length;++i)
+                /*for(var i = 0; i<institutionList.length;++i)
                 {
                     if(institutionList[i].state == stateName){
-                        for(var j = 0; j<contactList.length;++j){
+                        for(var j = 0; j<transferInstitution.length;++j){
                             if(contactList[j].institution != undefined){
                               if( contactList[j].institution.city == institutionList[i].city){
                                   contactList[j].institution.state = stateName;
@@ -228,20 +236,19 @@
                             }
                         }
                     }
-                }
+                }*/
                 $("#institution").val("-1");
-                $("#InstitutionCityFilter").val("-1");
-                $("#role").val("-1");
-                $("#contactName").val("");
-                removeAllUsers();
-                for(var i = 0; i < contactList.length; ++i){
-                    if(contactList[i].institution != undefined){  //If there are institutions defined for contacts.
+                console.log(transferInstitutionState.length);
+                clearAgreements();
+                
+                for(var i = 0; i < transferInstitution.length; ++i){
+                    if(transferInstitutionState[i] != undefined){  //If there are institutions defined for contacts.
                        
-                       if(stateName == contactList[i].institution.state){   // If the state name matches.
-                           let element = document.getElementById('lstBoxselectUser_ViewUser');
+                       if(stateName == transferInstitutionState[i]){   // If the state name matches.
+                           let element = document.getElementById('agreementsBox');
                             let option = document.createElement( 'option' );
-                             option.value = contactList[i].id;
-                            option.textContent = contactList[i].name +" - "  + contactList[i].institution.name;
+                             option.value = agreementIDArray[i];
+                            option.textContent = transferInstitution[i] +" ----> "  + transfereeInstitution[i];
                             element.appendChild( option );
                             ++count;
                           document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>" +"Found " + count + " User for " + stateName;
@@ -261,7 +268,19 @@
     
     function populateInstitutionStateSelect(){      //This function is called from retrieveInstitutions(). This will populate states of Institution for location filter.
 
-        //clearSelectStates();
+      for(var i = 0; i<institutionList.length;++i){
+        if(institutionList[i].state != undefined){
+        for(var j = 0; j<transferInstitution.length;++j){
+            if( transferInstitution[j] == institutionList[i].name){
+                //console.log(transferInstitution[j] + " = " + institutionList[i].name);
+                  transferInstitutionState[j] = institutionList[i].state;
+                  //console.log(transferInstitutionState[j] + " == " + institutionList[i].state);
+                  }
+          }
+        }
+        }
+
+        clearSelectStates();
         let element = document.getElementById('InstitutionStateFilter');
         let option1 = document.createElement('option');
         option1.value = -1;
@@ -273,24 +292,16 @@
         var uniquesName = []; 
 
         for(var i = 0; i<institutionList.length;++i){
-         
-                    //if(institutionList[i].state != undefined){
-                       //console.log(transferInstitutionState.length);
-                        for(var j = 0; j<transferInstitutionState.length;++j){
-                           // if(transferInstitutionState[j] != undefined){
-                                console.log(transferInstitutionState[j] + " = " + institutionList[i].state);
-                              if( transferInstitutionState[j] == institutionList[i].state){
-                                  id[i] =  agreementIDArray[j];
-                                  names[i] =  transferInstitution[j].state;
-                                  alert("boom");
-                              }
-                              
-                           // }
-                                              
-                        }
 
-                   // }
-      }
+            for(var j = 0; j<transferInstitutionState.length;++j){
+                
+                    if( transferInstitutionState[j] == institutionList[i].state){
+                       // console.log(transferInstitutionState[j] + " == " + institutionList[i].state);
+                          id[i] =  agreementIDArray[j];
+                          names[i] =  transferInstitutionState[j];
+                    }
+              }
+         }
 
             $.each(names,function(i,el){
                 if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
@@ -300,6 +311,7 @@
             });
             uniquesID.sort();
             uniquesName.sort();
+            
             for (var i = 0; i < uniquesName.length; ++i){
                 let option = document.createElement( 'option' );
                 option.value  = uniquesID[i];
@@ -309,12 +321,11 @@
     }
   
     function populateAgreements(){
-        //console.log(transferInstitution.length + " " + transfereeInstitution.length + " " + agreementIDArray.length + " " + fileNameArray.length + " " );
+        
         let element = document.getElementById("agreementsBox");
          //transferInstitution.sort();
         for(var i=0;i<transferInstitution.length;++i){
-           
-            //console.log( i + " " + agreementIDArray[i] +" "+ transferInstitution[i] + " --> " + transfereeInstitution[i]);
+        
             let element = document.getElementById("agreementsBox");
                let option = document.createElement( 'option' );
                 option.value = agreementIDArray[i];
@@ -832,8 +843,7 @@
       } 
    }
 
-   function populateInstitutionsSelect()
-    {
+   function populateInstitutionsSelect() {
         let element = document.getElementById('institution');
         var id = [];
         var names = [];
@@ -846,24 +856,7 @@
                      option.textContent = transferInstitution[i];
                      element.appendChild( option );  
         }
-
-       /* $.each(names,function(i,el){
-            if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
-        });
-        $.each(id,function(i,el){
-            if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
-        });
-        uniquesID.sort();
-        uniquesName.sort();
-        
-         for (var i = 0; i < uniquesName.length; ++i){
-               
-                let option = document.createElement('option');
-                option.value = uniquesID[i];
-                option.textContent = uniquesName[i];
-                element.appendChild( option );  
-         }*/   
-    }
+  }
 
     function instituteFilter(){
 
@@ -871,34 +864,10 @@
         let institutionId = select.options[select.selectedIndex].value;
         let institutionName = select.options[select.selectedIndex].text;
         var count = 0;
-        //console.log(institutionId + " - " + institutionName);
-
-       /* if(institutionId != -1){
-          var iName = []; //Institute Name
-          var cName = []; // Contact Name
-          var cID = []; // Contact ID 
-          for (var i = 0; i < contactList.length; ++i){
-              if(contactList[i].institution == null)
-              {
-                  iName[i] = -1;  
-                  cName[i] = "undefined";
-                  cID[i] = -1;
-              }
-              else if(contactList[i].institution != null){
-                iName[i] = contactList[i].institution.name;  
-                cName[i] = contactList[i].name;
-                cID[i] = contactList[i].id;
-              }
-              
-          }
-            */
-          
-          //$("#InstitutionStateFilter").val("-1");
-          //$("#InstitutionCityFilter").val("-1");
-          //$("#role").val("-1");
-         //$("#contactName").val("");
-          clearAgreements();
-           for (var i = 0; i < transferInstitution.length; ++i){
+        
+        clearAgreements();
+        
+        for (var i = 0; i < transferInstitution.length; ++i){
               if (transferInstitution[i]  == institutionName)   //If the institution Name from select box is same as iName at i.
                   {
                       let element = document.getElementById( 'agreementsBox' );
@@ -907,22 +876,19 @@
                         option.textContent = transferInstitution[i] +" -----> " + transfereeInstitution[i];
                         element.appendChild( option );
                         ++count;
-                          //document.getElementById("displayStatus").innerHTML = "Institution : " + institutionName + "<br>" +"Found " + count + " User for " + institutionName;
+                          document.getElementById("displayStatus").innerHTML = "Institution : " + institutionName + "<br>" +"Found " + count + " User for " + institutionName;
                   }
           }
-        }
-        /*else{
-            document.getElementById("displayStatus").innerHTML = "Please Select an Institution to Filter! ";
-        }*/
-    //}
+    }
+        
 </script>
 
 <div>
     <h2>Manage Agreements</h2>
     <div>
-        <div style="display:inline-block; float: left; padding: 10px;"><a href="/agreements/create" style="float: left;">Create Agreement</a></div>
+        <div style="display:none; float: left; padding: 10px;"><a href="/agreements/create" style="float: left;">Create Agreement</a></div>
         <div style="display:inline-block; overflow: hidden; width: 100px;"></div>
-        <div style="display:inline-block; float: right; padding: 10px;">
+        <div style="display:none; float: right; padding: 10px;">
             <form name="search" method="post" action="/agreements/search">
                 <input type="text" name="text" placeholder="Search by title..."/><input type="submit" value="Find"/>
             </form>
@@ -932,20 +898,20 @@
     {% if searchText %}
     <h3>Search results for ({{ searchText }})</h3>
     {% endif %}
-
-    <div style="float:left;margin: 0px 0px 0px 20px; height: 450px; width:450px">
-    <select multiple="multiple" style="width: 600px;height: 400px;" id="agreementsBox">
+    <div style="height: 500px; width: 1200px; ">
+    <div style="float:left;margin: 0px 0px 0px 20px; height: 470px; width:650px;">
+    <select multiple="multiple" id="agreementsBox">
            
     </select><br>
     
     <button onclick="viewAgreement()" class="commonBtn" style="width: 140px">View Agreement</button>
     <a href="/agreements/create"><input type="button" class="commonBtn" style="width: 160px" value="Create Agreement"></a>
-    <button onclick="deleteAgreement()" class="commonBtn" style="width: 160px">Remove Agreement</button>
-    <button class="commonBtn">Remove Filters</button>
+    <button  onclick="deleteAgreement()" class="commonBtn" style="width: 160px">Remove Agreement</button>
+    <button  onclick="removeAllFilters()" class="commonBtn">Remove Filters</button>
     <p id="displayStatus"></p>
     </div>
 
-    <div style="float: right; padding: 10px; margin: 0px 20px 0px 0px; width:450px; height: 450px">
+    <div style="float: right; padding: 10px; margin: 0px 20px 0px 0px; width:450px; height: 450px;">
         <table>
              <tr>
               <td>  Filter By Region:</td>
@@ -987,6 +953,7 @@
                 <td><button class="commonBtn" onclick="instituteFilter()"> Apply Filter </button> </td>
             </tr>
         </table>
+    </div>
     </div>
     <!--div id="agreements">
         {% for agreement in agreements %}

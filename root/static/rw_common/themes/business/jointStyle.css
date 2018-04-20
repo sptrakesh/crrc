@@ -352,7 +352,7 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
     margin: 10px 0px;
     text-align: left;
     width: 620px;
-    height: 300px;
+    height: 400px;
     font-size: 14pt;
     border: 1px solid black;
     border-radius: 5px;
@@ -400,8 +400,8 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
 	padding: 10px;
     margin: 10px 0px;
 	text-align: left;
-    width: 550px;
-    height: 350px;
+    width: 620px;
+    height: 400px;
     font-size: 14pt;
     border: 1px solid black;
     border-radius: 5px;
@@ -419,7 +419,7 @@ input[class="commonBtn"]:active, button[class="commonBtn"]:active{
     /*border: 1px solid black;*/
     border-radius: 10px;
     width: 450px;
-    height: 400px;
+    height: 530px;
     margin: 20px;
     float:right;
 }
@@ -595,8 +595,8 @@ div[class="addProgramContainer"]{
     padding: 10px;
     margin: 10px;
 	text-align: left;
-    width: 530px;
-    height: 300px;
+    width: 620px;
+    height: 400px;
     font-size: 14pt;
     border: 1px solid black;
     border-radius: 5px;
@@ -611,3 +611,16 @@ div[class="addProgramContainer"]{
 
 
 /*---------------------------------  End Clark CSS ----------------------------------------------------------------*/
+
+/*----------------------------------   View Agreement -------------------------------------------------------------*/
+ select[id="agreementsBox"]{
+    padding: 10px;
+    margin: 10px 0px;
+    text-align: left;
+    width: 620px;
+    height: 400px;
+    font-size: 14pt;
+    border: 1px solid black;
+    border-radius: 5px;
+    overflow: scroll;
+}

@@ -276,12 +276,12 @@
   </div>
   <div><br>
     <form id="details" method="post" action="/agreements/id/{{ object.id }}/update" style="display: inline-block;">
-      <input type="submit" value="Edit" />
+      <input type="submit" class="commonBtn" value="Edit" />
     </form>
     <form action="/agreements/remove" method="post" style="display: inline-block;">
       <input type="hidden" name="id" value="{{ object.id }}" />
       <input type="hidden" name="response" value="html" />
-      <input type="submit" value="Delete" />
+      <input type="submit" class="commonBtn" value="Delete" />
       <div style="clear: both;"></div>
     </form>
   </div>
@@ -300,7 +300,7 @@
         <a href="/programs/id/{{ relation.transferProgram.id }}">{{ relation.transferProgram.title }}</a>
       </div>
       <div style="float: right; display: inline; width: 5%;">
-        <button onclick="removeRelation({{ relation.transferProgram.id }}, '{{ relation.transferProgram.title }}', {{ relation.transfereeProgram.id }}, '{{ relation.transfereeProgram.title }}')">Remove</button>
+        <button  class="commonBtn" onclick="removeRelation({{ relation.transferProgram.id }}, '{{ relation.transferProgram.title }}', {{ relation.transfereeProgram.id }}, '{{ relation.transfereeProgram.title }}')">Remove</button>
       </div>
       <div id="transfereeProgram" style="float:left; width: 45%; display: inline;">
         <a href="/programs/id/{{ relation.transfereeProgram.id }}">{{ relation.transfereeProgram.title }}</a>
@@ -312,7 +312,7 @@
   <div id="relationFormContainer">
   </div>
   <div id="buttonsDiv">
-    <button id="relationButton" onclick="addRelation()">Add Relation</button>
-    <button id="cancelButton" style="display: none;" onclick="hideForm()">Cancel</button>
+    <button id="relationButton" class="commonBtn" onclick="addRelation()">Add Relation</button>
+    <button id="cancelButton" class="commonBtn" style="display: none;" onclick="hideForm()">Cancel</button>
   </div>
 </div>
