@@ -261,6 +261,7 @@ where agreement_id = :id
 
   if ( query.exec() )
   {
+    context->stash()["status_msg"] = QString( "%1" ).arg( query.numRowsAffected() );
     if ( query.numRowsAffected() > 0 )
     {
       auto iter = agreements.find( id );
