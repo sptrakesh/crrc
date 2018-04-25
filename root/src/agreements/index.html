@@ -892,7 +892,106 @@
                   }
           }
     }
-        
+       
+    /************ Get the programs each institution has ************/
+   
+   //Retrieves from the server and puts everything in the program list array
+   function getPrograms() 
+   {
+   
+       let xhr = new XMLHttpRequest();
+       xhr.open( 'POST', '/programs' );
+       xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
+       xhr.onload = function ()
+       {
+           if ( xhr.status === 200 && xhr.readyState == 4)
+           {
+                //console.log( xhr.responseText );
+               programList = JSON.parse( xhr.responseText );
+               
+                populateDegrees();
+                        function populateDegrees(){
+                        var id = [];
+                        var names = [];
+                        var uniquesID = [];
+                        var uniquesName = [];
+                         let element = document.getElementById('degree');
+                     
+                         
+                     //alert(programList.length);
+                         for (var i = 0; i < programList.length; ++i){
+                          
+                              id[i] =i;
+                             names[i] = programList[i].degree.title;
+                         }
+                        $.each(names,function(i,el){
+                        if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+                        });
+                        $.each(id,function(i,el){
+                            if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+                        });
+                        uniquesID.sort();
+                        uniquesName.sort();
+
+                  for (var i = 0; i < uniquesName.length; ++i){
+                            let option = document.createElement( 'option' );
+                            option.value  = uniquesID[i];
+                            option.textContent= uniquesName[i];
+                            element.appendChild( option );  
+                        }
+                     
+               
+           }
+         }
+           else
+           {
+               console.log( `Unable to retrieve Program list.  Server returned status: ${xhr.status}` );
+           }
+       };
+       xhr.send( '' );
+   } 
+
+   function filterDegrees()
+   {
+       $("#InstitutionStateFilter").val("-1");
+       $("#InstitutionRegionFilter").val("-1");
+       $("#institution").val("-1");
+       let select = document.getElementById('degree');
+       let degreeId = select.options[select.selectedIndex].value;
+       let degreeName = select.options[select.selectedIndex].text;
+       
+       clearAgreements();
+       
+       for (var i=0; i<programList.length; i++)
+           {
+              
+               if(programList[i].degree.title == degreeName)
+                   {
+
+                       for(var j=0; j<transferInstitution.length; j++)
+                           {console.log(transferInstitution[j] + " =?= " + programList[i].institution.name);
+                               if(transferInstitution[j] == programList[i].institution.name)
+                                   {
+
+                                       //institutions[j].degree.id = programList[i].degree.id;
+                                       //degreeDisplayName = programList[i].degree.title + " in " + programList[i].title;
+                                       //.institutions[j].degree = programList[i].degree.title;
+                                       
+                                       let element = document.getElementById('agreementsBox');
+                                       let option = document.createElement('option');
+                                       option.value = agreementIDArray[j];
+                                       option.textContent = transferInstitution[j] + " - " + programList[i].degree.title;
+                                       element.appendChild(option);
+
+                                           
+                                   }
+                           }
+                   }
+           }
+       
+       document.getElementById("displayStatus").innerHTML = "Degree Type: " + degreeName;
+
+   }   
 </script>
 
 <div>
@@ -980,7 +1079,7 @@
                 </select>
             </tr>
             <tr>
-                <td><button class="commonBtn" onclick="degreeFilter()"> Apply Filter </button> </td>
+                <td><button class="commonBtn" onclick="filterDegrees()"> Apply Filter </button> </td>
             </tr>
             <tr >
             <td colspan="4"><hr></td>
@@ -1012,6 +1111,7 @@
 //These functions are defined above but only called at the end of the html because there was a problem of append child of null. 
 //This usually happens when a function is called before the page reads html.
       populateAgreements();
+      getPrograms();
       populateInstitutionsSelect();
       $('#agreementsBox').dblclick(function() {
                         viewAgreement();
