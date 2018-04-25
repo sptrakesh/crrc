@@ -850,11 +850,24 @@
         var uniquesName = [];
 
          for (var i = 0; i < transferInstitution.length; ++i){
-                    let option = document.createElement('option');
-                     option.value = agreementIDArray[i];
-                     option.textContent = transferInstitution[i];
-                     element.appendChild( option );  
+                    id[i] = agreementIDArray[i];
+                     names[i] = transferInstitution[i];
         }
+
+        $.each(names,function(i,el){
+        if($.inArray(el, uniquesName) === -1 ) uniquesName.push(el);
+        });
+        $.each(id,function(i,el){
+        if($.inArray(el, uniquesID) === -1 ) uniquesID.push(el);
+        });
+
+        for (var i = 0; i < uniquesName.length; ++i){
+            let option = document.createElement( 'option' );
+            option.value = uniquesID[i];
+            option.textContent = uniquesName[i];
+            element.appendChild( option );
+        }
+
   }
 
     function instituteFilter(){
@@ -940,7 +953,10 @@
             </tr>
             <tr>
                 <td> <button class="commonBtn" onclick="locationFilter()"> Apply Filter </button> </td>
-            </tr><br><br>
+            </tr>
+            <tr >
+            <td colspan="4"><hr></td>
+            </tr>
             <tr><br>
                 <td>Institution List:</td>
             
@@ -950,7 +966,26 @@
             </tr>
             <tr>
                 <td><button class="commonBtn" onclick="instituteFilter()"> Apply Filter </button> </td>
+                
             </tr>
+            <tr >
+            <td colspan="4"><hr></td>
+            </tr>
+            <tr><br>
+
+                <td>Degree List:</td>
+            
+                <td><select class="CmbBox" id="degree">
+                    <option value="-1"> Select Degree</option>
+                </select>
+            </tr>
+            <tr>
+                <td><button class="commonBtn" onclick="degreeFilter()"> Apply Filter </button> </td>
+            </tr>
+            <tr >
+            <td colspan="4"><hr></td>
+            </tr>
+            
         </table>
     </div>
     </div>

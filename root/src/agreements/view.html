@@ -262,12 +262,53 @@
     };
     xhr.send( `agreementId={{ object.id }}&transferProgramId=${transferProgramId}&transfereeProgramId=${transfereeProgramId}` );
   }
+
+// Changing text to a link. I am trying to pull the institution list table from the database.
+// If the name of institution is same as transfer institution / transferee institution, then the link is added. 
+// The user can use this link and can be redirected to institution/id/view ( Instituion details ).
+// The function is called at the end of the html.
+
+  function changeHeaderToLink(){
+   var transferInstitutionName;
+   var transferInstitutionId;
+   transferInstitutionName = ('{{ object.transferInstitution.name }}');
+    transferInstitutionId = ('{{ object.transferInstitution.id }}');
+
+    if (transferInstitutionId == undefined){
+        console.log("Transfer ID is undefined");
+    }
+    else if(transferInstitutionId == null){
+        console.log("Transfer ID is null");
+    }
+    else{
+        document.getElementById("transferInstitution").innerHTML = "Transfer Institution: "+ "<a href=/institutions/id/"+transferInstitutionId+"/view >"+ transferInstitutionName +"</a>";
+    }
+
+   var transfereeInstitutionName;
+   var transfereeInstitutionId;
+   transfereeInstitutionName = ('{{ object.transfereeInstitution.name }}');
+    transfereeInstitutionId = ('{{ object.transfereeInstitution.id }}');
+
+    //console.log("work " + transferInstitutionId);
+
+    if (transfereeInstitutionId == undefined){
+        console.log("Transferee ID is undefined");
+    }
+    else if(transfereeInstitutionId == null){
+        console.log("Transferee ID is null");
+    }
+    else{
+        document.getElementById("transfereeInstitution").innerHTML = "Transferee Institution: "+ "<a href=/institutions/id/"+transfereeInstitutionId+"/view >"+ transfereeInstitutionName +"</a>";
+    }
+
+  }
+
 </script>
 
 <div>
   <h3>Title: {{ object.filename }}</h3>
-  <h3>Transfer Institution: {{ object.transferInstitution.name }}</h3>
-  <h3>Transferee Institution: {{ object.transfereeInstitution.name }}</h3>
+  <h3 id="transferInstitution">Transfer Institution: {{ object.transferInstitution.name }}</h3>
+  <h3 id="transfereeInstitution">Transferee Institution: {{ object.transfereeInstitution.name }}</h3>
   <strong>Size:</strong> {{ object.filesize }}<br />
   <strong>Type:</strong> {{ object.mimetype }}<br />
   <div>
@@ -297,13 +338,13 @@
     {% for relation in relations %}
     <div id="pr_{{ relation.transferProgram.id }}_{{ relation.transfereeProgram.id }}">
       <div style="float:left; width: 45%; display: inline;">
-        <a href="/programs/id/{{ relation.transferProgram.id }}">{{ relation.transferProgram.title }}</a>
+        <a href="/programs/id/{{ relation.transferProgram.id }}/view">{{ relation.transferProgram.title }}</a>
       </div>
       <div style="float: right; display: inline; width: 5%;">
         <button  class="commonBtn" onclick="removeRelation({{ relation.transferProgram.id }}, '{{ relation.transferProgram.title }}', {{ relation.transfereeProgram.id }}, '{{ relation.transfereeProgram.title }}')">Remove</button>
       </div>
       <div id="transfereeProgram" style="float:left; width: 45%; display: inline;">
-        <a href="/programs/id/{{ relation.transfereeProgram.id }}">{{ relation.transfereeProgram.title }}</a>
+        <a href="/programs/id/{{ relation.transfereeProgram.id }}/view  ">{{ relation.transfereeProgram.title }}</a>
       </div>
       <div style="clear: both;"></div>
     </div>
@@ -316,3 +357,6 @@
     <button id="cancelButton" class="commonBtn" style="display: none;" onclick="hideForm()">Cancel</button>
   </div>
 </div>
+<script>
+  changeHeaderToLink();
+</script>
