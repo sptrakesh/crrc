@@ -30,7 +30,7 @@
        {
            if ( xhr.status === 200 )
            {
-            //console.log( xhr.responseText );
+            console.log( xhr.responseText );
                let json = JSON.parse( xhr.responseText );
                institutions = json;
               
@@ -885,12 +885,14 @@
                     var count = 0; 
                     //  Hard Coding Western States;
                     var ncStates = [];
+                     ncStates[0] = "ND";
+                    ncStates[1] = "SD";
+                    ncStates[2] = "NE";
+                    ncStates[3] = "KS";
+                    ncStates[4] = "MN";
+                    ncStates[5] = "IA";
+                    ncStates[6] = "MO";
 
-                   ncStates[0] = "WI";
-                    ncStates[1] = "IL";
-                    ncStates[2] = "MI";
-                    ncStates[3] = "IN";
-                    ncStates[4] = "OH";
 
                     clearInstitutions();
 
@@ -950,14 +952,11 @@
 
                     //  Hard Coding Western States;
                     var mwStates = [];
-
-                    mwStates[0] = "ND";
-                    mwStates[1] = "SD";
-                    mwStates[2] = "NE";
-                    mwStates[3] = "KS";
-                    mwStates[4] = "MN";
-                    mwStates[5] = "IA";
-                    mwStates[6] = "MO";
+                    mwStates[0] = "WI";
+                    mwStates[1] = "IL";
+                    mwStates[2] = "MI";
+                    mwStates[3] = "IN";
+                    mwStates[4] = "OH";
 
                       clearInstitutions();
                    for(var i=0; i< institutions.length; i++){
