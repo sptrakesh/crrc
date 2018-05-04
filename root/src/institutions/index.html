@@ -219,10 +219,7 @@
      $("#designationExpiration").val("-1");
      $("#schoolName").val("");
      
-     document.getElementById("StateF").innerHTML = "";
-     document.getElementById("CityF").innerHTML = "";
-     document.getElementById("DegreeF").innerHTML = "";
-     document.getElementById("InstitutionF").innerHTML = "";
+     
      document.getElementById("displayStatus").innerHTML = "";
      //document.getElementById("displayStatus").innerHTML = ""; 
      populateInstitutionStateSelect();
@@ -345,11 +342,8 @@
    
    /******************* Filter by the location *********************/
    function locationFilter(){
-       document.getElementById("StateF").innerHTML = "";
-       document.getElementById("CityF").innerHTML = "";
-       document.getElementById("DegreeF").innerHTML = "";
-       document.getElementById("InstitutionF").innerHTML = "";
-       document.getElementById("NameF").innerHTML = "";
+       document.getElementById("displayStatus").innerHTML = "";
+       
         //$("#state").val("-1");
         //$("#city").val("-1");
         $("#DegreeType").val("-1");
@@ -378,7 +372,7 @@
            }
            else{
                
-               document.getElementById("StateF").innerHTML = "State: " + stateName;
+               document.getElementById("displayStatus").innerHTML = "State: " + stateName;
                
                clearInstitutions();
                for(var i = 0; i < institutions.length; ++i){
@@ -399,8 +393,7 @@
            let optionValue = selectState.options[selectState.selectedIndex].value;
            stateName = selectState.options[selectState.selectedIndex].text;
            
-           document.getElementById("StateF").innerHTML = "State: " + stateName;
-           document.getElementById("CityF").innerHTML = "City: " + cityName;
+           document.getElementById("displayStatus").innerHTML = "City: " + cityName;
            clearInstitutions();
            for(var i = 0; i < institutions.length; ++i){
                if(cityName == institutions[i].city){
@@ -418,11 +411,8 @@
    
    function filterDegrees()
    {
-       document.getElementById("StateF").innerHTML = "";
-       document.getElementById("CityF").innerHTML = "";
-       document.getElementById("DegreeF").innerHTML = "";
-       document.getElementById("InstitutionF").innerHTML = "";
-       document.getElementById("NameF").innerHTML = "";
+       document.getElementById("displayStatus").innerHTML = "";
+       
        $("#state").val("-1");
        $("#city").val("-1");
        //$("#DegreeType").val("-1");
@@ -462,7 +452,7 @@
                    }
            }
        
-       document.getElementById("DegreeF").innerHTML = "Degree Type: " + degreeName;
+       document.getElementById("displayStatus").innerHTML = "Degree Type: " + degreeName;
 
    }
    
@@ -471,11 +461,8 @@
    
    function filterByName()
    {
-       document.getElementById("StateF").innerHTML = "";
-       document.getElementById("CityF").innerHTML = "";
-       document.getElementById("DegreeF").innerHTML = "";
-       document.getElementById("InstitutionF").innerHTML = "";
-       document.getElementById("NameF").innerHTML = "";
+       document.getElementById("displayStatus").innerHTML = "";
+       
        $("#state").val("-1");
      $("#city").val("-1");
      $("#DegreeType").val("-1");
@@ -487,7 +474,7 @@
        
        let select = document.getElementById('schoolName');//the name searched
        
-       document.getElementById("NameF").innerHTML = "Institution Name: " + select.value;//tell the user what filter was applied
+       document.getElementById("displayStatus").innerHTML = "Institution Name: " + select.value;//tell the user what filter was applied
        let nameInput = select.value.toUpperCase(); //put the name in all caps to ignore case sensitivity
        //nameInput = nameInput.toUpperCase();
        //console.log(nameInput);
@@ -496,7 +483,7 @@
     
    
        clearInstitutions();
-       //document.getElementById("NameF").innerHTML = "Institution Name: " + nameInput;
+       
        for(var i=0; i<institutions.length; i++)
            {
                let temp = institutions[i].name;
@@ -517,11 +504,8 @@
    }
    
    function filterByDesignationTitle(){
-       document.getElementById("StateF").innerHTML = "";
-       document.getElementById("CityF").innerHTML = "";
-       document.getElementById("DegreeF").innerHTML = "";
-       document.getElementById("InstitutionF").innerHTML = "";
-       document.getElementById("NameF").innerHTML = "";
+       document.getElementById("displayStatus").innerHTML = "";
+       
       $("#state").val("-1");
      $("#city").val("-1");
      $("#DegreeType").val("-1");
@@ -558,11 +542,8 @@
       //This function is called from html onclick button
 
       //This function gives the list of all the institutions that have designation expiration in particular year.
-       document.getElementById("StateF").innerHTML = "";
-       document.getElementById("CityF").innerHTML = "";
-       document.getElementById("DegreeF").innerHTML = "";
-       document.getElementById("InstitutionF").innerHTML = "";
-       document.getElementById("NameF").innerHTML = "";
+       document.getElementById("displayStatus").innerHTML = "";
+       
         $("#state").val("-1");
        $("#city").val("-1");
        $("#DegreeType").val("-1");
@@ -654,52 +635,13 @@
           <ul style="background-color: white; list-style-type:none">
             <li><h3><u>Filters Applied</u></h3></li>
          </ul>
-
-          <ul class="WhatFilter" style="background-color: white; list-style-type:none">
-            <li id="displayStatus"></li>
-         </ul>
-         <ul class="WhatFilter" style="background-color: white; list-style-type:none">
-            <li id="StateF"></li>
-         </ul>
-         <ul class="WhatFilter" style="background-color: white; list-style-type:none">
-            <li id="CityF"></li>
-         </ul>
-         <ul class="WhatFilter" style="background-color: white; list-style-type:none">
-            <li id="DegreeF"></li>
-         </ul>
-         <ul class="WhatFilter" style="background-color: white; list-style-type:none">
-            <li id="InstitutionF"></li>
-         </ul>
-         <ul class="WhatFilter" style="background-color: white; list-style-type:none">
-            <li id="NameF"></li>
-         </ul>
-          <p id="displayStatus">  </p><br>
+      <p id="displayStatus">  </p><br>
       </div>
       <!-- The Search Filters -->
       <div id="SearchOptions" class="SearchOptions" style="float: right; padding: 10px; margin: 0px 20px 0px 0px; width:350px; height: 450px">
          <h2>Filter By</h2>
           
          <table id="AdvancedOptionTable">
-            <!--
-               <tr>
-                   <th colspan=2 style="align: center"><u>User ID:</u></th>
-               </tr>
-               <tr>
-                   <td>
-                        
-                       User Name:
-                   </td>
-                   <td>
-                       <input type="text" name="userNameInput" placeholder="User Name">
-                   </td>
-               </tr>
-               <tr>
-                   <td></td>
-                   <td>
-                       <input type="submit" value="Search" name="searchUserButton" id="searchUserButton"><br><br>
-                   </td>
-               </tr>
-               -->
              <tr>
                <th colspan=2 style="align: center"><u>Name</u></th>
             </tr>
@@ -1411,7 +1353,5 @@
                   }
               }
           }
-   
-   
    }
 </script>
