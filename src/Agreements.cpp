@@ -39,8 +39,17 @@ void Agreements::object( Cutelyst::Context* c, const QString& id ) const
 
 void Agreements::create( Cutelyst::Context* c ) const
 {
+  auto list = dao::InstitutionDAO{}.retrieveAll();
+  qSort( list.begin(), list.end(), 
+    []( const QVariant& inst1, const QVariant& inst2 ) -> bool
+    {
+      const auto ptr1 = model::Institution::from( inst1 );
+      const auto ptr2 = model::Institution::from( inst2 );
+      return *ptr1 < *ptr2;
+  } );
+
   c->stash( {
-    { "institutions", dao::InstitutionDAO().retrieveAll() },
+    { "institutions", list },
     { "template", "agreements/form.html" }
   } );
 }
