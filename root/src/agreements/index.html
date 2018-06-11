@@ -106,7 +106,7 @@
             if (xhr.status === 200) {
                 //console.log( xhr.responseText );
                 institutionList = JSON.parse(xhr.responseText);
-                populateInstitutionStateSelect(); //  This function is calling to populate list for location filter.
+                //populateInstitutionStateSelect(); //  This function is calling to populate list for location filter.
             } else {
                 console.log(`Error retrieving institution list.  Server returned status: ${xhr.start}`);
             }
@@ -173,6 +173,7 @@
 
             //If the user has not selected a state, but has selected a region.
             else {
+                $("#InstitutionStateFilter").val("-1");
                 document.getElementById("displayStatus").innerHTML = "Region : " + optionsText;
 
                 clearSelectStates();
@@ -224,6 +225,7 @@
                         element.appendChild(option);
                         ++count;
                         document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>" + "Found " + count + " User for " + stateName;
+                        
                     } else {
                         document.getElementById("displayStatus").innerHTML = "State : " + stateName + "<br>" + "Found " + count + " User for " + stateName;
                     }
@@ -738,14 +740,25 @@
         var names = [];
         var uniquesID = [];
         var uniquesName = [];
+        var lenigth = transferInstitution.length; 
+        var limit = lenigth + transfereeInstitution.length; // adding both lenghts to make array for transfer and transferee institutuions
+        var j=0;
 
-        for (var i = 0; i < transferInstitution.length; ++i) {
-            id[i] = agreementIDArray[i];
-            names[i] = transferInstitution[i];
+               
+        for (var i = 0; i < limit; i++) {
+            if (i<lenigth ){
+                id[i] = agreementIDArray[i];
+                names[i] = transferInstitution[i];
+            }else {
+                id[i] = agreementIDArray[j];
+                names[i] = transfereeInstitution[j];
+                j++;
+            }
         }
 
         $.each(names, function(i, el) {
             if ($.inArray(el, uniquesName) === -1) uniquesName.push(el);
+            uniquesName.sort();
         });
         $.each(id, function(i, el) {
             if ($.inArray(el, uniquesID) === -1) uniquesID.push(el);
@@ -761,16 +774,23 @@
     }
 
     function instituteFilter() {
-
+        $("#InstitutionRegionFilter").val("-1");
+        $("#InstitutionStateFilter").val("-1");
+        $("#degree").val("-1");
+        
         let select = document.getElementById('institution');
         let institutionId = select.options[select.selectedIndex].value;
         let institutionName = select.options[select.selectedIndex].text;
         var count = 0;
+        var lenigth = transferInstitution.length;
+        var limit = lenigth + transfereeInstitution.length;
+        var j=0;
+
 
         clearAgreements();
 
-        for (var i = 0; i < transferInstitution.length; ++i) {
-            if (transferInstitution[i] == institutionName) //If the institution Name from select box is same as iName at i.
+        for (var i = 0; i < limit; ++i) {
+            if (transferInstitution[i] == institutionName) //If the transfer institution Name from select box is same as iName at i.
             {
                 let element = document.getElementById('agreementsBox');
                 let option = document.createElement('option');
@@ -780,6 +800,18 @@
                 ++count;
                 document.getElementById("displayStatus").innerHTML = "Institution : " + institutionName + "<br>" + "Found " + count + " User for " + institutionName;
             }
+
+            if (transfereeInstitution[i] == institutionName) //If the transferee institution Name from select box is same as iName at i.
+            {
+                let element = document.getElementById('agreementsBox');
+                let option = document.createElement('option');
+                option.value = agreementIDArray[i];
+                option.textContent = transferInstitution[i] + " -----> " + transfereeInstitution[i];
+                element.appendChild(option);
+                ++count;
+                document.getElementById("displayStatus").innerHTML = "Institution : " + institutionName + "<br>" + "Found " + count + " User for " + institutionName;
+            }
+            
         }
     }
 
@@ -913,7 +945,7 @@
             <table>
                 <tr>
                     <td> Filter By Region:</td>
-                    <td><select class="CmbBox" id="InstitutionRegionFilter">
+                    <td><select class="CmbBox" id="InstitutionRegionFilter" onchange="locationFilter()">
                     <option value="-1"> Select Region </option>
                     <option value="1">Northwest Region</option>
                     <option value="2">Southwest Region</option>
@@ -932,10 +964,18 @@
                     <td> Filter By State: </td>
 
                     <td>
-                        <select class="CmbBox" id="InstitutionStateFilter">
+                        <select class="CmbBox" id="InstitutionStateFilter" onchange="locationFilter()">
                      <option value="-1" style="display: none"> Select State </option>
                   </select><br>
                     </td>
+                </tr>
+                
+                <tr><br>
+                    <td>Institution List:</td>
+
+                    <td><select class="CmbBox" id="InstitutionStateFilter">
+                    <option value="-1"> Select Institution</option>
+                </select>
                 </tr>
                 <tr>
                     <td> <button class="commonBtn" onclick="locationFilter()"> Apply Filter </button> </td>
