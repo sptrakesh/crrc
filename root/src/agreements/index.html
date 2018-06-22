@@ -13,44 +13,6 @@
     agreementIDArray.push('{{ agreement.id }}'); 
     {% endfor %}
 
-    /*function deleteAgreement( form )
-    {
-        if ( !confirm( 'Do you want to permanently delete agreement?' ) ) return false;
-
-        function displayWarning()
-        {
-            document.getElementById( `aw_${form.id.value}` ).innerText = 'Unable to delete agreement from the server.  Please try again later.';
-        }
-
-        let xhr = new XMLHttpRequest();
-        xhr.open( 'POST', form.action );
-        xhr.setRequestHeader( 'Content-Type', 'application/x-www-form-urlencoded' );
-        xhr.onload = function ()
-        {
-            if ( xhr.status === 200 )
-            {
-                console.log( xhr.responseText );
-                let json = JSON.parse( xhr.responseText );
-                if ( json.status )
-                {
-                    let element = document.getElementById( `av_${form.id.value}` );
-                    element.parentElement.removeChild( element );
-                }
-                else
-                {
-                    displayWarning();
-                }
-            }
-            else
-            {
-                displayWarning();
-            }
-        };
-        xhr.send( `id=${form.id.value}` );
-
-        return false;
-    }*/
-
     function deleteAgreement() {
 
         //This function is currently working without json status. For some reason the json return status is false.
@@ -58,7 +20,6 @@
         let select = document.getElementById('agreementsBox');
         let agreementID = select.options[select.selectedIndex].value;
         let transferInstitution = select.options[select.selectedIndex].text;
-        // let xhr = new XMLHttpRequest();
         console.log(agreementID + " is agreement ID ");
         if (agreementID == -1) {
             document.getElementById('displayStatus').innerHTML = "Please select a User to Remove";
@@ -116,7 +77,7 @@
 
     function clearSelectStates() //This function clears the options from Filter by State Select.
     {
-        let element = document.getElementById('InstitutionStateFilter');
+        let element = document.getElementById('StateFilter');
         while (element.firstChild) {
             element.removeChild(element.firstChild);
         }
@@ -126,10 +87,11 @@
         clearAgreements();
         populateAgreements();
         $("#institution").val("-1");
-        $("#InstitutionRegionFilter").val("-1");
+        $("#RegionFilter").val("-1");
 
         populateInstitutionStateSelect();
-        $("#InstitutionStateFilter").val("-1");
+        $("#StateFilter").val("-1");
+        $("#InstitutionFilter").val("-1");
 
         document.getElementById("displayStatus").innerHTML = "";
     }
@@ -137,7 +99,7 @@
     function locationFilter() {
         //The location filter works for both state and city. If the user has not selected a city, It will show all the programs from Institution in selected state. If the user has city selected it will show the list of programs in selected city.
 
-        let selectState = document.getElementById('InstitutionStateFilter');
+        let selectState = document.getElementById('StateFilter');
         let optionValue = selectState.options[selectState.selectedIndex].value;
         let stateName = selectState.options[selectState.selectedIndex].text;
 
@@ -145,7 +107,8 @@
             document.getElementById("displayStatus").innerHTML = "Please Select a State to Filter! ";
 
             $("#institution").val("-1");
-            $("#InstitutionStateFilter").val("-1");
+            $("#StateFilter").val("-1");
+            $("#InstitutionFilter").val("-1");
 
             for (var i = 0; i < institutionList.length; ++i) {
 
@@ -162,7 +125,7 @@
                 }
             }
 
-            let select = document.getElementById('InstitutionRegionFilter');
+            let select = document.getElementById('RegionFilter');
             let optionValue = select.options[select.selectedIndex].value;
             let optionsText = select.options[select.selectedIndex].text;
 
@@ -173,12 +136,12 @@
 
             //If the user has not selected a state, but has selected a region.
             else {
-                $("#InstitutionStateFilter").val("-1");
+                $("#StateFilter").val("-1");
                 document.getElementById("displayStatus").innerHTML = "Region : " + optionsText;
 
                 clearSelectStates();
 
-                let state = document.getElementById('InstitutionStateFilter');
+                let state = document.getElementById('StateFilter');
                 let stateOption = document.createElement('option');
                 stateOption.value = -1;
                 stateOption.textContent = "Select State";
@@ -214,11 +177,11 @@
             console.log(transferInstitutionState.length);
             clearAgreements();
 
+            let element = document.getElementById('agreementsBox');
             for (var i = 0; i < transferInstitution.length; ++i) {
                 if (transferInstitutionState[i] != undefined) { //If there are institutions defined for contacts.
 
                     if (stateName == transferInstitutionState[i]) { // If the state name matches.
-                        let element = document.getElementById('agreementsBox');
                         let option = document.createElement('option');
                         option.value = agreementIDArray[i];
                         option.textContent = transferInstitution[i] + " ----> " + transfereeInstitution[i];
@@ -232,6 +195,8 @@
                 }
             }
         }
+
+      populateInstitutionSelect();
     }
 
 
@@ -250,7 +215,7 @@
         }
 
         clearSelectStates();
-        let element = document.getElementById('InstitutionStateFilter');
+        let element = document.getElementById('StateFilter');
         let option1 = document.createElement('option');
         option1.value = -1;
         option1.textContent = "Select State";
@@ -288,6 +253,38 @@
             element.appendChild(option);
         }
     }
+
+  function populateInstitutionSelect()
+  {
+    let element = document.getElementById( 'InstitutionFilter' );
+
+    function clearInstitutionSelect()
+    {
+      while ( element.firstChild ) element.removeChild( element.firstChild );
+      let option = document.createElement( 'option' );
+      option.value = -1;
+      option.textContent = 'Select Institution';
+      element.appendChild(option);
+    }
+
+    let state = document.getElementById( 'StateFilter' );
+    if ( !state.selectedIndex ) return;
+    clearInstitutionSelect();
+
+    let stateText = state.options[state.selectedIndex].text;
+
+    for ( var i = 0; i < institutionList.length; ++i )
+    {
+      if ( institutionList[i].state == undefined ) continue;
+      if ( stateText === institutionList[i].state )
+      {
+        let option = document.createElement( 'option' );
+        option.value = i;
+        option.textContent = institutionList[i].name;
+        element.appendChild(option);
+      }
+    }
+  }
 
     function populateAgreements() { //This function adds agreements to the agreementBox select.
 
@@ -384,8 +381,8 @@
     function addState(st) {
 
         var stateValue = transferInstitutionState[st];
-        let state = document.getElementById('InstitutionStateFilter');
-        if ($('#InstitutionStateFilter option:contains(' + stateValue + ')').length) { //Testing if the state already exits in the select
+        let state = document.getElementById('StateFilter');
+        if ($('#StateFilter option:contains(' + stateValue + ')').length) { //Testing if the state already exits in the select
             //alert("exits");
         } else {
             let stateOption = document.createElement('option');
@@ -774,8 +771,8 @@
     }
 
     function instituteFilter() {
-        $("#InstitutionRegionFilter").val("-1");
-        $("#InstitutionStateFilter").val("-1");
+        $("#RegionFilter").val("-1");
+        $("#StateFilter").val("-1");
         $("#degree").val("-1");
         
         let select = document.getElementById('institution');
@@ -870,8 +867,8 @@
     }
 
     function filterDegrees() {
-        $("#InstitutionStateFilter").val("-1");
-        $("#InstitutionRegionFilter").val("-1");
+        $("#StateFilter").val("-1");
+        $("#RegionFilter").val("-1");
         $("#institution").val("-1");
         let select = document.getElementById('degree');
         let degreeId = select.options[select.selectedIndex].value;
@@ -945,7 +942,7 @@
             <table>
                 <tr>
                     <td> Filter By Region:</td>
-                    <td><select class="CmbBox" id="InstitutionRegionFilter" onchange="locationFilter()">
+                    <td><select class="CmbBox" id="RegionFilter" onchange="locationFilter()">
                     <option value="-1"> Select Region </option>
                     <option value="1">Northwest Region</option>
                     <option value="2">Southwest Region</option>
@@ -964,21 +961,21 @@
                     <td> Filter By State: </td>
 
                     <td>
-                        <select class="CmbBox" id="InstitutionStateFilter" onchange="locationFilter()">
+                        <select class="CmbBox" id="StateFilter" onchange="locationFilter()">
                      <option value="-1" style="display: none"> Select State </option>
                   </select><br>
                     </td>
                 </tr>
                 
-                <tr><br>
+                <tr>
                     <td>Institution List:</td>
 
-                    <td><select class="CmbBox" id="InstitutionStateFilter">
+                    <td><select class="CmbBox" id="InstitutionFilter">
                     <option value="-1"> Select Institution</option>
                 </select>
                 </tr>
                 <tr>
-                    <td> <button class="commonBtn" onclick="locationFilter()"> Apply Filter </button> </td>
+                    <td> <button class="commonBtn" onclick="institutionFilter()"> Apply Filter </button> </td>
                 </tr>
                 <tr>
                     <td colspan="4">
