@@ -312,7 +312,7 @@
   <strong>Size:</strong> {{ object.filesize }}<br />
   <strong>Type:</strong> {{ object.mimetype }}<br />
   <div>
-    Click <a href="/agreements/id/{{ object.id }}/display">{{ object.filename }}</a>
+    Click <a href="/agreements/id/{{ object.id }}/display" target="_blank">{{ object.filename }}</a>
     to view/download the articulation agreement.<br />
   </div>
   <div><br>
@@ -322,9 +322,14 @@
     <form action="/agreements/remove" method="post" style="display: inline-block;">
       <input type="hidden" name="id" value="{{ object.id }}" />
       <input type="hidden" name="response" value="html" />
-      <input type="submit" class="commonBtn" value="Delete" />
+      <input type="submit" class="commonBtn" value="Delete" onclick="return ConfirmDelete()">
       <div style="clear: both;"></div>
     </form>
+    <script>
+      function ConfirmDelete() {
+      return confirm("Are you sure you want to delete agreement?");
+      }
+      </script>
   </div>
   <br />
   <h3>Institutional Program Relations</h3>
