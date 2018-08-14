@@ -306,13 +306,13 @@
 </script>
 
 <div>
-  <h3>Title: {{ object.filename }}</h3>
+  <!-- <h3>Title: {{ object.filename }}</h3> -->
   <h3 id="transferInstitution">Transfer Institution: {{ object.transferInstitution.name }}</h3>
   <h3 id="transfereeInstitution">Transferee Institution: {{ object.transfereeInstitution.name }}</h3>
-  <strong>Size:</strong> {{ object.filesize }}<br />
-  <strong>Type:</strong> {{ object.mimetype }}<br />
+  <strong>Size:</strong> {{ object.filesize}} <h7><i>bytes</i></h4><br />
+  <strong>Type:</strong> <h7>PDF/word/excel</h7><br />
   <div>
-    Click <a href="/agreements/id/{{ object.id }}/display" target="_blank">{{ object.filename }}</a>
+    Click <a href="/agreements/id/{{ object.id }}/display" target="_blank">HERE</a>
     to view/download the articulation agreement.<br />
   </div>
   <div><br>
