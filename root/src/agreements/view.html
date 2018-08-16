@@ -207,9 +207,10 @@
     {
       if ( transferProgram.selectedIndex < 0 ) transferProgram.focus();
       else if ( transfereeProgram.selectedIndex < 0 ) transfereeProgram.focus();
-
+      
       displayWarning( 'Please select both transfer and transferee programs' );
     }
+    location.reload();
   }
 
   function hideForm()
@@ -343,16 +344,18 @@
     {% for relation in relations %}
     <div id="pr_{{ relation.transferProgram.id }}_{{ relation.transfereeProgram.id }}">
       <div style="float:left; width: 45%; display: inline;">
-        <a href="/programs/id/{{ relation.transferProgram.id }}/view">{{ relation.transferProgram.title }}</a>
+        <a href="/programs/id/{{ relation.transferProgram.id }}/view">{{ relation.transferProgram.degree.title }} in {{ relation.transferProgram.title }}</a>
       </div>
-      <div style="float: right; display: inline; width: 5%;">
-        <button  class="commonBtn" onclick="removeRelation({{ relation.transferProgram.id }}, '{{ relation.transferProgram.title }}', {{ relation.transfereeProgram.id }}, '{{ relation.transfereeProgram.title }}')">Remove</button>
+      <div style="float: right; display: inline; width: 10%;">
+        <button  type="submit" class="commonBtn"  onclick="removeRelation({{ relation.transferProgram.id }}, '{{ relation.transferProgram.title }}', {{ relation.transfereeProgram.id }}, '{{ relation.transfereeProgram.title }}')">Remove</button>
       </div>
+      
       <div id="transfereeProgram" style="float:left; width: 45%; display: inline;">
-        <a href="/programs/id/{{ relation.transfereeProgram.id }}/view  ">{{ relation.transfereeProgram.title }}</a>
+        <a href="/programs/id/{{ relation.transfereeProgram.id }}/view  ">{{ relation.transfereeProgram.degree.title }} in {{ relation.transfereeProgram.title }}</a>
       </div>
       <div style="clear: both;"></div>
     </div>
+    
     {% endfor %}
   </div>
   <div id="relationFormContainer">
