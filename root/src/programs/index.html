@@ -659,7 +659,11 @@
       $("#programName").val("");
       document.getElementById("displayStatus").innerHTML = ""; 
     }
-    
+
+  function totalNumber()
+    {
+        window.alert("Total Programs in the database - " + programList.length);
+    }   
 </script>
 
 <div style="min-height: 700px; margin-left: auto;margin-right: auto;">
@@ -680,6 +684,9 @@
      <div class="viewProgramContainer" style="min-height: 600px; width: 1150px;">
             <div class="TitleHeader">
                <h4>View Programs</h4>
+               <button type="button" onclick="totalNumber()">Total Programs</button>
+             
+               <br>
             </div>
             <div class="viewProgramsMultilineSelect">
                 

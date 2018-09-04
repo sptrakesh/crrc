@@ -144,6 +144,7 @@
                    option.value = institutions[i].id;
                    option.textContent = institutions[i].name + " ("  + institutions[i].city + " , " + institutions[i].state + ")" ;
                    element.appendChild( option );
+                   console.log(institutions.length);
                }
 
        }
@@ -446,6 +447,7 @@
                                        option.textContent = institutions[i].name + " - " + programList[i].title;
                                        element.appendChild(option);
 
+                                       
                                            
                                    }
                            }
@@ -575,6 +577,13 @@
           document.getElementById("displayStatus").innerHTML = "Designation Expiration Year : " + designationYear+ "<br>" + "Found " + count + " Institutions that have Designation expiring on " + designationYear;
        }
    }
+  
+   function totalNumber()
+    {
+        window.alert("Total Institutions are " + institutions.length);
+    }
+     //document.getElementById("totalInstitution").innerHTML = 6;
+  
    /****************************************************/
    
 </script>
@@ -582,16 +591,22 @@
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <div id="InstitutionsContainer" class="InstitutionsContainer" align="center" style="">
    <div id="PageTitle">
       <h2 align="center">View Institutions</h2>
+      <button type="button" onclick="totalNumber()">Total Institution</button>
+             
+               <br>
    </div>
    <div style="min-height: 900px; width: 1100px">
       <div id="institutions" class="institutions" style="float:left;margin: 0px 0px 0px 20px; height: 450px; width:450px">
          <table>
              <tr>
-               <br><br>
+               
             </tr> 
+            
+            
             <tr>
                <!-- The list of institutions -->
                <td>
@@ -610,7 +625,8 @@
                <td>
                   <!-- table holding the buttons for selecting, adding and removing an institution -->
                   <table align=center>
-                     <tr>
+                    Note: * Represents Institutions not affiliated with CAE. 
+                    <tr>
                         <td>
                            <button onclick="displayInstitutionsPage()" class="commonBtn" style="width: 150px">View Details</button>
                         </td>

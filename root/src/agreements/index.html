@@ -908,10 +908,17 @@
         document.getElementById("displayStatus").innerHTML = "Degree Type: " + degreeName;
 
     }
+
+
+    function totalNumber()
+    {
+        window.alert("Total Agreements are " + agreementIDArray.length);
+    }
 </script>
 
 <div>
     <h2>Manage Agreements</h2>
+    <button type="button" onclick="totalNumber()">Total Agreements</button>
     <div>
         <div style="display:none; float: left; padding: 10px;"><a href="/agreements/create" style="float: left;">Create Agreement</a></div>
         <div style="display:inline-block; overflow: hidden; width: 100px;"></div>

@@ -1110,6 +1110,11 @@
             }
         }
     }
+
+ function totalNumber()
+    {
+        window.alert("Total Users are " + contactList.length);
+    }
 </script>
 
 <div style="margin-left: auto; margin-right: auto;min-height: 700px ;">
@@ -1123,6 +1128,7 @@
         <div class="viewUserContainer">
             <div class="TitleHeader">
                 <h4>View User</h4>
+                <button type="button" onclick="totalNumber()">Total Users</button>
             </div>
             <!--End of Title Header </div-->
             <!--Start of div view Users Multiline Select -->
@@ -1139,7 +1145,7 @@
                   });
                   </script>
                </select>
-                    <br><br>
+                    
                     <button class="commonBtn" onclick="displayContactDetails()">View Details</button>
                     <a href="/contacts/create"><input type="button" name="addUser" value="Add User" class="commonBtn" id="addUserButton"></a>
                     <button class="commonBtn" onclick="removeUser()">Remove User</button>
